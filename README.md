@@ -1,5 +1,12 @@
-#Internet radio
+# Internet radio
+The basic design of a project that is just started...
 The internet radio is used to play audio from radio station streams (http). Details such as the network location are configured (externally) and accessible to the user as favorites.
+
+# Framework
+The application is build using the
+[Espressif IoT Development Framework](https://esp-idf.readthedocs.io/en/latest/index.html).
+
+**Table of contents**
 
 [TOC]
 
@@ -111,31 +118,31 @@ Display stream details
 + Update display
 
 ## Reader
-	+ Read file
-		+ Read data from network file and write to buffer
-	+ Read stream
-		+ Read data from network stream and write to buffer
++ Read file
+	+ Read data from network file and write to buffer
++ Read stream
+	+ Read data from network stream and write to buffer
 
 ## Buffer
-	+ Provide read and write methods
++ Provide read and write methods
 
 ## Player
-	+ Read from buffer (stream source)
-	+ Send to DSP (stream sink)
++ Read from buffer (stream source)
++ Send to DSP (stream sink)
 
 ## Boundary
-	+ Provides debug interface
-	+ Interpret control commands
++ Provides debug interface
++ Interpret control commands
 
 ## I2C
-	+ Arbitrate usage
-		+ IO
-		+ LCD
++ Arbitrate usage
+	+ IO
+	+ LCD
 
 ## SPI
-	+ Arbitrate usage
-		+ DSP
-		+ MEM
++ Arbitrate usage
+	+ DSP
+	+ MEM
 
 ## Settings
 + Favorites
@@ -184,6 +191,12 @@ LM2596 3A step-down switching regulator
 |Power |GND     |GND     |
 
 ### CPU processor
+---
+UNDER CONSTRUCTION.
+Changing ESP8266 to ESP32
+---
+
+#### ESP8266
 WeMos D1 mini pro module.
 
 + 16M bytes(128M bit) flash memory
@@ -191,7 +204,7 @@ WeMos D1 mini pro module.
 + Built-in ceramic antenna
 + CP2104 USB to serial controller
 
-**Table: CPU terminals**
+**Table: CPU terminals 1**
 
 |Group  |Terminal|Function                                                        |
 |:------|:-------|:---------------------------------------------------------------|
@@ -211,6 +224,57 @@ WeMos D1 mini pro module.
 |Control|D4      |GPIO2 10k pull-up, built in led, boot mode, DSP.XCS (active low)|
 |Power  |G       |GND                                                             |
 |Power  |5V      |5V                                                              |
+
+#### ESP32
+NodeMCU ESP-32S module.
+
++ 4M bytes(32M bit) flash memory
++ Built-in PCB antenna
++ CP2102 USB to serial controller
++ AMS1117 3.3V LDO
+
+**Table: CPU terminals 2**
+
+|Group  |Terminal|Function                                 |
+|:------|:-------|:----------------------------------------|
+|Power  |3V3     |not connected                            |
+|       |EN      |Chip enable (active high)                |
+|       |SVP     |GPIO36,ADC0                              |
+|       |SVN     |GPIO39,ADC3                              |
+|       |P34     |GPIO34,ADC6                              |
+|       |P35     |GPIO35,ADC7                              |
+|       |P32     |GPIO32,ADC4,TOUCH9                       |
+|       |P33     |GPIO33,ADC5,TOUCH8                       |
+|       |P25     |GPIO25,ADC18                             |
+|       |P26     |GPIO26,ADC19                             |
+|       |P27     |GPIO27,ADC17,TOUCH7                      |
+|       |P14     |GPIO14,ADC16,TOUCH6                      |
+|       |P12     |GPIO12,ADC15,TOUCH5                      |
+|Power  |GND     |                                         |
+|       |P13     |GPIO13,ADC14,TOUCH4                      |
+|       |SD2     |GPIO9,FLASH_D2                           |
+|       |SD3     |GPIO10,FLASH_D3                          |
+|       |CMD     |GPIO11,FLASH_CMD                         |
+|Power  |5V      |                                         |
+|       |CLK     |GPIO6,FLASH_SCK                          |
+|       |SD0     |GPIO7,FLASH_D0                           |
+|       |SD1     |GPIO8,FLASH_D1                           |
+|       |P15     |GPIO15,ADC13,TOUCH3                      |
+|       |P2      |GPIO2,ADC12,TOUCH2,blue LED (active high)|
+|       |P0      |GPIO0,ADC11,TOUCH1                       |
+|       |P4      |GPIO4,ADC10,TOUCH0                       |
+|       |P16     |GPIO16                                   |
+|       |P17     |GPIO17                                   |
+|       |P5      |GPIO5,VSPI_SS                            |
+|       |P18     |GPIO18,VSPI_SCK                          |
+|       |P19     |GPIO19,VSPI_MISO                         |
+|Power  |GND     |                                         |
+|       |P21     |GPIO21,VSPIHD                            |
+|Serial |RX      |GPIO3,RX0,USB                            |
+|Serial |TX      |GPIO1,TX0,USB                            |
+|       |P22     |GPIO22,VSPIWP                            |
+|       |P23     |GPIO23,VSPI_MOSI                         |
+|Power  |GND     |                                         |
 
 ### LVL digital level converter
 BSS138 based digital level converter module.
@@ -385,7 +449,7 @@ TPA3110 2x15W class D audio amplifier module.
 |CPU.MISO|D6 |P1.3|2  |
 |CPU.MOSI|D7 |P1.4|5  |
 |CPU.CLK |D5 |P1.5|6  |
-
+ESP-IDF Programming Guide
 ### Control
 **Table: Control connections**
 
