@@ -1,11 +1,74 @@
 menu "Application Configuration"
 
 config GPIO_BLINK_LED
-    int "GPIO pin for blinking LED (0-64)"
+    int "GPIO pin for blinking LED (0-44)"
     default 2
-    range 0 64
+    range 0 44
     help
-        Select the GPIO pin for blinking LED (0-64).
+        Select the GPIO pin for blinking LED (0-44).
+
+config GPIO_HSPI_CLK
+    int "GPIO pin for HSPI CLK (0-44)"
+    default 14
+    range 0 44
+    help
+        Select the GPIO pin for HSPI CLK (0-44).
+
+config GPIO_HSPI_MOSI
+    int "GPIO pin for HSPI MOSI (0-44)"
+    default 13
+    range 0 44
+    help
+        Select the GPIO pin for HSPI MOSI (0-44).
+
+config GPIO_HSPI_MISO
+    int "GPIO pin for HSPI MISO (0-44)"
+    default 12
+    range 0 44
+    help
+        Select the GPIO pin for HSPI MISO (0-44).
+
+config GPIO_HSPI_RAM_CS
+    int "GPIO pin for HSPI RAM CS (0-44)"
+    default 15
+    range 0 44
+    help
+        Select the GPIO pin for HSPI RAM chip select (0-44).
+
+config GPIO_VSPI_CLK
+    int "GPIO pin for VSPI CLK (0-44)"
+    default 0
+    range 0 44
+    help
+        Select the GPIO pin for VSPI CLK (0-44).
+
+config GPIO_VSPI_MOSI
+    int "GPIO pin for VSPI MOSI (0-44)"
+    default 0
+    range 0 44
+    help
+        Select the GPIO pin for VSPI MOSI (0-44).
+
+config GPIO_VSPI_MISO
+    int "GPIO pin for VSPI MISO (0-44)"
+    default 0
+    range 0 44
+    help
+        Select the GPIO pin for VSPI MISO (0-44).
+
+config GPIO_VSPI_DSP_XCS
+    int "GPIO pin for VSPI DSP XCS (0-44)"
+    default 0
+    range 0 44
+    help
+        Select the GPIO pin for VSPI DSP control chip select (0-44).
+
+config GPIO_VSPI_DSP_XDCS
+    int "GPIO pin for VSPI DSP XDCS (0-44)"
+    default 0
+    range 0 44
+    help
+        Select the GPIO pin for VSPI DSP data chip select (0-44).
 
 config BLINK_ON_MS
     int "Blinking LED ON duration (10-1000) ms"
