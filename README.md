@@ -75,12 +75,12 @@ Display stream details
 
 **Table: Home layout**
 
-||        |
-||--------|
-||Favorite|
-||Title   |
-||Artist  |
-||Album   |
+|   |1234567890123456|
+|:-:|----------------|
+|1  |Favorite        |
+|2  |Title           |
+|3  |Artist          |
+|4  |Album           |
 
 **Table: Home keys**
 
@@ -202,7 +202,7 @@ The NodeMCU module contains an ESP-32S module, which contains an ESP32 chip. Bec
 
 **Table: ESP32 connection**
 
-|ESP32 pin|ESP32 function                                                                       |ESP-32S pin|NodeMcu pin|NodeMcu label|
+|ESP32 pin|ESP32 functions                                                                      |ESP-32S pin|NodeMcu pin|NodeMcu label|
 |:--------|:------------------------------------------------------------------------------------|:----------|:----------|:------------|
 |1        |VDDA                                                                                 |           |           |             |
 |2        |LNA_IN                                                                               |           |           |             |
@@ -257,47 +257,47 @@ The following table shows the function to terminal mapping for this application.
 
 **Table: CPU terminals**
 
-|Group |Terminal|Function                                                         |
-|:-----|:-------|:----------------------------------------------------------------|
-|Power |3V3     |                                                                 |
-|      |EN      |CHIP_PU, Chip Enable (Active High)                               |
-|      |SVP     |SENSOR_VP, GPIO36, ADC_PRE_AMP, ADC1_CH0, RTC_GPIO0              |
-|      |SVN     |SENSOR_VN, GPIO39, ADC1_CH3, ADC_PRE_AMP, RTC_GPIO3              |
-|      |P34     |VDET_1, GPIO34, ADC1_CH6, RTC_GPIO4                              |
-|      |P35     |VDET_2, GPIO35, ADC1_CH7, RTC_GPIO5                              |
-|      |P32     |32K_XP, GPIO32, ADC1_CH4, TOUCH9, RTC_GPIO9                      |
-|      |P33     |32K_XN, GPIO33, ADC1_CH5, TOUCH8, RTC_GPIO8                      |
-|      |P25     |GPIO25, DAC_1, ADC2_CH8, RTC_GPIO6,                              |
-|      |P26     |GPIO26, DAC_2, ADC2_CH9, RTC_GPIO7,                              |
-|      |P27     |GPIO27, ADC2_CH7, TOUCH7, RTC_GPIO17,                            |
-|      |P14     |MTMS, HSPI-CLK, sram CLK                                         |
-|      |P12     |MTDI, HSPIQ, sram MISO                                           |
-|Power |GND     |                                                                 |
-|      |P13     |MTCK, HSPID, sram MOSI                                           |
-|      |SD2     |in-use 4MB flash                                                 |
-|      |SD3     |in-use 4MB flash                                                 |
-|      |CMD     |in-use 4MB flash                                                 |
-|Power |5V      |                                                                 |
-|-     |-       |-                                                                |
-|      |CLK     |in-use 4MB flash                                                 |
-|      |SD0     |in-use 4MB flash                                                 |
-|      |SD1     |in-use 4MB flash                                                 |
-|      |P15     |MTDO, HSPICS0, sram CS                                           |
-|      |P2      |GPIO2, HSPIWP, blue LED (active high)                            |
-|      |P0      |GPIO0, ADC2_CH1, TOUCH1, RTC_GPIO11, CLK_OUT1, strapping pin mode|
-|      |P4      |GPIO4, ADC2_CH0, TOUCH0, RTC_GPIO10, HSPIHD                      |
-|      |P16     |GPIO16                                                           |
-|      |P17     |GPIO17                                                           |
-|      |P5      |GPIO5, VSPICS0                                                   |
-|      |P18     |GPIO18, VSPICLK,                                                 |
-|      |P19     |GPIO19, VSPIQ                                                    |
-|Power |GND     |                                                                 |
-|      |P21     |GPIO21, VSPIHD                                                   |
-|Serial|RX      |U0RXD, USB-to-serial CP2102                                      |
-|Serial|TX      |U0TXD, USB-to-serial CP2102                                      |
-|      |P22     |GPIO22, VSPIWP                                                   |
-|      |P23     |GPIO23, VSPID                                                    |
-|Power |GND     |                                                                 |
+|Group |Terminal|Function|Comment                 |
+|:-----|:-------|:-------|------------------------|
+|Power |3V3     |        |                        |
+|      |EN      |CHIP_PU |chip enable, active high|
+|      |SVP     |        |                        |
+|      |SVN     |        |                        |
+|      |P34     |        |                        |
+|      |P35     |        |                        |
+|      |P32     |        |                        |
+|      |P33     |        |                        |
+|      |P25     |        |                        |
+|      |P26     |        |                        |
+|      |P27     |        |                        |
+|      |P14     |HSPI-CLK|DSP SCK                 |
+|      |P12     |HSPIQ   |DSP SO                  |
+|Power |GND     |        |                        |
+|      |P13     |HSPID   |DSP SI                  |
+|      |SD2     |        |in-use 4MB flash        |
+|      |SD3     |        |in-use 4MB flash        |
+|      |CMD     |        |in-use 4MB flash        |
+|Power |5V      |        |                        |
+|-     |-       |-       |                        |
+|      |CLK     |        |in-use 4MB flash        |
+|      |SD0     |        |in-use 4MB flash        |
+|      |SD1     |        |in-use 4MB flash        |
+|      |P15     |HSPICS0 |DSP XDCS                |
+|      |P2      |GPIO2   |blue LED, active high   |
+|      |P0      |        |strapping pin, boot mode|
+|      |P4      |GPIO4   |DSP XCS                 |
+|      |P16     |        |                        |
+|      |P17     |        |                        |
+|      |P5      |VSPICS0 |MEM CS                  |
+|      |P18     |VSPICLK |MEM SCK                 |
+|      |P19     |VSPIQ   |MEM SO/SIO1             |
+|Power |GND     |        |                        |
+|      |P21     |VSPIHD  |MEM HOLD/SIO3           |
+|Serial|RX      |        |in-use USB-to-serial    |
+|Serial|TX      |        |in-use USB-to-serial    |
+|      |P22     |VSPIWP  |MEM SIO2                |
+|      |P23     |VSPID   |MEM SI/SIO0             |
+|Power |GND     |        |                        |
 
 ### LVL digital level converter
 BSS138 based digital level converter module.
@@ -388,16 +388,16 @@ MCP23017 16-bit I/O expander module.
 
 **Table: MEM terminals**
 
-|Group  |Terminal|Function               |
-|:------|:-------|:----------------------|
-|Control|1       |CS (active low)        |
-|SPI    |2       |SO                     |
-|       |3       |not connected          |
-|Power  |4       |GND                    |
-|SPI    |5       |SI                     |
-|SPI    |6       |SCK                    |
-|       |7       |HOLD (active low) = 3V3|
-|Power  |8       |VCC = 3V3              |
+|Group  |Terminal|Function       |
+|:------|:-------|:--------------|
+|Control|1       |CS (active low)|
+|SPI    |2       |SIO1           |
+|SPI    |3       |SIO2           |
+|Power  |4       |GND            |
+|SPI    |5       |SIO0           |
+|SPI    |6       |SCK            |
+|SPI    |7       |SIO3           |
+|Power  |8       |VCC = 3V3      |
 
 ### AMP amplifier
 TPA3110 2x15W class D audio amplifier module.
@@ -470,22 +470,33 @@ UNDER CONSTRUCTION rework from ESP8266 to ESP32
 |LVL.SCL |   |HV2|SCL|SCL|
 
 ### SPI
-**Table: SPI connections**
+**Table: HSPI connections**
 
-|Function|CPU|DSP |MEM|
-|:-------|:--|:---|:--|
-|CPU.MISO|D6 |P1.3|2  |
-|CPU.MOSI|D7 |P1.4|5  |
-|CPU.CLK |D5 |P1.5|6  |
+|Function     |CPU|DSP |
+|:------------|:--|:---|
+|CPU.HSPI.MISO|   |P1.3|
+|CPU.HSPI.MOSI|   |P1.4|
+|CPU.HSPI.CLK |   |P1.5|
+|             |   |    |
+
+**Table: VSPI connections**
+
+|Function     |CPU|MEM|
+|:------------|:--|:--|
+|CPU.VSPI.SIOO|   |5  |
+|CPU.VSPI.SIO1|   |2  |
+|CPU.VSPI.SIO2|   |3  |
+|CPU.VSPI.SIO3|   |7  |
+|CPU.VSPI.CLK |   |6  |
 
 ### Control
 **Table: Control connections**
 
 |Function|CPU|IO  |LVL|DSP |MEM|AMP   |
 |:-------|:--|:---|:--|:---|:--|:-----|
-|CPU.XCS |D4 |    |   |P1.7|   |      |
-|CPU.XDCS|D3 |    |   |P1.6|   |      |
-|CPU.CS  |D8 |    |   |    |1  |      |
+|DSP.XCS |D4 |    |   |P1.7|   |      |
+|DSP.XDCS|D3 |    |   |P1.6|   |      |
+|MEM.CS  |D8 |    |   |    |1  |      |
 |IO.MUTE |   |GPB0|   |    |   |MUTE.1|
 |IO.RST  |   |GPB1|HV3|    |   |      |
 |LVL.RST |   |    |LV3|P1.1|   |      |
