@@ -200,7 +200,7 @@ NodeMCU ESP-32S module.
 
 The NodeMCU module contains an ESP-32S module, which contains an ESP32 chip. Because the ESP32 chip is flexible in mapping functions and pins the following table clarifies their relationship.
 
-**Table: ESP32 connection**
+**Table: ESP32 connections**
 
 |ESP32 pin|ESP32 functions                                                                      |ESP-32S pin|NodeMcu pin|NodeMcu label|
 |:--------|:------------------------------------------------------------------------------------|:----------|:----------|:------------|
@@ -270,10 +270,10 @@ The following table shows the function to terminal mapping for this application.
 |      |P25     |        |                        |
 |      |P26     |        |                        |
 |      |P27     |        |                        |
-|      |P14     |HSPI-CLK|DSP SCK                 |
-|      |P12     |HSPIQ   |DSP SO                  |
+|      |P14     |HSPI-CLK|HSPI SCK                |
+|      |P12     |HSPIQ   |HSPI SO                 |
 |Power |GND     |        |                        |
-|      |P13     |HSPID   |DSP SI                  |
+|      |P13     |HSPID   |HSPI SI                 |
 |      |SD2     |        |in-use 4MB flash        |
 |      |SD3     |        |in-use 4MB flash        |
 |      |CMD     |        |in-use 4MB flash        |
@@ -286,17 +286,17 @@ The following table shows the function to terminal mapping for this application.
 |      |P2      |GPIO2   |blue LED, active high   |
 |      |P0      |        |strapping pin, boot mode|
 |      |P4      |GPIO4   |DSP XCS                 |
-|      |P16     |        |                        |
-|      |P17     |        |                        |
+|      |P16     |GPIO16  |I2C SDA                 |
+|      |P17     |GPIO17  |I2C SCL                 |
 |      |P5      |VSPICS0 |MEM CS                  |
-|      |P18     |VSPICLK |MEM SCK                 |
-|      |P19     |VSPIQ   |MEM SO/SIO1             |
+|      |P18     |VSPICLK |VSPI SCK                |
+|      |P19     |VSPIQ   |VSPI SO/SIO1            |
 |Power |GND     |        |                        |
-|      |P21     |VSPIHD  |MEM HOLD/SIO3           |
+|      |P21     |VSPIHD  |VSPI HOLD/SIO3          |
 |Serial|RX      |        |in-use USB-to-serial    |
 |Serial|TX      |        |in-use USB-to-serial    |
-|      |P22     |VSPIWP  |MEM SIO2                |
-|      |P23     |VSPID   |MEM SI/SIO0             |
+|      |P22     |VSPIWP  |VSPI SIO2               |
+|      |P23     |VSPID   |VSPI SI/SIO0            |
 |Power |GND     |        |                        |
 
 ### LVL digital level converter
@@ -443,18 +443,13 @@ TPA3110 2x15W class D audio amplifier module.
 |User |16      |ENCODER_SWITCH|
 
 ## Connections
----
-
-UNDER CONSTRUCTION rework from ESP8266 to ESP32
-
----
 
 ### Power
 **Table: Power connections**
 
 |Function|PSU|VRM|CPU|LVL|IO |LCD|DSP  |AMP    |MEM|
 |:-------|:--|:--|:--|:--|:--|:--|:----|:------|:--|
-|GND     |GND|GND|G  |GND|GND|GND|P1.10|Power.2|4  |
+|GND     |GND|GND|GND|GND|GND|GND|P1.10|Power.2|4  |
 |12V     |12V|IN |   |   |   |   |     |Power.1|   |
 |5V      |   |OUT|5V |HV |VCC|VCC|P1.9 |       |   |
 |3V3     |   |   |   |LV |   |   |3V3  |       |8  |
@@ -464,9 +459,9 @@ UNDER CONSTRUCTION rework from ESP8266 to ESP32
 
 |Function|CPU|LVL|IO |LCD|
 |:-------|:--|:--|:--|:--|
-|CPU.SDA |D2 |LV1|   |   |
+|CPU.SDA |   |LV1|   |   |
 |LVL.SDA |   |HV1|SDA|SDA|
-|CPU.SCL |D1 |LV2|   |   |
+|CPU.SCL |   |LV2|   |   |
 |LVL.SCL |   |HV2|SCL|SCL|
 
 ### SPI
@@ -474,33 +469,33 @@ UNDER CONSTRUCTION rework from ESP8266 to ESP32
 
 |Function     |CPU|DSP |
 |:------------|:--|:---|
-|CPU.HSPI.MISO|   |P1.3|
-|CPU.HSPI.MOSI|   |P1.4|
-|CPU.HSPI.CLK |   |P1.5|
+|CPU.HSPI.MISO|P12|P1.3|
+|CPU.HSPI.MOSI|P13|P1.4|
+|CPU.HSPI.CLK |P14|P1.5|
 |             |   |    |
 
 **Table: VSPI connections**
 
 |Function     |CPU|MEM|
 |:------------|:--|:--|
-|CPU.VSPI.SIOO|   |5  |
-|CPU.VSPI.SIO1|   |2  |
-|CPU.VSPI.SIO2|   |3  |
-|CPU.VSPI.SIO3|   |7  |
-|CPU.VSPI.CLK |   |6  |
+|CPU.VSPI.SIOO|P23|5  |
+|CPU.VSPI.SIO1|P19|2  |
+|CPU.VSPI.SIO2|P22|3  |
+|CPU.VSPI.SIO3|P21|7  |
+|CPU.VSPI.CLK |P18|6  |
 
 ### Control
 **Table: Control connections**
 
 |Function|CPU|IO  |LVL|DSP |MEM|AMP   |
 |:-------|:--|:---|:--|:---|:--|:-----|
-|DSP.XCS |D4 |    |   |P1.7|   |      |
-|DSP.XDCS|D3 |    |   |P1.6|   |      |
-|MEM.CS  |D8 |    |   |    |1  |      |
+|DSP.XCS |P4 |    |   |P1.7|   |      |
+|DSP.XDCS|P15|    |   |P1.6|   |      |
+|MEM.CS  |P5 |    |   |    |1  |      |
 |IO.MUTE |   |GPB0|   |    |   |MUTE.1|
 |IO.RST  |   |GPB1|HV3|    |   |      |
 |LVL.RST |   |    |LV3|P1.1|   |      |
-|DSP.DREQ|D0 |    |   |    |   |      |
+|DSP.DREQ|   |    |   |    |   |      |
 
 ### Audio
 **Table: Audio connections**
