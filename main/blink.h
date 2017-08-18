@@ -6,6 +6,7 @@
 #include "freertos/task.h"
 #include "driver/gpio.h"
 #include "esp_log.h"
+#include "esp_task_wdt.h"
 #include "sdkconfig.h"
 
 void blink_log_configuration();
