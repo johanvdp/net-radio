@@ -2,6 +2,11 @@
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
+/**
+ * @file
+ * FreeRTOS application.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,7 +16,6 @@
 #include "esp_system.h"
 #include "esp_spi_flash.h"
 #include "esp_log.h"
-//#include "esp_task_wdt.h"
 #include "driver/spi_master.h"
 #include "driver/gpio.h"
 #include "sdkconfig.h"

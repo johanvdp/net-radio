@@ -12,23 +12,20 @@ void blink_log_configuration() {
 }
 
 void blink_task(void *pvUnused) {
-	ESP_LOGI(TAG, ">blink_task");
+	ESP_LOGD(TAG, ">blink_task");
 
 	// init
 	gpio_pad_select_gpio(CONFIG_GPIO_BLINK);
 	gpio_set_direction(CONFIG_GPIO_BLINK, GPIO_MODE_OUTPUT);
-	esp_task_wdt_init();
 
 	// loop forever
 	while (1) {
 		/* OFF */
 		gpio_set_level(CONFIG_GPIO_BLINK, 0);
-		esp_task_wdt_feed();
 		vTaskDelay(CONFIG_BLINK_OFF_MS / portTICK_PERIOD_MS);
 
 		/* ON */
 		gpio_set_level(CONFIG_GPIO_BLINK, 1);
-		esp_task_wdt_feed();
 		vTaskDelay(CONFIG_BLINK_ON_MS / portTICK_PERIOD_MS);
 	}
 }
