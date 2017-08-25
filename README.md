@@ -257,47 +257,27 @@ The following table shows the function to terminal mapping for this application.
 
 **Table: CPU terminals**
 
-|Group |Terminal|Function|Comment                 |
-|:-----|:-------|:-------|------------------------|
-|Power |3V3     |        |                        |
-|      |EN      |CHIP_PU |chip enable, active high|
-|      |SVP     |        |                        |
-|      |SVN     |        |                        |
-|      |P34     |        |                        |
-|      |P35     |        |                        |
-|      |P32     |        |                        |
-|      |P33     |        |                        |
-|      |P25     |        |                        |
-|      |P26     |        |                        |
-|      |P27     |        |                        |
-|      |P14     |HSPI-CLK|HSPI SCK                |
-|      |P12     |HSPIQ   |HSPI SO                 |
-|Power |GND     |        |                        |
-|      |P13     |HSPID   |HSPI SI                 |
-|      |SD2     |        |in-use 4MB flash        |
-|      |SD3     |        |in-use 4MB flash        |
-|      |CMD     |        |in-use 4MB flash        |
-|Power |5V      |        |                        |
-|-     |-       |-       |                        |
-|      |CLK     |        |in-use 4MB flash        |
-|      |SD0     |        |in-use 4MB flash        |
-|      |SD1     |        |in-use 4MB flash        |
-|      |P15     |HSPICS0 |DSP XDCS                |
-|      |P2      |GPIO2   |blue LED, active high   |
-|      |P0      |        |strapping pin, boot mode|
-|      |P4      |GPIO4   |DSP XCS                 |
-|      |P16     |GPIO16  |I2C SDA                 |
-|      |P17     |GPIO17  |I2C SCL                 |
-|      |P5      |VSPICS0 |MEM CS                  |
-|      |P18     |VSPICLK |VSPI SCK                |
-|      |P19     |VSPIQ   |VSPI SO/SIO1            |
-|Power |GND     |        |                        |
-|      |P21     |VSPIHD  |VSPI HOLD/SIO3          |
-|Serial|RX      |        |in-use USB-to-serial    |
-|Serial|TX      |        |in-use USB-to-serial    |
-|      |P22     |VSPIWP  |VSPI SIO2               |
-|      |P23     |VSPID   |VSPI SI/SIO0            |
-|Power |GND     |        |                        |
+|Group |Terminal|Function|Comment                 ||Group  |Terminal|Function|Comment                 |
+|:-----|:-------|:-------|------------------------||:------|:-------|:-------|------------------------|
+|Power |3V3     |        |                        ||Power  |GND     |        |                        |
+|      |EN      |CHIP_PU |chip enable, active high||VSPI   |P23     |VSPID   |VSPI MOSI               |
+|      |SVP     |        |                        ||       |P22     |        |                        |
+|      |SVN     |        |                        ||Serial |TX      |        |in-use USB-to-serial    |
+|      |P34     |        |                        ||Serial |RX      |        |in-use USB-to-serial    |
+|      |P35     |        |                        ||       |P21     |        |                        |
+|      |P32     |        |                        ||Power  |GND     |        |                        |
+|      |P33     |        |                        ||VSPI   |P19     |VSPIQ   |VSPI MISO               |
+|      |P25     |        |                        ||VSPI   |P18     |VSPICLK |VSPI SCK                |
+|      |P26     |        |                        ||Control|P5      |VSPICS0 |MEM CS                  |
+|      |P27     |        |                        ||I2C    |P17     |GPIO17  |I2C SCL                 |
+|HSPI  |P14     |HSPI-CLK|HSPI SCK                ||I2C    |P16     |GPIO16  |I2C SDA                 |
+|HSPI  |P12     |HSPIQ   |HSPI MISO               ||Control|P4      |GPIO4   |DSP XCS                 |
+|Power |GND     |        |                        ||       |P0      |        |strapping pin, boot mode|
+|HSPI  |P13     |HSPID   |HSPI MOSI               ||       |P2      |GPIO2   |blue LED, active high   |
+|      |SD2     |        |in-use 4MB flash        ||Control|P15     |HSPICS0 |DSP XDCS                |
+|      |SD3     |        |in-use 4MB flash        ||       |SD1     |        |in-use 4MB flash        |
+|      |CMD     |        |in-use 4MB flash        ||       |SD0     |        |in-use 4MB flash        |
+|Power |5V      |        |                        ||       |CLK     |        |in-use 4MB flash        |
 
 ### LVL digital level converter
 BSS138 based digital level converter module.
@@ -321,22 +301,39 @@ BSS138 based digital level converter module.
 ### DSP audio decoder
 AlienTek VS1053 audio decoder module.
 
-**Table: DSP terminals**
++ 3V3 I/O
+
+**Table: DSP terminals P1**
 
 |Group  |Terminal     |Function                                                     |
 |:------|:------------|:------------------------------------------------------------|
 |Control|P1.1         |RST reset input (active low)                                 |
 |Control|P1.2         |DREQ data request output (buffer can take 32 bytes when high)|
-|SPI    |P1.3         |SO serial output (active when XCS low)                       |
-|SPI    |P1.4         |SI serial input (sampled on rising edge SCK)                 |
-|SPI    |P1.5         |SCK serial clock input (can be continuous or gated)          |
+|HSPI   |P1.3         |SO serial output (active when XCS low)                       |
+|HSPI   |P1.4         |SI serial input (sampled on rising edge SCK)                 |
+|HSPI   |P1.5         |SCK serial clock input (can be continuous or gated)          |
 |Control|P1.6         |XDCS data interface chip select (active low)                 |
 |Control|P1.7         |XCS control interface chip select (active low)               |
 |Power  |P1.8         |3V3 output (500mA max)                                       |
 |Power  |P1.9         |5V input                                                     |
 |Power  |P1.10        |GND                                                          |
+
+**Table: DSP terminals P2**
+
+|Group  |Terminal     |Function                                                     |
+|:------|:------------|:------------------------------------------------------------|
 |       |P2           |not connected                                                |
+
+**Table: DSP terminals LINE_IN**
+
+|Group  |Terminal     |Function                                                     |
+|:------|:------------|:------------------------------------------------------------|
 |       |LINE_IN      |not connected                                                |
+
+**Table: DSP terminals PHONE**
+
+|Group  |Terminal     |Function                                                     |
+|:------|:------------|:------------------------------------------------------------|
 |Audio  |PHONE.GND    |GND                                                          |
 |Audio  |PHONE.LEFT   |LEFT                                                         |
 |Audio  |PHONE.RIGHT  |RIGHT                                                        |
@@ -358,20 +355,21 @@ MCP23017 16-bit I/O expander module.
 |       |A0      |5V                       |
 |       |A1      |GND                      |
 |       |A2      |GND                      |
-|Keys   |GPA0    |KEY_UP input             |
-|Keys   |GPA1    |KEY_DOWN input           |
-|Keys   |GPA2    |KEY_LEFT input           |
-|Keys   |GPA3    |KEY_RIGHT input          |
-|Keys   |GPA4    |KEY_HOME input           |
-|Knob   |GPA5    |ENCODER_A input          |
-|Knob   |GPA6    |ENCODER_B input          |
-|Knob   |GPA7    |ENCODER_SWITCH           |
-|Control|GPB0    |MUTE (active low) output |
-|Control|GPB1    |RESET (active low) output|
+|User   |GPA0    |KEY_UP, input            |
+|User   |GPA1    |KEY_DOWN, input          |
+|User   |GPA2    |KEY_LEFT, input          |
+|User   |GPA3    |KEY_RIGHT, input         |
+|User   |GPA4    |KEY_HOME, input          |
+|User   |GPA5    |ENCODER_A, input         |
+|User   |GPA6    |ENCODER_B, input         |
+|User   |GPA7    |ENCODER_SWITCH, input    |
+|Control|GPB0    |MUTE, active low, output |
+|Control|GPB1    |RESET, active low, output|
 
 ### LCD display
 128x64 pixel LCD display module controlled via an MCP23017 16-bit I/O expander.
 
++ 5V
 + I2C address 0x20
 
 **Table: LCD terminals**
@@ -386,37 +384,42 @@ MCP23017 16-bit I/O expander module.
 ### MEM nemory
 23LC1024 1Mbit SPI SRAM module.
 
++ 3V3
+
 **Table: MEM terminals**
 
-|Group  |Terminal|Function       |
-|:------|:-------|:--------------|
-|Control|1       |CS (active low)|
-|SPI    |2       |SIO1           |
-|SPI    |3       |SIO2           |
-|Power  |4       |GND            |
-|SPI    |5       |SIO0           |
-|SPI    |6       |SCK            |
-|SPI    |7       |SIO3           |
-|Power  |8       |VCC = 3V3      |
+|Group  |Terminal|Function          |
+|:------|:-------|:-----------------|
+|Control|1       |CS, active low    |
+|VSPI   |2       |SO/SIO1           |
+|       |3       |SIO2, pull-up     |
+|Power  |4       |VSS               |
+|VSPI   |5       |SI/SIO0           |
+|VSPI   |6       |SCK               |
+|       |7       |HOLD/SIO3, pull-up|
+|Power  |8       |VCC               |
 
 ### AMP amplifier
 TPA3110 2x15W class D audio amplifier module.
 
 **Table: AMP terminals**
 
-|Group  |Terminal |Function          |
-|:------|:--------|:-----------------|
-|Power  |POWER.1  |12V               |
-|Power  |POWER.2  |GND               |
-|Control|MUTE.1   |MUTE (active low) |
-|       |MUTE.2   |GND, not connected|
-|Audio  |LINE_IN.1|LEFT              |
-|Audio  |LINE_IN.2|GND               |
-|Audio  |LINE_IN.3|RIGHT             |
-|Audio  |LEFT.1   |LEFT+             |
-|Audio  |LEFT.2   |LEFT-             |
-|Audio  |RIGHT.1  |RIGHT+            |
-|Audio  |RIGHT.2  |RIGHT-            |
++ 12V
+
+
+|Group  |Terminal |Function                              |
+|:------|:--------|:-------------------------------------|
+|Power  |POWER.1  |12V                                   |
+|Power  |POWER.2  |GND                                   |
+|Control|MUTE.1   |MUTE, active low &lt;0.8V, high &gt;2V|
+|       |MUTE.2   |GND, not connected                    |
+|Audio  |LINE_IN.1|LEFT                                  |
+|Audio  |LINE_IN.2|GND                                   |
+|Audio  |LINE_IN.3|RIGHT                                 |
+|Audio  |LEFT.1   |LEFT+                                 |
+|Audio  |LEFT.2   |LEFT-                                 |
+|Audio  |RIGHT.1  |RIGHT+                                |
+|Audio  |RIGHT.2  |RIGHT-                                |
 
 ### AUX terminals
 2.54 mm pitch screw terminal block.
