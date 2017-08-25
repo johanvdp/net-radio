@@ -3,6 +3,8 @@
 
 static const char* TAG = "main.c";
 
+#define MAIN_BUFFER_BYTES 33
+
 spi_device_handle_t vspi_bus_handle;
 uint8_t *writeBuffer;
 uint8_t *readBuffer;
@@ -64,33 +66,23 @@ void main_vspi_free() {
 void main_mem_byte() {
 	ESP_LOGI(TAG, ">main_mem_byte");
 
-	mem_initialize_command((spi_host_device_t) VSPI_HOST);
-	mem_command_write_mode_register(MEM_MODE_BYTE);
-	uint8_t mode = mem_command_read_mode_register();
-	ESP_LOGI(TAG, "mode: %02x", mode);
-	mem_free();
-
-	mem_initialize_data((spi_host_device_t) VSPI_HOST);
-	uint32_t page = 0;
-	uint32_t byte = 0;
-	uint8_t out = 0;
-	uint8_t in = 0;
+	uint32_t address = 0;
+	uint8_t w = 0;
+	uint8_t r = 0;
 	uint32_t errors = 0;
-	// MEM_NUMBER_OF_PAGES takes too long, use 100 pages
-	ESP_LOGI(TAG, "transfer %d pages", 100);
-	for (page = 0; page < 100; page++) {
-		for (byte = 0; byte < MEM_BYTES_PER_PAGE; byte++) {
-			mem_data_write_byte(byte, out);
-			in = mem_data_read_byte(byte);
-			if (in != out) {
-				errors++;
-			}
-			out++;
+	for (address = 0; address < MEM_TOTAL_BYTES; address++) {
+		// write
+		mem_data_write_byte(address, w);
+		// read
+		r = mem_data_read_byte(address);
+		// check
+		if (r != w) {
+			//ESP_LOGI(TAG, "%d w:%02x r:%02x", address, w, r);
+			errors++;
 		}
-		esp_task_wdt_feed();
+		w++;
 	}
 	ESP_LOGI(TAG, "errors: %d", errors);
-	mem_free();
 
 	ESP_LOGI(TAG, "<main_mem_byte");
 }
@@ -99,69 +91,125 @@ void main_mem_byte() {
 void main_mem_page() {
 	ESP_LOGI(TAG, ">main_mem_page");
 
-	mem_initialize_command((spi_host_device_t) VSPI_HOST);
-	mem_command_write_mode_register(MEM_MODE_PAGE);
-	uint8_t mode = mem_command_read_mode_register();
-	ESP_LOGI(TAG, "mode: %02x", mode);
-	mem_free();
-
-	uint32_t page = 0;
-	uint32_t byte = 0;
 	uint8_t r = 0;
 	uint8_t w = 0;
-	mem_initialize_data((spi_host_device_t) VSPI_HOST);
+	uint32_t address = 0;
+	uint32_t index = 0;
 	uint32_t errors = 0;
-	ESP_LOGI(TAG, "transfer %d pages", MEM_NUMBER_OF_PAGES);
-	for (page = 0; page < MEM_NUMBER_OF_PAGES; page++) {
-		uint32_t address = 0;//page * MEM_BYTES_PER_PAGE;
-		for (byte = 0; byte < MEM_BYTES_PER_PAGE; byte++) {
-			writeBuffer[byte] = byte;
+
+	for (address = 0; address < 32; address+=32) {
+		// write
+		w = 1;
+		for (index = 0; index < MEM_BYTES_PER_PAGE; index++) {
+			writeBuffer[index] = w;
+			w++;
 		}
 		mem_data_write_page(address, writeBuffer);
+
+		// read
 		mem_data_read_page(address, readBuffer);
-		for (byte = 0; byte < MEM_BYTES_PER_PAGE; byte++) {
-			r = readBuffer[byte];
-			w = writeBuffer[byte];
+
+		// check
+		errors = 0;
+		for (index = 0; index < MEM_BYTES_PER_PAGE; index++) {
+			r = readBuffer[index];
+			w = writeBuffer[index];
 			if (w != r) {
+				ESP_LOGI(TAG, "%d w:%02x r:%02x", index, w, r);
 				errors++;
 			}
 		}
-		esp_task_wdt_feed();
 	}
 	ESP_LOGI(TAG, "errors: %d", errors);
-	mem_free();
+
 	ESP_LOGI(TAG, "<main_mem_page");
 }
 
-void main_buffers_initialize() {
-	size_t size = heap_caps_get_minimum_free_size(MALLOC_CAP_DMA);
-	ESP_LOGI(TAG, "heap_caps_get_minimum_free_size: %d", size);
-	writeBuffer = heap_caps_malloc(MEM_BYTES_PER_PAGE, MALLOC_CAP_DMA);
-	if (writeBuffer == NULL) {
-		ESP_LOGI(TAG, "heap_caps_malloc write: out of memory");
+void main_mem_mode() {
+	mem_add_command((spi_host_device_t) VSPI_HOST);
+	mem_command_write_mode_register(MEM_MODE_BYTE);
+	uint8_t mode = mem_command_read_mode_register();
+	ESP_LOGI(TAG, "mode: 0x%02x", mode);
+	mem_command_write_mode_register(MEM_MODE_PAGE);
+	mode = mem_command_read_mode_register();
+	ESP_LOGI(TAG, "mode: 0x%02x", mode);
+	mem_command_write_mode_register(MEM_MODE_SEQUENTIAL);
+	mode = mem_command_read_mode_register();
+	ESP_LOGI(TAG, "mode: 0x%02x", mode);
+	mem_remove();
+}
+
+// transfer sequential
+void main_mem_sequential() {
+	ESP_LOGI(TAG, ">main_mem_sequential");
+
+	uint8_t r = 0;
+	uint8_t w = 0;
+	uint32_t address = 0;
+	uint32_t index = 0;
+	uint32_t errors = 0;
+
+	for (address = 0; address < MEM_TOTAL_BYTES; address+=MAIN_BUFFER_BYTES) {
+		// write
+		w = 1;
+		for (index = 0; index < MAIN_BUFFER_BYTES; index++) {
+			writeBuffer[index] = w;
+			w++;
+		}
+		mem_data_write_page(address, writeBuffer);
+
+		// read
+		mem_data_read_page(address, readBuffer);
+
+		// check
+		errors = 0;
+		for (index = 0; index < MAIN_BUFFER_BYTES; index++) {
+			r = readBuffer[index];
+			w = writeBuffer[index];
+			if (w != r) {
+				//ESP_LOGI(TAG, "%d w:%02x r:%02x", index, w, r);
+				errors++;
+			}
+		}
 	}
-	readBuffer = heap_caps_malloc(MEM_BYTES_PER_PAGE, MALLOC_CAP_DMA);
-	if (readBuffer == NULL) {
-		ESP_LOGI(TAG, "heap_caps_malloc read: out of memory");
-	}
+	ESP_LOGI(TAG, "errors: %d", errors);
+	ESP_LOGI(TAG, "<main_mem_sequential");
+}
+
+void main_buffers_malloc() {
+	ESP_LOGI(TAG, ">main_buffers_malloc");
+	writeBuffer = mem_malloc(MAIN_BUFFER_BYTES);
+	readBuffer = mem_malloc(MAIN_BUFFER_BYTES);
+	ESP_LOGI(TAG, "<main_buffers_malloc");
 }
 
 void main_buffers_free() {
-	heap_caps_free(writeBuffer);
-	heap_caps_free(readBuffer);
+	mem_free(writeBuffer);
+	mem_free(readBuffer);
 }
 
 void main_task(void *ignore) {
 	ESP_LOGI(TAG, ">main_task");
-	esp_task_wdt_init();
-	main_buffers_initialize();
+	//esp_task_wdt_init();
+	main_buffers_malloc();
 	main_vspi_initialize();
 
+	mem_add_command((spi_host_device_t) VSPI_HOST);
+	mem_command_write_mode_register(MEM_MODE_PAGE);
+	uint8_t mode = mem_command_read_mode_register();
+	ESP_LOGI(TAG, "mode: 0x%02x", mode);
+	mem_remove();
+
+	mem_add_data((spi_host_device_t) VSPI_HOST);
+
 	while (1) {
-		main_mem_byte();
+		//main_mem_mode();
+		//main_mem_byte();
 		main_mem_page();
+		//main_mem_sequential();
 	}
 
+//	mem_free();
 //	main_vspi_free();
 //	main_buffers_free();
 //	ESP_LOGI(TAG, "<main_task");
@@ -172,6 +220,6 @@ void app_main() {
 	blink_log_configuration();
 	mem_log_configuration();
 
-	xTaskCreate(&main_task, "main_task", 2048, NULL, 5, NULL);
+	xTaskCreate(&main_task, "main_task", 4096, NULL, 5, NULL);
 	xTaskCreate(&blink_task, "blink_task", 2048, NULL, 5, NULL);
 }

@@ -6,19 +6,23 @@
 #include "esp_log.h"
 #include "driver/spi_master.h"
 #include "sdkconfig.h"
+#include "esp_heap_caps.h"
 
-#define MEM_TOTAL_BYTES 131072
-#define MEM_NUMBER_OF_PAGES 4092
-#define MEM_BYTES_PER_PAGE 32
+#define MEM_TOTAL_BYTES (131072)
+#define MEM_NUMBER_OF_PAGES (4092)
+#define MEM_BYTES_PER_PAGE (32)
 
 #define MEM_MODE_BYTE (0x00)
 #define MEM_MODE_PAGE (0x80)
 #define MEM_MODE_SEQUENTIAL (0x40)
 
+void *mem_malloc(size_t size);
+void mem_free(void *ptr);
+
 void mem_log_configuration();
-void mem_initialize_command(spi_host_device_t host);
-void mem_initialize_data(spi_host_device_t host);
-void mem_free();
+void mem_add_command(spi_host_device_t host);
+void mem_add_data(spi_host_device_t host);
+void mem_remove();
 
 // READ 0000 0011 0x03 Read data from memory array beginning at selected address
 uint8_t mem_data_read_byte(uint32_t address);
