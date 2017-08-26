@@ -27,6 +27,9 @@ void main_log_configuration() {
 	ESP_LOGI(TAG, "CONFIG_GPIO_VSPI_CLK: %d", CONFIG_GPIO_VSPI_CLK);
 	ESP_LOGI(TAG, "CONFIG_GPIO_VSPI_MOSI: %d", CONFIG_GPIO_VSPI_MOSI);
 	ESP_LOGI(TAG, "CONFIG_GPIO_VSPI_MISO: %d", CONFIG_GPIO_VSPI_MISO);
+	ESP_LOGI(TAG, "CONFIG_GPIO_HSPI_CLK: %d", CONFIG_GPIO_HSPI_CLK);
+	ESP_LOGI(TAG, "CONFIG_GPIO_HSPI_MOSI: %d", CONFIG_GPIO_HSPI_MOSI);
+	ESP_LOGI(TAG, "CONFIG_GPIO_HSPI_MISO: %d", CONFIG_GPIO_HSPI_MISO);
 	ESP_LOGD(TAG, "<main_log_configuration");
 }
 
@@ -49,6 +52,24 @@ void main_vspi_free() {
 	ESP_LOGD(TAG, "<main_vspi_free");
 }
 
+void main_hspi_initialize() {
+	ESP_LOGD(TAG, ">main_hspi_initialize");
+	spi_bus_config_t configuration;
+	memset(&configuration, 0, sizeof(configuration));
+	configuration.sclk_io_num = CONFIG_GPIO_HSPI_CLK;
+	configuration.mosi_io_num = CONFIG_GPIO_HSPI_MOSI;
+	configuration.miso_io_num = CONFIG_GPIO_HSPI_MISO;
+	configuration.quadwp_io_num = -1;
+	configuration.quadhd_io_num = -1;
+	ESP_ERROR_CHECK(spi_bus_initialize(HSPI_HOST, &configuration, 2));
+	ESP_LOGD(TAG, "<main_hspi_initialize");
+}
+
+void main_hspi_free() {
+	ESP_LOGD(TAG, ">main_hspi_free");
+	ESP_ERROR_CHECK(spi_bus_free(HSPI_HOST));
+	ESP_LOGD(TAG, "<main_hspi_free");
+}
 /**
  * FreeRTOS Application entry point.
  */
@@ -59,10 +80,12 @@ void app_main() {
 	test_mem_log_configuration();
 
 	main_vspi_initialize();
+	main_hspi_initialize();
 
 	xTaskCreate(&test_mem_task, "test_mem_task", 4096, NULL, 5, NULL);
 	xTaskCreate(&blink_task, "blink_task", 2048, NULL, 5, NULL);
 
-	// never free
+	// tasks are still running, never free resources
 	// main_vspi_free();
+	// main_hspi_free();
 }
