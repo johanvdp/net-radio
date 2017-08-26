@@ -1,10 +1,10 @@
 // The author disclaims copyright to this source code.
-#ifndef _MAIN_H_
-#define _MAIN_H_
+#ifndef _TEST_MEM_H_
+#define _TEST_MEM_H_
 
 /**
  * @file
- * FreeRTOS application.
+ * FreeRTOS MEM test task.
  */
 
 #include <stdio.h>
@@ -19,7 +19,9 @@
 #include "driver/spi_master.h"
 #include "driver/gpio.h"
 #include "sdkconfig.h"
-#include "blink.h"
-#include "test_mem.h"
+#include "mem.h"
+
+void test_mem_log_configuration();
+void test_mem_task(void *ignore);
 
 #endif

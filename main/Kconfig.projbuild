@@ -1,12 +1,11 @@
 # The author disclaims copyright to this source code.
+# 
+# For language definition see:
+# https://www.mjmwired.net/kernel/Documentation/kbuild/kconfig-language.txt
+#
 menu "Application Configuration"
 
-config GPIO_BLINK
-    int "GPIO pin for blinking LED (0-44)"
-    default 2
-    range 0 44
-    help
-        Select the GPIO pin for blinking LED (0-44).
+# HSPI bus
 
 config GPIO_HSPI_CLK
     int "GPIO pin for HSPI CLK (0-44)"
@@ -29,19 +28,7 @@ config GPIO_HSPI_MISO
     help
         Select the GPIO pin for HSPI MISO (0-44).
 
-config GPIO_DSP_XDCS
-    int "GPIO pin for DSP data CS (0-44)"
-    default 15
-    range 0 44
-    help
-        Select the GPIO pin for DSP data CS (0-44).
-
-config GPIO_DSP_XCS
-    int "GPIO pin for DSP control CS (0-44)"
-    default 4
-    range 0 44
-    help
-        Select the GPIO pin for DSP control CS (0-44).
+# VSPI bus
 
 config GPIO_VSPI_CLK
     int "GPIO pin for VSPI CLK (0-44)"
@@ -64,12 +51,30 @@ config GPIO_VSPI_MISO
     help
         Select the GPIO pin for VSPI MISO (0-44).
 
-config GPIO_MEM_CS
-    int "GPIO pin for MEM CS (0-44)"
-    default 5
+# Control
+
+config GPIO_DSP_DREQ
+    int "GPIO pin for DSP DREQ (0-44)"
+    default 27
     range 0 44
     help
-        Select the GPIO pin for MEM CS (0-44).
+        Select the GPIO pin for DSP DREQ (0-44).
+
+config GPIO_DSP_XDCS
+    int "GPIO pin for DSP data CS (0-44)"
+    default 15
+    range 0 44
+    help
+        Select the GPIO pin for DSP data CS (0-44).
+
+config GPIO_DSP_XCS
+    int "GPIO pin for DSP control CS (0-44)"
+    default 4
+    range 0 44
+    help
+        Select the GPIO pin for DSP control CS (0-44).
+
+# I2C bus
 
 config GPIO_I2C_SDA
     int "GPIO pin for I2C SDA (0-44)"
@@ -85,18 +90,47 @@ config GPIO_I2C_SCL
     help
         Select the GPIO pin for I2C SCL (0-44).
 
+menu "BLINK"
+
+config BLINK_GPIO
+    int "BLINK GPIO pin for LED (0-44)"
+    default 2
+    range 0 44
+    help
+        BLINK GPIO pin for LED (0-44).
+
 config BLINK_ON_MS
-    int "Blinking LED ON duration (10-1000) ms"
+    int "BLINK LED ON duration (10-1000) ms"
     default 50
     range 10 1000
     help
-        Blinking LED ON duration (10-1000) in ms.
+        BLINK LED ON duration (10-1000) in ms.
 
 config BLINK_OFF_MS
-    int "Blinking LED OFF duration (10-2000) ms"
+    int "BLINK LED OFF duration (10-2000) ms"
     default 1950
     range 10 2000
     help
-        Blinking LED OFF duration (10-2000) in ms.
+        BLINK LED OFF duration (10-2000) in ms.
+
+endmenu
+
+menu "MEM"
+
+config MEM_GPIO_CS
+    int "MEM GPIO pin for CS (0-44)"
+    default 5
+    range 0 44
+    help
+        MEM GPIO pin for CS (0-44).
+
+config MEM_SPI_SPEED_MHZ
+    int "MEM SPI clock frequency (1-50) MHz"
+    default 20
+    range 1 40
+    help
+        MEM SPI clock frequency (1-50) MHz.
+
+endmenu
 
 endmenu

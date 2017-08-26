@@ -4,23 +4,24 @@
 static const char* TAG = "mem.c";
 
 /** SPI clock speed [Hz] */
-#define MEM_SPI_SPEED (20000000)
+#define MEM_SPI_SPEED_HZ (CONFIG_MEM_SPI_SPEED_MHZ * 1000000)
 
 spi_device_handle_t mem_spi_handle;
 spi_transaction_t mem_spi_transaction;
 
 void mem_log_configuration() {
-	ESP_LOGI(TAG, ">mem_log_configuration");
-	ESP_LOGI(TAG, "CONFIG_GPIO_MEM_CS: %d", CONFIG_GPIO_MEM_CS);
-	ESP_LOGI(TAG, "<mem_log_configuration");
+	ESP_LOGD(TAG, ">mem_log_configuration");
+	ESP_LOGI(TAG, "CONFIG_MEM_GPIO_CS: %d", CONFIG_MEM_GPIO_CS);
+	ESP_LOGI(TAG, "CONFIG_MEM_SPI_SPEED_MHZ: %d", CONFIG_MEM_SPI_SPEED_MHZ);
+	ESP_LOGD(TAG, "<mem_log_configuration");
 }
 
 void mem_begin_command(spi_host_device_t host) {
 	ESP_LOGD(TAG, ">mem_begin_command %d", host);
 	spi_device_interface_config_t configuration;
 	memset(&configuration, 0, sizeof(configuration));
-	configuration.clock_speed_hz = MEM_SPI_SPEED;
-	configuration.spics_io_num = CONFIG_GPIO_MEM_CS;
+	configuration.clock_speed_hz = MEM_SPI_SPEED_HZ;
+	configuration.spics_io_num = CONFIG_MEM_GPIO_CS;
 	configuration.queue_size = 1;
 	ESP_ERROR_CHECK(spi_bus_add_device(host, &configuration, &mem_spi_handle));
 	ESP_LOGD(TAG, "<mem_begin_command");
@@ -33,8 +34,8 @@ void mem_begin_data(spi_host_device_t host) {
 	// command and address in separate phase
 	configuration.command_bits = 8;
 	configuration.address_bits = 24;
-	configuration.clock_speed_hz = MEM_SPI_SPEED;
-	configuration.spics_io_num = CONFIG_GPIO_MEM_CS;
+	configuration.clock_speed_hz = MEM_SPI_SPEED_HZ;
+	configuration.spics_io_num = CONFIG_MEM_GPIO_CS;
 	configuration.queue_size = 1;
 	ESP_ERROR_CHECK(spi_bus_add_device(host, &configuration, &mem_spi_handle));
 	ESP_LOGD(TAG, "<mem_begin_data");
@@ -57,7 +58,7 @@ uint8_t mem_data_read_byte(uint32_t address) {
 }
 
 void mem_data_read_page(uint32_t address, uint8_t *data) {
-	mem_data_read(address, 32, data);
+	mem_data_read(address, MEM_BYTES_PER_PAGE, data);
 }
 
 void mem_data_read(uint32_t address, uint32_t length, uint8_t *data) {
@@ -81,7 +82,7 @@ void mem_data_write_byte(uint32_t address, uint8_t data) {
 }
 
 void mem_data_write_page(uint32_t address, uint8_t *data) {
-	mem_data_write(address, 32, data);
+	mem_data_write(address, MEM_BYTES_PER_PAGE, data);
 }
 
 void mem_data_write(uint32_t address, uint32_t length, uint8_t *data) {
