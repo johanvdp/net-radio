@@ -98,6 +98,7 @@ Display stream details
 # Software
 
 ## UserInput
+Maintain a representation of user actions.
 + Read IO
 + Evaluate button state
 	+ Debounce
@@ -113,24 +114,24 @@ Display stream details
 + Update LCD
 
 ## Page
+Manage the transition between multiple pages. Making one page active and visible at one time. Each page provides its own strategy to:
+
 + Evaluate user input
-+ Perform action
++ Perform actions
++ Navigate to a different page
 + Update display
 
 ## Reader
-+ Read file
-	+ Read data from network file and write to buffer
-+ Read stream
-	+ Read data from network stream and write to buffer
+Read data from network a stream and write to the buffer
 
 ## Buffer
-+ Provide read and write methods
++ Provide access to read and write methods.
 
 ## Player
 + Read from buffer (stream source)
 + Send to DSP (stream sink)
 
-## Boundary
+## Control
 + Provides debug interface
 + Interpret control commands
 
@@ -139,10 +140,11 @@ Display stream details
 	+ IO
 	+ LCD
 
-## SPI
-+ Arbitrate usage
-	+ DSP
-	+ MEM
+## MEM
++ Provide memory access via VSPI
+
+## DSP
++ Provide DSP access via HSPI
 
 ## Settings
 + Favorites
@@ -257,27 +259,27 @@ The following table shows the function to terminal mapping for this application.
 
 **Table: CPU terminals**
 
-|Group |Terminal|Function|Comment                 ||Group  |Terminal|Function|Comment                 |
-|:-----|:-------|:-------|------------------------||:------|:-------|:-------|------------------------|
-|Power |3V3     |        |                        ||Power  |GND     |        |                        |
-|      |EN      |CHIP_PU |chip enable, active high||VSPI   |P23     |VSPID   |VSPI MOSI               |
-|      |SVP     |        |                        ||       |P22     |        |                        |
-|      |SVN     |        |                        ||Serial |TX      |        |in-use USB-to-serial    |
-|      |P34     |        |                        ||Serial |RX      |        |in-use USB-to-serial    |
-|      |P35     |        |                        ||       |P21     |        |                        |
-|      |P32     |        |                        ||Power  |GND     |        |                        |
-|      |P33     |        |                        ||VSPI   |P19     |VSPIQ   |VSPI MISO               |
-|      |P25     |        |                        ||VSPI   |P18     |VSPICLK |VSPI SCK                |
-|      |P26     |        |                        ||Control|P5      |VSPICS0 |MEM CS                  |
-|      |P27     |        |                        ||I2C    |P17     |GPIO17  |I2C SCL                 |
-|HSPI  |P14     |HSPI-CLK|HSPI SCK                ||I2C    |P16     |GPIO16  |I2C SDA                 |
-|HSPI  |P12     |HSPIQ   |HSPI MISO               ||Control|P4      |GPIO4   |DSP XCS                 |
-|Power |GND     |        |                        ||       |P0      |        |strapping pin, boot mode|
-|HSPI  |P13     |HSPID   |HSPI MOSI               ||       |P2      |GPIO2   |blue LED, active high   |
-|      |SD2     |        |in-use 4MB flash        ||Control|P15     |HSPICS0 |DSP XDCS                |
-|      |SD3     |        |in-use 4MB flash        ||       |SD1     |        |in-use 4MB flash        |
-|      |CMD     |        |in-use 4MB flash        ||       |SD0     |        |in-use 4MB flash        |
-|Power |5V      |        |                        ||       |CLK     |        |in-use 4MB flash        |
+|Group  |Terminal|Function|Comment                 ||Group  |Terminal|Function|Comment                 |
+|:------|:-------|:-------|------------------------||:------|:-------|:-------|------------------------|
+|Power  |3V3     |        |                        ||Power  |GND     |        |                        |
+|       |EN      |CHIP_PU |chip enable, active high||VSPI   |P23     |VSPID   |VSPI MOSI               |
+|       |SVP     |        |                        ||       |P22     |        |                        |
+|       |SVN     |        |                        ||Serial |TX      |        |in-use USB-to-serial    |
+|       |P34     |        |                        ||Serial |RX      |        |in-use USB-to-serial    |
+|       |P35     |        |                        ||       |P21     |        |                        |
+|       |P32     |        |                        ||Power  |GND     |        |                        |
+|       |P33     |        |                        ||VSPI   |P19     |VSPIQ   |VSPI MISO               |
+|       |P25     |        |                        ||VSPI   |P18     |VSPICLK |VSPI SCK                |
+|       |P26     |        |                        ||Control|P5      |VSPICS0 |MEM CS                  |
+|Control|P27     |GPIO27  |DSP DREQ                ||I2C    |P17     |GPIO17  |I2C SCL                 |
+|HSPI   |P14     |HSPI-CLK|HSPI SCK                ||I2C    |P16     |GPIO16  |I2C SDA                 |
+|HSPI   |P12     |HSPIQ   |HSPI MISO               ||Control|P4      |GPIO4   |DSP XCS                 |
+|Power  |GND     |        |                        ||       |P0      |        |strapping pin, boot mode|
+|HSPI   |P13     |HSPID   |HSPI MOSI               ||       |P2      |GPIO2   |blue LED, active high   |
+|       |SD2     |        |in-use 4MB flash        ||Control|P15     |HSPICS0 |DSP XDCS                |
+|       |SD3     |        |in-use 4MB flash        ||       |SD1     |        |in-use 4MB flash        |
+|       |CMD     |        |in-use 4MB flash        ||       |SD0     |        |in-use 4MB flash        |
+|Power  |5V      |        |                        ||       |CLK     |        |in-use 4MB flash        |
 
 ### LVL digital level converter
 BSS138 based digital level converter module.
@@ -406,7 +408,6 @@ TPA3110 2x15W class D audio amplifier module.
 
 + 12V
 
-
 |Group  |Terminal |Function                              |
 |:------|:--------|:-------------------------------------|
 |Power  |POWER.1  |12V                                   |
@@ -498,7 +499,7 @@ TPA3110 2x15W class D audio amplifier module.
 |IO.MUTE |   |GPB0|   |    |   |MUTE.1|
 |IO.RST  |   |GPB1|HV3|    |   |      |
 |LVL.RST |   |    |LV3|P1.1|   |      |
-|DSP.DREQ|   |    |   |    |   |      |
+|DSP.DREQ|P27|    |   |    |   |      |
 
 ### Audio
 **Table: Audio connections**
