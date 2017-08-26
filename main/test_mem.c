@@ -151,9 +151,9 @@ void *test_mem_malloc(size_t size) {
 	ESP_LOGD(TAG, ">test_mem_malloc");
 	void *buffer = heap_caps_malloc(size, MALLOC_CAP_DMA);
 	if (buffer == NULL) {
-		ESP_LOGD(TAG, "heap_caps_malloc: out of memory");
+		ESP_LOGE(TAG, "heap_caps_malloc: out of memory");
 		size_t available = heap_caps_get_minimum_free_size(MALLOC_CAP_DMA);
-		ESP_LOGD(TAG, "heap_caps_get_minimum_free_size: %d", available);
+		ESP_LOGI(TAG, "heap_caps_get_minimum_free_size: %d", available);
 	}
 	memset(buffer, 0, size);
 	ESP_LOGD(TAG, "<test_mem_malloc");
