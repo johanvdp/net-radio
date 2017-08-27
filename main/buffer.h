@@ -48,8 +48,13 @@ void buffer_pull(uint8_t *page, uint32_t length);
  */
 void buffer_log_configuration();
 /**
- * Initialize buffer once before operation.
+ * Begin usage.
  */
-void buffer_initialize();
+void buffer_begin();
+/**
+ * End usage.
+ */
+void buffer_end();
+
 
 #endif

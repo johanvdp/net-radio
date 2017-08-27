@@ -37,15 +37,24 @@ void buffer_log_configuration() {
 	ESP_LOGD(TAG, "<buffer_log_configuration");
 }
 
-void buffer_initialize() {
-	ESP_LOGD(TAG, ">buffer_initialize");
+void buffer_begin() {
+	ESP_LOGD(TAG, ">buffer_begin");
+
 	buffer_read_addr = 0;
 	buffer_write_addr = 0;
+
 	mem_begin_command((spi_host_device_t) VSPI_HOST);
 	mem_command_write_mode_register(MEM_MODE_SEQUENTIAL);
 	mem_command_read_mode_register();
 	mem_end();
+
 	mem_begin_data((spi_host_device_t) VSPI_HOST);
-	ESP_LOGD(TAG, "<buffer_initialize");
+
+	ESP_LOGD(TAG, "<buffer_begin");
 }
 
+void buffer_end() {
+	ESP_LOGD(TAG, ">buffer_end");
+	mem_end();
+	ESP_LOGD(TAG, "<buffer_end");
+}

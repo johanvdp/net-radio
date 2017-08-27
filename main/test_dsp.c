@@ -48,6 +48,7 @@ void test_dsp_task(void *ignore) {
 	}
 
 	// never reached
+	//dsp_end();
 	//ESP_LOGI(TAG, "<test_dsp_task");
 	//vTaskDelete(NULL);
 }
