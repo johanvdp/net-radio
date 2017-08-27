@@ -178,6 +178,14 @@ void dsp_soft_reset() {
 	ESP_LOGD(TAG, "<dsp_soft_reset");
 }
 
+void dsp_hard_reset() {
+	ESP_LOGD(TAG, ">dsp_hard_reset");
+	ESP_ERROR_CHECK(gpio_set_level(CONFIG_DSP_GPIO_RST, 0));
+	vTaskDelay(10);
+	ESP_ERROR_CHECK(gpio_set_level(CONFIG_DSP_GPIO_RST, 1));
+	ESP_LOGD(TAG, "<dsp_hard_reset");
+}
+
 void dsp_begin(spi_host_device_t host) {
 	ESP_LOGD(TAG, ">dsp_begin %d", host);
 
@@ -189,9 +197,8 @@ void dsp_begin(spi_host_device_t host) {
 	gpio_pad_select_gpio(CONFIG_DSP_GPIO_RST);
 	ESP_ERROR_CHECK(gpio_set_direction(CONFIG_DSP_GPIO_RST, GPIO_MODE_OUTPUT));
 	ESP_ERROR_CHECK(gpio_set_level(CONFIG_DSP_GPIO_RST, 1));
-	ESP_ERROR_CHECK(gpio_set_level(CONFIG_DSP_GPIO_RST, 0));
-	vTaskDelay(100);
-	ESP_ERROR_CHECK(gpio_set_level(CONFIG_DSP_GPIO_RST, 1));
+
+	dsp_hard_reset();
 
 	dsp_buffer_malloc();
 
