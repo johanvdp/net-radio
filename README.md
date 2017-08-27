@@ -270,7 +270,7 @@ The following table shows the function to terminal mapping for this application.
 |       |P32     |        |                        ||Power  |GND     |        |                        |
 |       |P33     |        |                        ||VSPI   |P19     |VSPIQ   |VSPI MISO               |
 |       |P25     |        |                        ||VSPI   |P18     |VSPICLK |VSPI SCK                |
-|       |P26     |        |                        ||Control|P5      |VSPICS0 |MEM CS                  |
+|Control|P26     |GPIO26  |DSP RST                 ||Control|P5      |VSPICS0 |MEM CS                  |
 |Control|P27     |GPIO27  |DSP DREQ                ||I2C    |P17     |GPIO17  |I2C SCL                 |
 |HSPI   |P14     |HSPI-CLK|HSPI SCK                ||I2C    |P16     |GPIO16  |I2C SDA                 |
 |HSPI   |P12     |HSPIQ   |HSPI MISO               ||Control|P4      |GPIO4   |DSP XCS                 |
@@ -286,19 +286,19 @@ BSS138 based digital level converter module.
 
 **Table: terminals**
 
-|Group  |Terminal|Function     |
-|:------|:-------|:------------|
-|Power  |HV      |5V           |
-|Power  |LV      |3V3          |
-|Power  |GND     |GND          |
-|I2C    |HV1     |SDA_H        |
-|I2C    |LV1     |SDA_L        |
-|I2C    |HV2     |SCL_H        |
-|I2C    |LV2     |SCL_L        |
-|Control|HV3     |RST_H        |
-|Control|LV3     |RST_L        |
-|       |HV4     |not connected|
-|       |LV4     |not connected|
+|Group|Terminal|Function     |
+|:----|:-------|:------------|
+|Power|HV      |5V           |
+|Power|LV      |3V3          |
+|Power|GND     |GND          |
+|I2C  |HV1     |SDA_H        |
+|I2C  |LV1     |SDA_L        |
+|I2C  |HV2     |SCL_H        |
+|I2C  |LV2     |SCL_L        |
+|     |HV3     |not connected|
+|     |LV3     |not connected|
+|     |HV4     |not connected|
+|     |LV4     |not connected|
 
 ### DSP audio decoder
 AlienTek VS1053 audio decoder module.
@@ -353,10 +353,10 @@ MCP23017 16-bit I/O expander module.
 |Power  |GND     |GND                      |
 |I2C    |SDA     |SDA                      |
 |I2C    |SCL     |SCL                      |
-|Control|RESET   |5V                       |
-|       |A0      |5V                       |
-|       |A1      |GND                      |
-|       |A2      |GND                      |
+|Control|RESET   |pull-up                  |
+|       |A0      |pull-up                  |
+|       |A1      |pull-down                |
+|       |A2      |pull-down                |
 |User   |GPA0    |KEY_UP, input            |
 |User   |GPA1    |KEY_DOWN, input          |
 |User   |GPA2    |KEY_LEFT, input          |
@@ -456,7 +456,7 @@ TPA3110 2x15W class D audio amplifier module.
 |GND     |GND|GND|GND|GND|GND|GND|P1.10|Power.2|4  |
 |12V     |12V|IN |   |   |   |   |     |Power.1|   |
 |5V      |   |OUT|5V |HV |VCC|VCC|P1.9 |       |   |
-|3V3     |   |   |   |LV |   |   |3V3  |       |8  |
+|3V3     |   |   |   |LV |   |   |P1.8 |       |8  |
 
 ### I2C
 **Table: I2C connections**
@@ -495,11 +495,10 @@ TPA3110 2x15W class D audio amplifier module.
 |:-------|:--|:---|:--|:---|:--|:-----|
 |DSP.XCS |P4 |    |   |P1.7|   |      |
 |DSP.XDCS|P15|    |   |P1.6|   |      |
+|DSP.RST |P26|    |   |P1.1|   |      |
+|DSP.DREQ|P27|    |   |P1.2|   |      |
 |MEM.CS  |P5 |    |   |    |1  |      |
 |IO.MUTE |   |GPB0|   |    |   |MUTE.1|
-|IO.RST  |   |GPB1|HV3|    |   |      |
-|LVL.RST |   |    |LV3|P1.1|   |      |
-|DSP.DREQ|P27|    |   |    |   |      |
 
 ### Audio
 **Table: Audio connections**

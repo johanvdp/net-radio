@@ -82,7 +82,8 @@ void app_main() {
 	main_vspi_initialize();
 	main_hspi_initialize();
 
-	xTaskCreate(&test_mem_task, "test_mem_task", 4096, NULL, 5, NULL);
+	xTaskCreatePinnedToCore(&test_mem_task, "test_mem_task", 4096, NULL, 5, NULL, 0);
+	xTaskCreatePinnedToCore(&test_dsp_task, "test_dsp_task", 4096, NULL, 5, NULL, 1);
 	xTaskCreate(&blink_task, "blink_task", 2048, NULL, 5, NULL);
 
 	// tasks are still running, never free resources

@@ -21,5 +21,6 @@
 #include "sdkconfig.h"
 #include "blink.h"
 #include "test_mem.h"
+#include "test_dsp.h"
 
 #endif

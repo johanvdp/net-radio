@@ -137,7 +137,8 @@ void test_mem_sequential() {
 		}
 	}
 	if (errorcount > 0) {
-		ESP_LOGE(TAG, "test_mem_sequential FAIL %d/%d", TEST_MEM_LENGTH, errorcount);
+		ESP_LOGE(TAG, "test_mem_sequential FAIL %d/%d", TEST_MEM_LENGTH,
+				errorcount);
 	} else {
 		ESP_LOGI(TAG, "test_mem_sequential OK");
 	}
@@ -182,19 +183,20 @@ void test_mem_task(void *ignore) {
 
 	test_mem_buffers_malloc();
 
-	// write and read TEST_MEM_LENGTH bytes per byte
-	test_mem_byte();
+	while (1) {
+		// write and read TEST_MEM_LENGTH bytes per byte
+		test_mem_byte();
 
-	// write and read TEST_MEM_LENGTH bytes per MEM_BYTES_PER_PAGE
-	test_mem_page();
+		// write and read TEST_MEM_LENGTH bytes per MEM_BYTES_PER_PAGE
+		test_mem_page();
 
-	// write and read TEST_MEM_LENGTH bytes at once
-	test_mem_sequential();
+		// write and read TEST_MEM_LENGTH bytes at once
+		test_mem_sequential();
+	}
 
-	test_mem_buffers_free();
-
-	ESP_LOGI(TAG, "<test_mem_task");
-
-	vTaskDelete(NULL);
+	// never reached
+	//test_mem_buffers_free();
+	//ESP_LOGI(TAG, "<test_mem_task");
+	//vTaskDelete(NULL);
 }
 

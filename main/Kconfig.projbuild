@@ -8,96 +8,76 @@ menu "Application Configuration"
 # HSPI bus
 
 config GPIO_HSPI_CLK
-    int "GPIO pin for HSPI CLK (0-44)"
+    int "GPIO pin for HSPI CLK (0-39)"
     default 14
-    range 0 44
+    range 0 39
     help
-        Select the GPIO pin for HSPI CLK (0-44).
+        Select the GPIO pin for HSPI CLK (0-39).
 
 config GPIO_HSPI_MOSI
-    int "GPIO pin for HSPI MOSI (0-44)"
+    int "GPIO pin for HSPI MOSI (0-39)"
     default 13
-    range 0 44
+    range 0 39
     help
-        Select the GPIO pin for HSPI MOSI (0-44).
+        Select the GPIO pin for HSPI MOSI (0-39).
 
 config GPIO_HSPI_MISO
-    int "GPIO pin for HSPI MISO (0-44)"
+    int "GPIO pin for HSPI MISO (0-39)"
     default 12
-    range 0 44
+    range 0 39
     help
-        Select the GPIO pin for HSPI MISO (0-44).
+        Select the GPIO pin for HSPI MISO (0-39).
 
 # VSPI bus
 
 config GPIO_VSPI_CLK
-    int "GPIO pin for VSPI CLK (0-44)"
+    int "GPIO pin for VSPI CLK (0-39)"
     default 18
-    range 0 44
+    range 0 39
     help
-        Select the GPIO pin for VSPI CLK (0-44).
+        Select the GPIO pin for VSPI CLK (0-39).
 
 config GPIO_VSPI_MOSI
-    int "GPIO pin for VSPI MOSI (0-44)"
+    int "GPIO pin for VSPI MOSI (0-39)"
     default 23
-    range 0 44
+    range 0 39
     help
-        Select the GPIO pin for VSPI MOSI (0-44).
+        Select the GPIO pin for VSPI MOSI (0-39).
 
 config GPIO_VSPI_MISO
-    int "GPIO pin for VSPI MISO (0-44)"
+    int "GPIO pin for VSPI MISO (0-39)"
     default 19
-    range 0 44
+    range 0 39
     help
-        Select the GPIO pin for VSPI MISO (0-44).
+        Select the GPIO pin for VSPI MISO (0-39).
 
 # Control
 
-config GPIO_DSP_DREQ
-    int "GPIO pin for DSP DREQ (0-44)"
-    default 27
-    range 0 44
-    help
-        Select the GPIO pin for DSP DREQ (0-44).
-
-config GPIO_DSP_XDCS
-    int "GPIO pin for DSP data CS (0-44)"
-    default 15
-    range 0 44
-    help
-        Select the GPIO pin for DSP data CS (0-44).
-
-config GPIO_DSP_XCS
-    int "GPIO pin for DSP control CS (0-44)"
-    default 4
-    range 0 44
-    help
-        Select the GPIO pin for DSP control CS (0-44).
 
 # I2C bus
 
 config GPIO_I2C_SDA
-    int "GPIO pin for I2C SDA (0-44)"
+    int "GPIO pin for I2C SDA (0-39)"
     default 16
-    range 0 44
+    range 0 39
     help
-        Select the GPIO pin for I2C SDA (0-44).
+        Select the GPIO pin for I2C SDA (0-39).
 
 config GPIO_I2C_SCL
-    int "GPIO pin for I2C SCL (0-44)"
+    int "GPIO pin for I2C SCL (0-39)"
     default 17
-    range 0 44
+    range 0 39
     help
-        Select the GPIO pin for I2C SCL (0-44).
+        Select the GPIO pin for I2C SCL (0-39).
 
 menu "BLINK"
 
 config BLINK_GPIO
-    int "BLINK GPIO pin for LED (0-44)"
+    int "BLINK GPIO pin for LED (0-39)"
     default 2
-    range 0 44
+    range 0 39
     help
-        BLINK GPIO pin for LED (0-44).
+        BLINK GPIO pin for LED output (0-39).
 
 config BLINK_ON_MS
     int "BLINK LED ON duration (10-1000) ms"
@@ -115,14 +95,60 @@ config BLINK_OFF_MS
 
 endmenu
 
+menu "DSP"
+
+config DSP_GPIO_RST
+    int "DSP GPIO pin for RST (0-39)"
+    default 26
+    range 0 39
+    help
+        DSP GPIO pin for RST output (0-39).
+
+config DSP_GPIO_DREQ
+    int "DSP GPIO pin for DREQ (0-39)"
+    default 27
+    range 0 39
+    help
+        DSP GPIO pin for DREQ input (0-39).
+
+config DSP_GPIO_XDCS
+    int "DSP GPIO pin for Data CS (0-39)"
+    default 15
+    range 0 39
+    help
+        DSP GPIO pin for Data CS output (0-39).
+
+config DSP_GPIO_XCS
+    int "DSP GPIO pin for Control CS (0-39)"
+    default 4
+    range 0 39
+    help
+        DSP GPIO pin for Control CS output (0-39).
+
+config DSP_SPI_SPEED_START_KHZ
+    int "DSP SPI clock frequency startup (100-1000) kHz"
+    default 200
+    range 100 1000
+    help
+        DSP SPI clock frequency startup (100-1000) kHz.
+
+config DSP_SPI_SPEED_KHZ
+    int "DSP SPI clock frequency (100-20000) kHz"
+    default 4000
+    range 100 20000
+    help
+        DSP SPI clock frequency (100-20000) kHz.
+
+endmenu
+
 menu "MEM"
 
 config MEM_GPIO_CS
-    int "MEM GPIO pin for CS (0-44)"
+    int "MEM GPIO pin for CS (0-39)"
     default 5
-    range 0 44
+    range 0 39
     help
-        MEM GPIO pin for CS (0-44).
+        MEM GPIO pin for CS output (0-39).
 
 config MEM_SPI_SPEED_MHZ
     int "MEM SPI clock frequency (1-50) MHz"
