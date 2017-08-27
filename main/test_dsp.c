@@ -12,32 +12,38 @@ void test_dsp_log_configuration() {
 	ESP_LOGD(TAG, "<test_dsp_log_configuration");
 }
 
+void test_dsp_write(uint8_t *data, uint16_t length) {
+	ESP_LOGD(TAG, ">test_dsp_write %p %d", data, length);
+	uint8_t *p = data;
+	uint16_t remainder = length;
+	while (remainder > 0) {
+		// send maximum of 32 bytes
+		uint8_t max = (remainder > DSP_MAX_DATA_SIZE ? DSP_MAX_DATA_SIZE : remainder);
+		dsp_decode(p, max);
+		p += max;
+		remainder -= max;
+	}
+	ESP_LOGD(TAG, "<test_dsp_write");
+}
+
 /**
  * FreeRTOS MEM test task runs once.
  */
 void test_dsp_task(void *ignore) {
 	ESP_LOGI(TAG, ">test_dsp_task");
 
-	dsp_initialize((spi_host_device_t) HSPI_HOST);
-	dsp_set_volume(80,80);
+	dsp_begin((spi_host_device_t) HSPI_HOST);
+	dsp_set_volume(80, 80);
 
 	while (1) {
-		// scan data
-		ESP_LOGD(TAG, "dsp_initialize send");
-		const unsigned char *p = &HELLO_MP3[0];
-		const unsigned char *end = &HELLO_MP3[sizeof(HELLO_MP3) - 1];
-		while (p <= end) {
-			dsp_wait_dreq();
-			// You can actually send 32 bytes here before checking for DREQ again
-			dsp_write_data(*p++);
-		}
+		// send stream
+		ESP_LOGD(TAG, "test_dsp_task send");
+		test_dsp_write((uint8_t*)&HELLO_MP3[0], sizeof(HELLO_MP3));
 
-		// send empty buffer
-		ESP_LOGD(TAG, "dsp_initialize empty");
-		for (unsigned int i = 0; i < 2048; i++) {
-			dsp_wait_dreq();
-			dsp_write_data(0);
-		}
+		dsp_decode_end();
+
+		vTaskDelay(1000 / portTICK_PERIOD_MS);
+
 		dsp_soft_reset();
 	}
 

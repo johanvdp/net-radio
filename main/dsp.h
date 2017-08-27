@@ -89,6 +89,8 @@
 /** Bit 15: Input clock range (0:12..13MHz,1:24..26MHz) */
 #define DSP_SM_CLK_RANGE		(0x80)
 
+/** Maximum data size accepted when DREQ active */
+#define DSP_MAX_DATA_SIZE (32)
 
 /**
  * @brief Log configuration settings
@@ -98,13 +100,12 @@ void dsp_log_configuration();
 /**
  * @brief Initialize once on start
  */
-void dsp_initialize(spi_host_device_t host);
-void dsp_write_register(unsigned char addressbyte, unsigned char highbyte,
-		unsigned char lowbyte);
-void dsp_write_data(unsigned char byte);
-void dsp_set_volume(unsigned char left, unsigned char right);
+void dsp_begin(spi_host_device_t host);
+void dsp_end();
+void dsp_decode(uint8_t *data, uint8_t length);
+void dsp_decode_end();
+void dsp_set_volume(uint8_t left, uint8_t right);
 void dsp_wake();
-void dsp_wait_dreq();
 void dsp_soft_reset();
 
 #endif

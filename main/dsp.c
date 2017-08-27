@@ -8,6 +8,13 @@
 
 static const char* TAG = "dsp.c";
 
+static const uint8_t DSP_EMPTY_DATA[] = {
+		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, //
+		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, //
+		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, //
+		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00  //
+};
+
 /** SPI clock speed startup [Hz] */
 #define DSP_SPI_SPEED_START_HZ (CONFIG_DSP_SPI_SPEED_START_KHZ * 1000)
 /** SPI clock speed [Hz] */
@@ -17,6 +24,7 @@ spi_host_device_t dsp_host;
 spi_device_handle_t dsp_spi_control;
 spi_device_handle_t dsp_spi_data;
 spi_transaction_t dsp_spi_transaction;
+uint8_t *dsp_buffer;
 
 void dsp_log_configuration() {
 	ESP_LOGD(TAG, ">dsp_log_configuration");
@@ -27,6 +35,25 @@ void dsp_log_configuration() {
 			CONFIG_DSP_SPI_SPEED_START_KHZ);
 	ESP_LOGI(TAG, "CONFIG_DSP_SPI_SPEED_KHZ: %d", CONFIG_DSP_SPI_SPEED_KHZ);
 	ESP_LOGD(TAG, "<dsp_log_configuration");
+}
+
+
+void dsp_buffer_malloc() {
+	ESP_LOGD(TAG, ">dsp_buffer_malloc");
+	dsp_buffer = heap_caps_malloc(DSP_MAX_DATA_SIZE, MALLOC_CAP_DMA);
+	if (dsp_buffer == NULL) {
+		ESP_LOGE(TAG, "heap_caps_malloc: out of memory");
+		size_t available = heap_caps_get_minimum_free_size(MALLOC_CAP_DMA);
+		ESP_LOGI(TAG, "heap_caps_get_minimum_free_size: %d", available);
+	}
+	memset(dsp_buffer, 0, DSP_MAX_DATA_SIZE);
+	ESP_LOGD(TAG, "<dsp_buffer_malloc");
+}
+
+void dsp_buffer_free() {
+	ESP_LOGD(TAG, ">dsp_buffer_free");
+	heap_caps_free(dsp_buffer);
+	ESP_LOGD(TAG, "<dsp_buffer_free");
 }
 
 void dsp_begin_control_start() {
@@ -76,6 +103,11 @@ void dsp_end_data() {
 	ESP_LOGD(TAG, "<dsp_end_data");
 }
 
+void dsp_wait_dreq() {
+	while (gpio_get_level(CONFIG_DSP_GPIO_DREQ) == 0)
+		;
+}
+
 void dsp_write_register(uint8_t addressbyte, uint8_t highbyte,
 		uint8_t lowbyte) {
 	ESP_LOGD(TAG, ">dsp_write_register 0x%02x 0x%02x%02x", addressbyte, highbyte, lowbyte);
@@ -87,77 +119,67 @@ void dsp_write_register(uint8_t addressbyte, uint8_t highbyte,
 	dsp_spi_transaction.tx_data[2] = highbyte;
 	dsp_spi_transaction.tx_data[3] = lowbyte;
 	ESP_ERROR_CHECK(spi_device_transmit(dsp_spi_control, &dsp_spi_transaction));
+
+	// wait for dsp ready after command
+	dsp_wait_dreq();
+
 	ESP_LOGD(TAG, "<dsp_write_register");
 }
 
-void dsp_write_data(uint8_t byte) {
+void dsp_decode(uint8_t *data, uint8_t length) {
+	// copy to DMA capable region
+	memcpy(dsp_buffer, data, length);
+	// create transaction
 	memset(&dsp_spi_transaction, 0, sizeof(dsp_spi_transaction));
-	dsp_spi_transaction.flags = SPI_TRANS_USE_TXDATA;
-	dsp_spi_transaction.length = 8;
-	dsp_spi_transaction.tx_data[0] = byte;
+	dsp_spi_transaction.flags = 0;
+	dsp_spi_transaction.length = 8 * length;
+	dsp_spi_transaction.tx_buffer = dsp_buffer;
+	// wait for ready for data
+	dsp_wait_dreq();
+	// transmit
 	ESP_ERROR_CHECK(spi_device_transmit(dsp_spi_data, &dsp_spi_transaction));
+}
+
+void dsp_decode_end() {
+	ESP_LOGD(TAG, ">dsp_decode_end");
+	dsp_decode((uint8_t *)&DSP_EMPTY_DATA[0], sizeof(DSP_EMPTY_DATA));
+	ESP_LOGD(TAG, "<dsp_decode_end");
 }
 
 void dsp_set_volume(uint8_t left, uint8_t right) {
 	dsp_write_register(DSP_SCI_VOL, left, right);
 }
 
-// wait clki
-// apply magic with CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ and CONFIG_DSP_CLKI later
-static inline void dsp_wait_clki(int cycles) {
-	vTaskDelay(1);
-//	for (int i = 0; i < cycles; i++) {
-//		__asm__ __volatile__("nop");
-//	}
-}
-
-// wait xtali cycles
-// apply magic with CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ and CONFIG_DSP_XTALI later
-static inline void dsp_wait_xtali(int cycles) {
-	vTaskDelay(1);
-//	for (int i = 0; i < cycles; i++) {
-//		__asm__ __volatile__("nop");
-//	}
-}
-
 void dsp_wake() {
-	// Setting SCI_VOL to 0xFFFF will activate analog powerdown mode.
+	ESP_LOGD(TAG, ">dsp_wake");
+	// Setting SCI_VOL to 0xFFFF will activate analog power down mode.
 	dsp_set_volume(0xFF, 0xFF);
-	// Select slow sample rate for slow analog part startup (10Hz Mono)
+	// Select slow sample rate (10Hz Mono)
 	dsp_write_register(DSP_SCI_AUDATA, 0, 10);
-	dsp_wait_clki(450);
-
 	// Switch on the analog parts
 	dsp_set_volume(0xFE, 0xFE);
 	// Select low sample rate (8KHz Mono)
 	dsp_write_register(DSP_SCI_AUDATA, 31, 64);
 	// Set initial volume (40 = -20dB)
 	dsp_set_volume(40, 40);
-}
-
-void dsp_wait_dreq() {
-	while (gpio_get_level(CONFIG_DSP_GPIO_DREQ) == 0)
-		;
+	ESP_LOGD(TAG, "<dsp_wake");
 }
 
 void dsp_soft_reset() {
 	ESP_LOGD(TAG, ">dsp_soft_reset");
+	// Send reset
 	dsp_write_register(DSP_SCI_MODE, DSP_SM_SDINEW, DSP_SM_RESET);
-	dsp_wait_clki(80);
-	dsp_wait_dreq();
-	// Set clock register, doubler etc.
+	// Send clock register
 	// 1011 0000 0000 0000
 	// ---                 SC_MULT=XTALIx4.0 (clock multiplier)
 	//    - -              SC_ADD=XTALIx2.0 (firmware allowance)
 	//       --- ---- ---- SC_FREQ=0 (xtali=default 12.288MHz)
 	dsp_write_register(DSP_SCI_CLOCKF, 0xB0, 0x00);
-	dsp_wait_xtali(1200);
-	dsp_wait_dreq();
 	ESP_LOGD(TAG, "<dsp_soft_reset");
 }
 
-void dsp_initialize(spi_host_device_t host) {
-	ESP_LOGD(TAG, ">dsp_initialize %d", host);
+void dsp_begin(spi_host_device_t host) {
+	ESP_LOGD(TAG, ">dsp_begin %d", host);
 
 	dsp_host = host;
 
@@ -171,6 +193,8 @@ void dsp_initialize(spi_host_device_t host) {
 	vTaskDelay(100);
 	ESP_ERROR_CHECK(gpio_set_level(CONFIG_DSP_GPIO_RST, 1));
 
+	dsp_buffer_malloc();
+
 	// slow SPI
 	dsp_begin_control_start();
 	dsp_soft_reset();
@@ -181,6 +205,14 @@ void dsp_initialize(spi_host_device_t host) {
 	dsp_begin_control();
 	dsp_begin_data();
 
-	ESP_LOGD(TAG, "<dsp_initialize");
+	ESP_LOGD(TAG, "<dsp_begin");
 }
 
+void dsp_end() {
+	ESP_LOGD(TAG, ">dsp_end");
+	dsp_soft_reset();
+	dsp_end_control();
+	dsp_end_data();
+	dsp_buffer_free();
+	ESP_LOGD(TAG, "<dsp_end");
+}
