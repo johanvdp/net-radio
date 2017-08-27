@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "spi_ram.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_heap_caps.h"
@@ -19,7 +20,6 @@
 #include "driver/spi_master.h"
 #include "driver/gpio.h"
 #include "sdkconfig.h"
-#include "mem.h"
 
 /**
  * Check number of bytes that can be pulled from the buffer.

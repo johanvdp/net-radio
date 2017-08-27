@@ -141,22 +141,4 @@ config DSP_SPI_SPEED_KHZ
 
 endmenu
 
-menu "MEM"
-
-config MEM_GPIO_CS
-    int "MEM GPIO pin for CS (0-39)"
-    default 5
-    range 0 39
-    help
-        MEM GPIO pin for CS output (0-39).
-
-config MEM_SPI_SPEED_MHZ
-    int "MEM SPI clock frequency (1-50) MHz"
-    default 20
-    range 1 40
-    help
-        MEM SPI clock frequency (1-50) MHz.
-
-endmenu
-
 endmenu

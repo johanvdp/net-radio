@@ -1,0 +1,39 @@
+# The author disclaims copyright to this source code.
+menu "SPI_RAM"
+
+config SPI_RAM_GPIO_CS
+    int "SPI RAM GPIO pin for CS (0-39)"
+    default 5
+    range 0 39
+    help
+        SPI RAM GPIO pin for CS output (0-39).
+
+config SPI_RAM_SPEED_MHZ
+    int "SPI RAM clock frequency (1-50) MHz"
+    default 20
+    range 1 40
+    help
+        SPI RAM clock frequency (1-50) MHz.
+
+config SPI_RAM_TOTAL_BYTES
+    int "SPI RAM total bytes (1-1048576)"
+    default 131072
+    range 1 1048576
+    help
+        SPI RAM total bytes (1-1048576).
+
+config SPI_RAM_NUMBER_OF_PAGES
+    int "SPI RAM number of pages (1-1048576)"
+    default 4092
+    range 1 1048576
+    help
+        SPI RAM number of pages (1-1048576).
+
+config SPI_RAM_BYTES_PER_PAGE
+    int "SPI RAM bytes per page (1-1048576)"
+    default 32
+    range 1 1048576
+    help
+        SPI RAM bytes per page (1-1048576).
+
+endmenu

@@ -1,6 +1,8 @@
 // The author disclaims copyright to this source code.
 #include "test_mem.h"
 
+#include <string.h>
+
 static const char* TAG = "test_mem.c";
 
 // SPI DMA transfers are limited to 2048 bytes
@@ -18,12 +20,12 @@ void test_mem_log_configuration() {
 
 void test_mem_byte() {
 	ESP_LOGD(TAG, ">test_mem_byte");
-	mem_begin_command((spi_host_device_t) VSPI_HOST);
-	mem_command_write_mode_register(MEM_MODE_BYTE);
-	mem_command_read_mode_register();
-	mem_end();
+	spi_ram_begin_command((spi_host_device_t) VSPI_HOST);
+	spi_ram_command_write_mode_register(SPI_RAM_MODE_BYTE);
+	spi_ram_command_read_mode_register();
+	spi_ram_end();
 
-	mem_begin_data((spi_host_device_t) VSPI_HOST);
+	spi_ram_begin_data((spi_host_device_t) VSPI_HOST);
 
 	uint32_t address = 0;
 	uint8_t w = 0;
@@ -31,9 +33,9 @@ void test_mem_byte() {
 	uint32_t errorcount = 0;
 	for (address = 0; address < TEST_MEM_LENGTH; address++) {
 		// write
-		mem_data_write_byte(address, w);
+		spi_ram_data_write_byte(address, w);
 		// read
-		r = mem_data_read_byte(address);
+		r = spi_ram_data_read_byte(address);
 		// check
 		if (r != w) {
 			errorcount++;
@@ -46,7 +48,7 @@ void test_mem_byte() {
 		ESP_LOGI(TAG, "test_mem_byte OK");
 	}
 
-	mem_end();
+	spi_ram_end();
 
 	ESP_LOGD(TAG, "<test_mem_byte");
 }
@@ -54,12 +56,12 @@ void test_mem_byte() {
 void test_mem_page() {
 	ESP_LOGD(TAG, ">test_mem_page");
 
-	mem_begin_command((spi_host_device_t) VSPI_HOST);
-	mem_command_write_mode_register(MEM_MODE_PAGE);
-	mem_command_read_mode_register();
-	mem_end();
+	spi_ram_begin_command((spi_host_device_t) VSPI_HOST);
+	spi_ram_command_write_mode_register(SPI_RAM_MODE_PAGE);
+	spi_ram_command_read_mode_register();
+	spi_ram_end();
 
-	mem_begin_data((spi_host_device_t) VSPI_HOST);
+	spi_ram_begin_data((spi_host_device_t) VSPI_HOST);
 
 	uint8_t r = 0;
 	uint8_t w = 0;
@@ -69,27 +71,27 @@ void test_mem_page() {
 	uint32_t errorcount = 0;
 
 	for (address = 0; address < TEST_MEM_LENGTH; address +=
-	MEM_BYTES_PER_PAGE) {
+	CONFIG_SPI_RAM_BYTES_PER_PAGE) {
 		// write
-		for (index = 0; index < MEM_BYTES_PER_PAGE; index++) {
+		for (index = 0; index < CONFIG_SPI_RAM_BYTES_PER_PAGE; index++) {
 			writeBuffer[index] = w;
 			w++;
 		}
-		mem_data_write_page(address, writeBuffer);
+		spi_ram_data_write_page(address, writeBuffer);
 
 		// read
-		mem_data_read_page(address, readBuffer);
+		spi_ram_data_read_page(address, readBuffer);
 
 		// check
 		errorcount = 0;
-		for (index = 0; index < MEM_BYTES_PER_PAGE; index++) {
+		for (index = 0; index < CONFIG_SPI_RAM_BYTES_PER_PAGE; index++) {
 			r = readBuffer[index];
 			w = writeBuffer[index];
 			if (w != r) {
 				errorcount++;
 			}
 		}
-		bytecount += MEM_BYTES_PER_PAGE;
+		bytecount += CONFIG_SPI_RAM_BYTES_PER_PAGE;
 	}
 	if (errorcount > 0) {
 		ESP_LOGE(TAG, "test_mem_page FAIL %d/%d", bytecount, errorcount);
@@ -97,7 +99,7 @@ void test_mem_page() {
 		ESP_LOGI(TAG, "test_mem_page OK");
 	}
 
-	mem_end();
+	spi_ram_end();
 
 	ESP_LOGD(TAG, "<test_mem_page");
 }
@@ -105,12 +107,12 @@ void test_mem_page() {
 void test_mem_sequential() {
 	ESP_LOGD(TAG, ">test_mem_sequential");
 
-	mem_begin_command((spi_host_device_t) VSPI_HOST);
-	mem_command_write_mode_register(MEM_MODE_SEQUENTIAL);
-	mem_command_read_mode_register();
-	mem_end();
+	spi_ram_begin_command((spi_host_device_t) VSPI_HOST);
+	spi_ram_command_write_mode_register(SPI_RAM_MODE_SEQUENTIAL);
+	spi_ram_command_read_mode_register();
+	spi_ram_end();
 
-	mem_begin_data((spi_host_device_t) VSPI_HOST);
+	spi_ram_begin_data((spi_host_device_t) VSPI_HOST);
 
 	uint8_t r = 0;
 	uint8_t w = 0;
@@ -123,10 +125,10 @@ void test_mem_sequential() {
 		writeBuffer[index] = w;
 		w++;
 	}
-	mem_data_write(address, TEST_MEM_LENGTH, writeBuffer);
+	spi_ram_data_write(address, TEST_MEM_LENGTH, writeBuffer);
 
 	// read
-	mem_data_read(address, TEST_MEM_LENGTH, readBuffer);
+	spi_ram_data_read(address, TEST_MEM_LENGTH, readBuffer);
 
 	// check
 	for (index = 0; index < TEST_MEM_LENGTH; index++) {
@@ -143,7 +145,7 @@ void test_mem_sequential() {
 		ESP_LOGI(TAG, "test_mem_sequential OK");
 	}
 
-	mem_end();
+	spi_ram_end();
 
 	ESP_LOGD(TAG, "<test_mem_sequential");
 }
