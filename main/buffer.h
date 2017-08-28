@@ -22,11 +22,11 @@
 #include "sdkconfig.h"
 
 struct buffer_t {
-	spi_host_device_t spi_host;
-	spi_device_handle_t spi_device_handle;
+	spi_ram_handle_t spi_ram_handle;
 	uint32_t buffer_read_addr;
 	uint32_t buffer_write_addr;
 };
+
 typedef struct buffer_t *buffer_handle_t;
 
 /**

@@ -2,6 +2,14 @@
 #include "test_dsp.h"
 #include "hello_mp3.c"
 
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_heap_caps.h"
+#include "esp_log.h"
+#include "driver/spi_master.h"
+#include "sdkconfig.h"
+#include "dsp.h"
+
 static const char* TAG = "test_dsp.c";
 
 spi_device_handle_t test_mem_vspi_bus_handle;

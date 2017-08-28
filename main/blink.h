@@ -14,11 +14,6 @@
 #include "sdkconfig.h"
 
 /**
- * @brief Log configuration settings
- */
-void blink_log_configuration();
-
-/**
  * @brief The task entry function.
  * This function never returns.
  */

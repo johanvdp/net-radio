@@ -75,9 +75,6 @@ void main_hspi_free() {
  */
 void app_main() {
 	main_log_configuration();
-	blink_log_configuration();
-	spi_ram_log_configuration();
-	test_mem_log_configuration();
 
 	main_vspi_initialize();
 	main_hspi_initialize();

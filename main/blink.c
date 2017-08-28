@@ -12,7 +12,8 @@ void blink_log_configuration() {
 }
 
 void blink_task(void *pvUnused) {
-	ESP_LOGI(TAG, ">blink_task");
+	ESP_LOGD(TAG, ">blink_task");
+	blink_log_configuration();
 
 	// init
 	gpio_pad_select_gpio(CONFIG_BLINK_GPIO);
@@ -29,6 +30,6 @@ void blink_task(void *pvUnused) {
 		vTaskDelay(CONFIG_BLINK_ON_MS / portTICK_PERIOD_MS);
 	}
 	// never reached
-	// ESP_LOGI(TAG, "<blink_task");
+	// ESP_LOGD(TAG, "<blink_task");
 }
 
