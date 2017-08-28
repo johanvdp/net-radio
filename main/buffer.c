@@ -8,7 +8,6 @@ static const char* TAG = "buffer.c";
  */
 #define BUFFER_MASK (CONFIG_SPI_RAM_TOTAL_BYTES - 1)
 
-
 uint32_t buffer_available(buffer_handle_t handle) {
 
 	return handle->buffer_write_addr - handle->buffer_read_addr;
@@ -20,13 +19,13 @@ uint32_t buffer_free(buffer_handle_t handle) {
 
 void buffer_push(buffer_handle_t handle, uint8_t *data, uint32_t length) {
 	assert(buffer_free(handle) >= length);
-	spi_ram_data_write(handle->spi_ram_handle, handle->buffer_write_addr, length, data);
+	spi_ram_write(handle->spi_ram_handle, handle->buffer_write_addr, length, data);
 	handle->buffer_write_addr = (handle->buffer_write_addr + length) & BUFFER_MASK;
 }
 
 void buffer_pull(buffer_handle_t handle, uint8_t *page, uint32_t length) {
 	assert(buffer_available(handle) >= length);
-	spi_ram_data_read(handle->spi_ram_handle, handle->buffer_read_addr, length, page);
+	spi_ram_read(handle->spi_ram_handle, handle->buffer_read_addr, length, page);
 	handle->buffer_read_addr = (handle->buffer_read_addr + length) & BUFFER_MASK;
 }
 
@@ -56,12 +55,8 @@ void buffer_begin(spi_host_device_t host, buffer_handle_t *handle) {
 	configuration.number_of_bytes_page = CONFIG_SPI_RAM_BYTES_PER_PAGE;
 	spi_ram_begin(configuration, &(buffer_handle->spi_ram_handle));
 
-	spi_ram_begin_command(buffer_handle->spi_ram_handle);
-	spi_ram_command_write_mode_register(buffer_handle->spi_ram_handle, SPI_RAM_MODE_SEQUENTIAL);
-	spi_ram_command_read_mode_register(buffer_handle->spi_ram_handle);
-	spi_ram_end(buffer_handle->spi_ram_handle);
-
-	spi_ram_begin_data(buffer_handle->spi_ram_handle);
+	spi_ram_write_mode_register(buffer_handle->spi_ram_handle, SPI_RAM_MODE_SEQUENTIAL);
+	spi_ram_read_mode_register(buffer_handle->spi_ram_handle);
 
 	ESP_LOGD(TAG, "<buffer_begin");
 }

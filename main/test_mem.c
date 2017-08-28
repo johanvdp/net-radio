@@ -30,12 +30,8 @@ void test_mem_log_configuration() {
 void test_mem_byte() {
 	ESP_LOGD(TAG, ">test_mem_byte");
 
-	spi_ram_begin_command(test_mem_spi_ram_handle);
-	spi_ram_command_write_mode_register(test_mem_spi_ram_handle, SPI_RAM_MODE_BYTE);
-	spi_ram_command_read_mode_register(test_mem_spi_ram_handle);
-	spi_ram_end_command(test_mem_spi_ram_handle);
-
-	spi_ram_begin_data(test_mem_spi_ram_handle);
+	spi_ram_write_mode_register(test_mem_spi_ram_handle, SPI_RAM_MODE_BYTE);
+	spi_ram_read_mode_register(test_mem_spi_ram_handle);
 
 	uint32_t address = 0;
 	uint8_t w = 0;
@@ -43,9 +39,9 @@ void test_mem_byte() {
 	uint32_t errorcount = 0;
 	for (address = 0; address < TEST_MEM_LENGTH; address++) {
 		// write
-		spi_ram_data_write_byte(test_mem_spi_ram_handle, address, w);
+		spi_ram_write_byte(test_mem_spi_ram_handle, address, w);
 		// read
-		r = spi_ram_data_read_byte(test_mem_spi_ram_handle, address);
+		r = spi_ram_read_byte(test_mem_spi_ram_handle, address);
 		// check
 		if (r != w) {
 			errorcount++;
@@ -58,20 +54,14 @@ void test_mem_byte() {
 		ESP_LOGI(TAG, "test_mem_byte OK");
 	}
 
-	spi_ram_end_data(test_mem_spi_ram_handle);
-
 	ESP_LOGD(TAG, "<test_mem_byte");
 }
 
 void test_mem_page() {
 	ESP_LOGD(TAG, ">test_mem_page");
 
-	spi_ram_begin_command(test_mem_spi_ram_handle);
-	spi_ram_command_write_mode_register(test_mem_spi_ram_handle, SPI_RAM_MODE_PAGE);
-	spi_ram_command_read_mode_register(test_mem_spi_ram_handle);
-	spi_ram_end_command(test_mem_spi_ram_handle);
-
-	spi_ram_begin_data(test_mem_spi_ram_handle);
+	spi_ram_write_mode_register(test_mem_spi_ram_handle, SPI_RAM_MODE_PAGE);
+	spi_ram_read_mode_register(test_mem_spi_ram_handle);
 
 	uint8_t r = 0;
 	uint8_t w = 0;
@@ -87,10 +77,10 @@ void test_mem_page() {
 			test_mem_write_buffer[index] = w;
 			w++;
 		}
-		spi_ram_data_write_page(test_mem_spi_ram_handle, address, test_mem_write_buffer);
+		spi_ram_write_page(test_mem_spi_ram_handle, address, test_mem_write_buffer);
 
 		// read
-		spi_ram_data_read_page(test_mem_spi_ram_handle, address, test_mem_read_buffer);
+		spi_ram_read_page(test_mem_spi_ram_handle, address, test_mem_read_buffer);
 
 		// check
 		errorcount = 0;
@@ -109,20 +99,14 @@ void test_mem_page() {
 		ESP_LOGI(TAG, "test_mem_page OK");
 	}
 
-	spi_ram_end_data(test_mem_spi_ram_handle);
-
 	ESP_LOGD(TAG, "<test_mem_page");
 }
 
 void test_mem_sequential() {
 	ESP_LOGD(TAG, ">test_mem_sequential");
 
-	spi_ram_begin_command(test_mem_spi_ram_handle);
-	spi_ram_command_write_mode_register(test_mem_spi_ram_handle, SPI_RAM_MODE_SEQUENTIAL);
-	spi_ram_command_read_mode_register(test_mem_spi_ram_handle);
-	spi_ram_end_command(test_mem_spi_ram_handle);
-
-	spi_ram_begin_data(test_mem_spi_ram_handle);
+	spi_ram_write_mode_register(test_mem_spi_ram_handle, SPI_RAM_MODE_SEQUENTIAL);
+	spi_ram_read_mode_register(test_mem_spi_ram_handle);
 
 	uint8_t r = 0;
 	uint8_t w = 0;
@@ -135,10 +119,10 @@ void test_mem_sequential() {
 		test_mem_write_buffer[index] = w;
 		w++;
 	}
-	spi_ram_data_write(test_mem_spi_ram_handle, address, TEST_MEM_LENGTH, test_mem_write_buffer);
+	spi_ram_write(test_mem_spi_ram_handle, address, TEST_MEM_LENGTH, test_mem_write_buffer);
 
 	// read
-	spi_ram_data_read(test_mem_spi_ram_handle, address, TEST_MEM_LENGTH, test_mem_read_buffer);
+	spi_ram_read(test_mem_spi_ram_handle, address, TEST_MEM_LENGTH, test_mem_read_buffer);
 
 	// check
 	for (index = 0; index < TEST_MEM_LENGTH; index++) {
@@ -149,13 +133,10 @@ void test_mem_sequential() {
 		}
 	}
 	if (errorcount > 0) {
-		ESP_LOGE(TAG, "test_mem_sequential FAIL %d/%d", TEST_MEM_LENGTH,
-				errorcount);
+		ESP_LOGE(TAG, "test_mem_sequential FAIL %d/%d", TEST_MEM_LENGTH, errorcount);
 	} else {
 		ESP_LOGI(TAG, "test_mem_sequential OK");
 	}
-
-	spi_ram_end_data(test_mem_spi_ram_handle);
 
 	ESP_LOGD(TAG, "<test_mem_sequential");
 }

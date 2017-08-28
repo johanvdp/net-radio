@@ -64,5 +64,4 @@ void buffer_begin(spi_host_device_t host, buffer_handle_t *handle);
  */
 void buffer_end(buffer_handle_t handle);
 
-
 #endif

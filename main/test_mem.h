@@ -10,7 +10,6 @@
  * FreeRTOS MEM test task.
  */
 
-
 void test_mem_task(void *ignore);
 
 #endif

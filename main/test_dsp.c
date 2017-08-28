@@ -46,7 +46,7 @@ void test_dsp_task(void *ignore) {
 	while (1) {
 		// send stream
 		ESP_LOGD(TAG, "test_dsp_task send");
-		test_dsp_write((uint8_t*)&HELLO_MP3[0], sizeof(HELLO_MP3));
+		test_dsp_write((uint8_t*) &HELLO_MP3[0], sizeof(HELLO_MP3));
 
 		dsp_decode_end();
 

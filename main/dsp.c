@@ -8,12 +8,12 @@
 
 static const char* TAG = "dsp.c";
 
-static const uint8_t DSP_EMPTY_DATA[] = {
-		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, //
-		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, //
-		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, //
-		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00  //
-};
+static const uint8_t DSP_EMPTY_DATA[] = { //
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //
+				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //
+				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //
+				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00  //
+		};
 
 /** SPI clock speed startup [Hz] */
 #define DSP_SPI_SPEED_START_HZ (CONFIG_DSP_SPI_SPEED_START_KHZ * 1000)
@@ -31,12 +31,10 @@ void dsp_log_configuration() {
 	ESP_LOGI(TAG, "CONFIG_DSP_GPIO_XCS: %d", CONFIG_DSP_GPIO_XCS);
 	ESP_LOGI(TAG, "CONFIG_DSP_GPIO_XDCS: %d", CONFIG_DSP_GPIO_XDCS);
 	ESP_LOGI(TAG, "CONFIG_DSP_GPIO_DREQ: %d", CONFIG_DSP_GPIO_DREQ);
-	ESP_LOGI(TAG, "CONFIG_DSP_SPI_SPEED_START_KHZ: %d",
-			CONFIG_DSP_SPI_SPEED_START_KHZ);
+	ESP_LOGI(TAG, "CONFIG_DSP_SPI_SPEED_START_KHZ: %d", CONFIG_DSP_SPI_SPEED_START_KHZ);
 	ESP_LOGI(TAG, "CONFIG_DSP_SPI_SPEED_KHZ: %d", CONFIG_DSP_SPI_SPEED_KHZ);
 	ESP_LOGD(TAG, "<dsp_log_configuration");
 }
-
 
 void dsp_buffer_malloc() {
 	ESP_LOGD(TAG, ">dsp_buffer_malloc");
@@ -63,8 +61,7 @@ void dsp_begin_control_start() {
 	configuration.clock_speed_hz = DSP_SPI_SPEED_START_HZ;
 	configuration.spics_io_num = CONFIG_DSP_GPIO_XCS;
 	configuration.queue_size = 1;
-	ESP_ERROR_CHECK(
-			spi_bus_add_device(dsp_host, &configuration, &dsp_spi_control));
+	ESP_ERROR_CHECK(spi_bus_add_device(dsp_host, &configuration, &dsp_spi_control));
 	ESP_LOGD(TAG, "<dsp_begin_control_start");
 }
 
@@ -75,8 +72,7 @@ void dsp_begin_control() {
 	configuration.clock_speed_hz = DSP_SPI_SPEED_HZ;
 	configuration.spics_io_num = CONFIG_DSP_GPIO_XCS;
 	configuration.queue_size = 1;
-	ESP_ERROR_CHECK(
-			spi_bus_add_device(dsp_host, &configuration, &dsp_spi_control));
+	ESP_ERROR_CHECK(spi_bus_add_device(dsp_host, &configuration, &dsp_spi_control));
 	ESP_LOGD(TAG, "<dsp_begin_control");
 }
 
@@ -108,8 +104,7 @@ void dsp_wait_dreq() {
 		;
 }
 
-void dsp_write_register(uint8_t addressbyte, uint8_t highbyte,
-		uint8_t lowbyte) {
+void dsp_write_register(uint8_t addressbyte, uint8_t highbyte, uint8_t lowbyte) {
 	ESP_LOGD(TAG, ">dsp_write_register 0x%02x 0x%02x%02x", addressbyte, highbyte, lowbyte);
 	memset(&dsp_spi_transaction, 0, sizeof(dsp_spi_transaction));
 	dsp_spi_transaction.flags = SPI_TRANS_USE_TXDATA;
@@ -142,7 +137,7 @@ void dsp_decode(uint8_t *data, uint8_t length) {
 
 void dsp_decode_end() {
 	ESP_LOGD(TAG, ">dsp_decode_end");
-	dsp_decode((uint8_t *)&DSP_EMPTY_DATA[0], sizeof(DSP_EMPTY_DATA));
+	dsp_decode((uint8_t *) &DSP_EMPTY_DATA[0], sizeof(DSP_EMPTY_DATA));
 	ESP_LOGD(TAG, "<dsp_decode_end");
 }
 

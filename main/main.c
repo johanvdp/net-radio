@@ -13,16 +13,11 @@ void main_log_configuration() {
 		ESP_LOGI(TAG, "model: %d (unknown)", chip_info.model);
 	}
 	ESP_LOGI(TAG, "cores: %d", chip_info.cores);
-	ESP_LOGI(TAG, "features WiFi: %s",
-			((chip_info.features & CHIP_FEATURE_WIFI_BGN) ? "YES" : "NO"));
-	ESP_LOGI(TAG, "features BT: %s",
-			((chip_info.features & CHIP_FEATURE_BT) ? "YES" : "NO"));
-	ESP_LOGI(TAG, "features BLE: %s",
-			((chip_info.features & CHIP_FEATURE_BLE) ? "YES" : "NO"));
-	ESP_LOGI(TAG, "features flash: %s",
-			((chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external"));
-	ESP_LOGI(TAG, "flash size (MB): %d",
-			(spi_flash_get_chip_size() / (1024 * 1024)));
+	ESP_LOGI(TAG, "features WiFi: %s", ((chip_info.features & CHIP_FEATURE_WIFI_BGN) ? "YES" : "NO"));
+	ESP_LOGI(TAG, "features BT: %s", ((chip_info.features & CHIP_FEATURE_BT) ? "YES" : "NO"));
+	ESP_LOGI(TAG, "features BLE: %s", ((chip_info.features & CHIP_FEATURE_BLE) ? "YES" : "NO"));
+	ESP_LOGI(TAG, "features flash: %s", ((chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external"));
+	ESP_LOGI(TAG, "flash size (MB): %d", (spi_flash_get_chip_size() / (1024 * 1024)));
 	ESP_LOGI(TAG, "revision: %d", chip_info.revision);
 	ESP_LOGI(TAG, "CONFIG_GPIO_VSPI_CLK: %d", CONFIG_GPIO_VSPI_CLK);
 	ESP_LOGI(TAG, "CONFIG_GPIO_VSPI_MOSI: %d", CONFIG_GPIO_VSPI_MOSI);
