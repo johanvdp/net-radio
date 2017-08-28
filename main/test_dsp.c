@@ -4,7 +4,7 @@
 
 static const char* TAG = "test_dsp.c";
 
-spi_device_handle_t vspi_bus_handle;
+spi_device_handle_t test_mem_vspi_bus_handle;
 
 void test_dsp_log_configuration() {
 	ESP_LOGD(TAG, ">test_dsp_log_configuration");
