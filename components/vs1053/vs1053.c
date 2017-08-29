@@ -113,6 +113,7 @@ void vs1053_write_register(vs1053_handle_t handle, uint8_t addressbyte, uint8_t 
 }
 
 void vs1053_decode(vs1053_handle_t handle, uint8_t *data, uint8_t length) {
+	ESP_ERROR_CHECK(length > VS1053_MAX_DATA_SIZE ? ESP_FAIL : ESP_OK);
 	// copy to DMA capable region
 	memcpy(handle->dma_buffer, data, length);
 	// create transaction
@@ -125,6 +126,18 @@ void vs1053_decode(vs1053_handle_t handle, uint8_t *data, uint8_t length) {
 	vs1053_wait_dreq(handle);
 	// transmit
 	ESP_ERROR_CHECK(spi_device_transmit(handle->device_data, &vs1053_spi_transaction));
+}
+
+void vs1053_decode_long(vs1053_handle_t handle, uint8_t *data, uint16_t length) {
+	uint8_t *p = data;
+	uint16_t remainder = length;
+	while (remainder > 0) {
+		// send maximum of 32 bytes
+		uint8_t max = (remainder > VS1053_MAX_DATA_SIZE ? VS1053_MAX_DATA_SIZE : remainder);
+		vs1053_decode(handle, p, max);
+		p += max;
+		remainder -= max;
+	}
 }
 
 void vs1053_decode_end(vs1053_handle_t handle) {

@@ -13,7 +13,7 @@
 
 static const char* TAG = "test_dsp.c";
 
-vs1053_handle_t test_vs1053_handle;
+vs1053_handle_t test_dsp_handle;
 
 void test_dsp_log_configuration() {
 	ESP_LOGD(TAG, ">test_dsp_log_configuration");
@@ -23,20 +23,6 @@ void test_dsp_log_configuration() {
 	ESP_LOGI(TAG, "CONFIG_DSP_SPI_SPEED_START_KHZ: %d", CONFIG_DSP_SPI_SPEED_START_KHZ);
 	ESP_LOGI(TAG, "CONFIG_DSP_SPI_SPEED_KHZ: %d", CONFIG_DSP_SPI_SPEED_KHZ);
 	ESP_LOGD(TAG, "<test_dsp_log_configuration");
-}
-
-void test_dsp_write(uint8_t *data, uint16_t length) {
-	ESP_LOGD(TAG, ">test_dsp_write %p %d", data, length);
-	uint8_t *p = data;
-	uint16_t remainder = length;
-	while (remainder > 0) {
-		// send maximum of 32 bytes
-		uint8_t max = (remainder > VS1053_MAX_DATA_SIZE ? VS1053_MAX_DATA_SIZE : remainder);
-		vs1053_decode(test_vs1053_handle, p, max);
-		p += max;
-		remainder -= max;
-	}
-	ESP_LOGD(TAG, "<test_dsp_write");
 }
 
 /**
@@ -55,19 +41,18 @@ void test_dsp_task(void *ignore) {
 	configuration.dreq_io_num = CONFIG_DSP_GPIO_DREQ;
 	configuration.rst_io_num = CONFIG_DSP_GPIO_RST;
 
-	vs1053_begin(configuration, &test_vs1053_handle);
-	vs1053_set_volume(test_vs1053_handle, 80, 80);
+	vs1053_begin(configuration, &test_dsp_handle);
+	vs1053_set_volume(test_dsp_handle, 80, 80);
 
 	while (1) {
-		// send stream
-		ESP_LOGD(TAG, "test_dsp_task send");
-		test_dsp_write((uint8_t*) &HELLO_MP3[0], sizeof(HELLO_MP3));
 
-		vs1053_decode_end(test_vs1053_handle);
+		vs1053_decode_long(test_dsp_handle, (uint8_t*) &HELLO_MP3[0], sizeof(HELLO_MP3));
+
+		vs1053_decode_end(test_dsp_handle);
 
 		vTaskDelay(1000 / portTICK_PERIOD_MS);
 
-		vs1053_soft_reset(test_vs1053_handle);
+		vs1053_soft_reset(test_dsp_handle);
 	}
 
 	// never reached

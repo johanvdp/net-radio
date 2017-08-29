@@ -4,7 +4,7 @@
 
 /**
  * @file
- * Driver to access RAM chip using the SPI bus.
+ * Driver to access memory chip (23LC1024, and similar) using the SPI bus.
  */
 
 #include "driver/spi_master.h"
@@ -41,15 +41,15 @@ typedef struct spi_mem_t {
 typedef struct spi_mem_t *spi_mem_handle_t;
 
 /**
- * @brief Begin using SPI RAM.
+ * @brief Begin using the component.
  * @param config The configuration to use.
- * @param handle The created SPI RAM handle.
+ * @param handle The created component handle.
  */
 void spi_mem_begin(spi_mem_config_t config, spi_mem_handle_t *handle);
 
 /**
- * @brief End using SPI RAM.
- * @param handle SPI RAM handle.
+ * @brief End using the component.
+ * @param handle Component handle.
  */
 void spi_mem_end(spi_mem_handle_t handle);
 
@@ -57,7 +57,7 @@ void spi_mem_end(spi_mem_handle_t handle);
  * @brief READ 0000 0011 0x03 Read data from memory array beginning at selected address.
  * Read memory one byte at a time.
  * Assumes the memory device is already in the correct mode.
- * @param handle SPI RAM handle.
+ * @param handle Component handle.
  * @param address Memory address.
  * @return The value read.
  */
@@ -67,7 +67,7 @@ uint8_t spi_mem_read_byte(spi_mem_handle_t handle, uint32_t address);
  * @brief READ 0000 0011 0x03 Read data from memory array beginning at selected address.
  * Read memory one page at a time.
  * Assumes the memory device is already in the correct mode.
- * @param handle SPI RAM handle.
+ * @param handle Component handle.
  * @param address Memory address.
  * @param data Target for values read.
  */
@@ -77,7 +77,7 @@ void spi_mem_read_page(spi_mem_handle_t handle, uint32_t address, uint8_t *data)
  * @brief READ 0000 0011 0x03 Read data from memory array beginning at selected address.
  * Read memory sequentially.
  * Assumes the memory device is already in the correct mode.
- * @param handle SPI RAM handle.
+ * @param handle Component handle.
  * @param address Memory address.
  * @param length The number of values read.
  * @param data Target for values read.
@@ -88,7 +88,7 @@ void spi_mem_read(spi_mem_handle_t handle, uint32_t address, uint32_t length, ui
  * @brief WRITE 0000 0010 0x02 Write data to memory array beginning at selected address.
  * Write memory one byte at a time.
  * Assumes the memory device is already in the correct mode.
- * @param handle SPI RAM handle.
+ * @param handle Component handle.
  * @param address Memory address.
  * @param data The value written.
  */
@@ -98,7 +98,7 @@ void spi_mem_write_byte(spi_mem_handle_t handle, uint32_t address, uint8_t data)
  * @brief WRITE 0000 0010 0x02 Write data to memory array beginning at selected address.
  * Write memory one page at a time.
  * Assumes the memory device is already in the correct mode.
- * @param handle SPI RAM handle.
+ * @param handle Component handle.
  * @param address Memory address.
  * @param data Source of values written.
  */
@@ -108,7 +108,7 @@ void spi_mem_write_page(spi_mem_handle_t handle, uint32_t address, uint8_t *data
  * @brief WRITE 0000 0010 0x02 Write data to memory array beginning at selected address.
  * Write memory sequentially.
  * Assumes the memory device is already in the correct mode.
- * @param handle SPI RAM handle.
+ * @param handle Component handle.
  * @param address Memory address.
  * @param length The number of values written.
  * @param data Source of values written.
@@ -117,19 +117,19 @@ void spi_mem_write(spi_mem_handle_t handle, uint32_t address, uint32_t length, u
 
 /**
  * @brief EDIO 0011 1011 0x3B Enter Dual I/O access (enter SDI bus mode).
- * @param handle SPI RAM handle.
+ * @param handle Component handle.
  */
 void spi_mem_enter_dual_io_access(spi_mem_handle_t handle);
 
 /**
  * @brief EQIO 0011 1000 0x38 Enter Quad I/O access (enter SQI bus mode).
- * @param handle SPI RAM handle.
+ * @param handle Component handle.
  */
 void spi_mem_enter_quad_io_access(spi_mem_handle_t handle);
 
 /**
  * @brief RSTIO 1111 1111 0xFF Reset Dual and Quad I/O access (revert to SPI bus mode).
- * @param handle SPI RAM handle
+ * @param handle Component handle
  */
 void spi_mem_reset_io_access(spi_mem_handle_t handle);
 
@@ -141,7 +141,7 @@ spi_mem_mode_t spi_mem_read_mode_register(spi_mem_handle_t handle);
 
 /**
  * @brief WRMR 0000 0001 0x01 Write Mode Register.
- * @param handle SPI RAM handle.
+ * @param handle Component handle.
  * @param mode Access mode.
  */
 void spi_mem_write_mode_register(spi_mem_handle_t handle, spi_mem_mode_t mode);

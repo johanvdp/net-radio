@@ -109,17 +109,45 @@ typedef struct vs1053_t {
 
 typedef struct vs1053_t *vs1053_handle_t;
 
-
 /**
- * @brief Begin using device.
+ * @brief Begin using this component.
  */
 void vs1053_begin(vs1053_config_t config, vs1053_handle_t *handle);
 /**
- * @brief End using device.
+ * @brief End using this component.
  */
 void vs1053_end(vs1053_handle_t handle);
+/**
+ * @brief Decode stream. Allowing only short data chunks.
+ * @param handle Component handle.
+ * @param data The data to send.
+ * @param length Length of the data to send. Obey VS1053 maximum data size
+ * @ref VS1053_MAX_DATA_SIZE
+ */
 void vs1053_decode(vs1053_handle_t handle, uint8_t *data, uint8_t length);
+/**
+ * @brief Decode stream.
+ * @param handle Component handle.
+ * @param data The data to send.
+ * @param length Length of the data to send.
+ */
+void vs1053_decode_long(vs1053_handle_t handle, uint8_t *data, uint16_t length);
+/**
+ * @brief End stream. Sends an empty data chunk to the decoder.
+ * @param handle Component handle.
+ */
 void vs1053_decode_end(vs1053_handle_t handle);
+/**
+ * @brief Set volume.
+ * The channel volume sets the attenuation from the maximum volume level in 0.5 dB steps.
+ * Thus, maximum volume is 0x0000 and total silence is 0xFEFE.
+ * Setting SCI_VOL to 0xFFFF will activate analog powerdown mode.
+ * Note, that after hardware reset the volume is set to full volume.
+ * Resetting the software does not reset the volume setting.
+ * @param handle Component handle.
+ * @param left Left channel volume.
+ * @param right Right channel volume.
+ */
 void vs1053_set_volume(vs1053_handle_t handle, uint8_t left, uint8_t right);
 void vs1053_wake(vs1053_handle_t handle);
 void vs1053_soft_reset(vs1053_handle_t handle);

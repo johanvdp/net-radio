@@ -13,7 +13,7 @@ static const char* TAG = "test_mem.c";
 // SPI DMA transfers are limited to 2048 bytes
 #define TEST_MEM_LENGTH 2048
 
-spi_mem_handle_t test_mem_spi_mem_handle;
+spi_mem_handle_t test_mem_handle;
 uint8_t *test_mem_write_buffer;
 uint8_t *test_mem_read_buffer;
 
@@ -30,8 +30,8 @@ void test_mem_log_configuration() {
 void test_mem_byte() {
 	ESP_LOGD(TAG, ">test_mem_byte");
 
-	spi_mem_write_mode_register(test_mem_spi_mem_handle, SPI_MEM_MODE_BYTE);
-	spi_mem_read_mode_register(test_mem_spi_mem_handle);
+	spi_mem_write_mode_register(test_mem_handle, SPI_MEM_MODE_BYTE);
+	spi_mem_read_mode_register(test_mem_handle);
 
 	uint32_t address = 0;
 	uint8_t w = 0;
@@ -39,9 +39,9 @@ void test_mem_byte() {
 	uint32_t errorcount = 0;
 	for (address = 0; address < TEST_MEM_LENGTH; address++) {
 		// write
-		spi_mem_write_byte(test_mem_spi_mem_handle, address, w);
+		spi_mem_write_byte(test_mem_handle, address, w);
 		// read
-		r = spi_mem_read_byte(test_mem_spi_mem_handle, address);
+		r = spi_mem_read_byte(test_mem_handle, address);
 		// check
 		if (r != w) {
 			errorcount++;
@@ -60,8 +60,8 @@ void test_mem_byte() {
 void test_mem_page() {
 	ESP_LOGD(TAG, ">test_mem_page");
 
-	spi_mem_write_mode_register(test_mem_spi_mem_handle, SPI_MEM_MODE_PAGE);
-	spi_mem_read_mode_register(test_mem_spi_mem_handle);
+	spi_mem_write_mode_register(test_mem_handle, SPI_MEM_MODE_PAGE);
+	spi_mem_read_mode_register(test_mem_handle);
 
 	uint8_t r = 0;
 	uint8_t w = 0;
@@ -77,10 +77,10 @@ void test_mem_page() {
 			test_mem_write_buffer[index] = w;
 			w++;
 		}
-		spi_mem_write_page(test_mem_spi_mem_handle, address, test_mem_write_buffer);
+		spi_mem_write_page(test_mem_handle, address, test_mem_write_buffer);
 
 		// read
-		spi_mem_read_page(test_mem_spi_mem_handle, address, test_mem_read_buffer);
+		spi_mem_read_page(test_mem_handle, address, test_mem_read_buffer);
 
 		// check
 		errorcount = 0;
@@ -105,8 +105,8 @@ void test_mem_page() {
 void test_mem_sequential() {
 	ESP_LOGD(TAG, ">test_mem_sequential");
 
-	spi_mem_write_mode_register(test_mem_spi_mem_handle, SPI_MEM_MODE_SEQUENTIAL);
-	spi_mem_read_mode_register(test_mem_spi_mem_handle);
+	spi_mem_write_mode_register(test_mem_handle, SPI_MEM_MODE_SEQUENTIAL);
+	spi_mem_read_mode_register(test_mem_handle);
 
 	uint8_t r = 0;
 	uint8_t w = 0;
@@ -119,10 +119,10 @@ void test_mem_sequential() {
 		test_mem_write_buffer[index] = w;
 		w++;
 	}
-	spi_mem_write(test_mem_spi_mem_handle, address, TEST_MEM_LENGTH, test_mem_write_buffer);
+	spi_mem_write(test_mem_handle, address, TEST_MEM_LENGTH, test_mem_write_buffer);
 
 	// read
-	spi_mem_read(test_mem_spi_mem_handle, address, TEST_MEM_LENGTH, test_mem_read_buffer);
+	spi_mem_read(test_mem_handle, address, TEST_MEM_LENGTH, test_mem_read_buffer);
 
 	// check
 	for (index = 0; index < TEST_MEM_LENGTH; index++) {
@@ -183,9 +183,9 @@ void test_mem_task(void *ignore) {
 	configuration.total_bytes = CONFIG_SPI_MEM_TOTAL_BYTES;
 	configuration.number_of_pages = CONFIG_SPI_MEM_NUMBER_OF_PAGES;
 	configuration.number_of_bytes_page = CONFIG_SPI_MEM_BYTES_PER_PAGE;
-	spi_mem_begin(configuration, &test_mem_spi_mem_handle);
+	spi_mem_begin(configuration, &test_mem_handle);
 
-	ESP_LOGD(TAG, "test_mem_spi_mem_handle=%p", test_mem_spi_mem_handle);
+	ESP_LOGD(TAG, "test_mem_spi_mem_handle=%p", test_mem_handle);
 
 	test_mem_buffers_malloc();
 
@@ -201,9 +201,9 @@ void test_mem_task(void *ignore) {
 	}
 
 	// never reached
-//	spi_mem_end(test_mem_spi_mem_handle);
-//	test_mem_buffers_free();
-//	ESP_LOGI(TAG, "<test_mem_task");
-//	vTaskDelete(NULL);
+	//spi_mem_end(test_mem_spi_mem_handle);
+	//test_mem_buffers_free();
+	//ESP_LOGI(TAG, "<test_mem_task");
+	//vTaskDelete(NULL);
 }
 
