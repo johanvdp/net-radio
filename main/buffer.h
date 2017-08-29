@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "spi_ram.h"
+#include "../components/mem/include/spi_mem.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_heap_caps.h"
@@ -22,7 +22,7 @@
 #include "sdkconfig.h"
 
 struct buffer_t {
-	spi_ram_handle_t spi_ram_handle;
+	spi_mem_handle_t spi_mem_handle;
 	uint32_t buffer_read_addr;
 	uint32_t buffer_write_addr;
 };

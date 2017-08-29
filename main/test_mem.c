@@ -2,8 +2,8 @@
 #include "test_mem.h"
 
 #include <string.h>
+#include "spi_mem.h"
 #include "esp_heap_caps.h"
-#include "spi_ram.h"
 #include "esp_log.h"
 #include "driver/spi_master.h"
 #include "sdkconfig.h"
@@ -13,25 +13,25 @@ static const char* TAG = "test_mem.c";
 // SPI DMA transfers are limited to 2048 bytes
 #define TEST_MEM_LENGTH 2048
 
-spi_ram_handle_t test_mem_spi_ram_handle;
+spi_mem_handle_t test_mem_spi_mem_handle;
 uint8_t *test_mem_write_buffer;
 uint8_t *test_mem_read_buffer;
 
 void test_mem_log_configuration() {
 	ESP_LOGD(TAG, ">test_mem_log_configuration");
-	ESP_LOGI(TAG, "CONFIG_SPI_RAM_GPIO_CS: %d", CONFIG_SPI_RAM_GPIO_CS);
-	ESP_LOGI(TAG, "CONFIG_SPI_RAM_SPEED_MHZ: %d", CONFIG_SPI_RAM_SPEED_MHZ);
-	ESP_LOGI(TAG, "CONFIG_SPI_RAM_TOTAL_BYTES: %d", CONFIG_SPI_RAM_TOTAL_BYTES);
-	ESP_LOGI(TAG, "CONFIG_SPI_RAM_NUMBER_OF_PAGES: %d", CONFIG_SPI_RAM_NUMBER_OF_PAGES);
-	ESP_LOGI(TAG, "CONFIG_SPI_RAM_BYTES_PER_PAGE: %d", CONFIG_SPI_RAM_BYTES_PER_PAGE);
+	ESP_LOGI(TAG, "CONFIG_SPI_MEM_GPIO_CS: %d", CONFIG_SPI_MEM_GPIO_CS);
+	ESP_LOGI(TAG, "CONFIG_SPI_MEM_SPEED_MHZ: %d", CONFIG_SPI_MEM_SPEED_MHZ);
+	ESP_LOGI(TAG, "CONFIG_SPI_MEM_TOTAL_BYTES: %d", CONFIG_SPI_MEM_TOTAL_BYTES);
+	ESP_LOGI(TAG, "CONFIG_SPI_MEM_NUMBER_OF_PAGES: %d", CONFIG_SPI_MEM_NUMBER_OF_PAGES);
+	ESP_LOGI(TAG, "CONFIG_SPI_MEM_BYTES_PER_PAGE: %d", CONFIG_SPI_MEM_BYTES_PER_PAGE);
 	ESP_LOGD(TAG, "<test_mem_log_configuration");
 }
 
 void test_mem_byte() {
 	ESP_LOGD(TAG, ">test_mem_byte");
 
-	spi_ram_write_mode_register(test_mem_spi_ram_handle, SPI_RAM_MODE_BYTE);
-	spi_ram_read_mode_register(test_mem_spi_ram_handle);
+	spi_mem_write_mode_register(test_mem_spi_mem_handle, SPI_MEM_MODE_BYTE);
+	spi_mem_read_mode_register(test_mem_spi_mem_handle);
 
 	uint32_t address = 0;
 	uint8_t w = 0;
@@ -39,9 +39,9 @@ void test_mem_byte() {
 	uint32_t errorcount = 0;
 	for (address = 0; address < TEST_MEM_LENGTH; address++) {
 		// write
-		spi_ram_write_byte(test_mem_spi_ram_handle, address, w);
+		spi_mem_write_byte(test_mem_spi_mem_handle, address, w);
 		// read
-		r = spi_ram_read_byte(test_mem_spi_ram_handle, address);
+		r = spi_mem_read_byte(test_mem_spi_mem_handle, address);
 		// check
 		if (r != w) {
 			errorcount++;
@@ -60,8 +60,8 @@ void test_mem_byte() {
 void test_mem_page() {
 	ESP_LOGD(TAG, ">test_mem_page");
 
-	spi_ram_write_mode_register(test_mem_spi_ram_handle, SPI_RAM_MODE_PAGE);
-	spi_ram_read_mode_register(test_mem_spi_ram_handle);
+	spi_mem_write_mode_register(test_mem_spi_mem_handle, SPI_MEM_MODE_PAGE);
+	spi_mem_read_mode_register(test_mem_spi_mem_handle);
 
 	uint8_t r = 0;
 	uint8_t w = 0;
@@ -71,27 +71,27 @@ void test_mem_page() {
 	uint32_t errorcount = 0;
 
 	for (address = 0; address < TEST_MEM_LENGTH; address +=
-	CONFIG_SPI_RAM_BYTES_PER_PAGE) {
+	CONFIG_SPI_MEM_BYTES_PER_PAGE) {
 		// write
-		for (index = 0; index < CONFIG_SPI_RAM_BYTES_PER_PAGE; index++) {
+		for (index = 0; index < CONFIG_SPI_MEM_BYTES_PER_PAGE; index++) {
 			test_mem_write_buffer[index] = w;
 			w++;
 		}
-		spi_ram_write_page(test_mem_spi_ram_handle, address, test_mem_write_buffer);
+		spi_mem_write_page(test_mem_spi_mem_handle, address, test_mem_write_buffer);
 
 		// read
-		spi_ram_read_page(test_mem_spi_ram_handle, address, test_mem_read_buffer);
+		spi_mem_read_page(test_mem_spi_mem_handle, address, test_mem_read_buffer);
 
 		// check
 		errorcount = 0;
-		for (index = 0; index < CONFIG_SPI_RAM_BYTES_PER_PAGE; index++) {
+		for (index = 0; index < CONFIG_SPI_MEM_BYTES_PER_PAGE; index++) {
 			r = test_mem_read_buffer[index];
 			w = test_mem_write_buffer[index];
 			if (w != r) {
 				errorcount++;
 			}
 		}
-		bytecount += CONFIG_SPI_RAM_BYTES_PER_PAGE;
+		bytecount += CONFIG_SPI_MEM_BYTES_PER_PAGE;
 	}
 	if (errorcount > 0) {
 		ESP_LOGE(TAG, "test_mem_page FAIL %d/%d", bytecount, errorcount);
@@ -105,8 +105,8 @@ void test_mem_page() {
 void test_mem_sequential() {
 	ESP_LOGD(TAG, ">test_mem_sequential");
 
-	spi_ram_write_mode_register(test_mem_spi_ram_handle, SPI_RAM_MODE_SEQUENTIAL);
-	spi_ram_read_mode_register(test_mem_spi_ram_handle);
+	spi_mem_write_mode_register(test_mem_spi_mem_handle, SPI_MEM_MODE_SEQUENTIAL);
+	spi_mem_read_mode_register(test_mem_spi_mem_handle);
 
 	uint8_t r = 0;
 	uint8_t w = 0;
@@ -119,10 +119,10 @@ void test_mem_sequential() {
 		test_mem_write_buffer[index] = w;
 		w++;
 	}
-	spi_ram_write(test_mem_spi_ram_handle, address, TEST_MEM_LENGTH, test_mem_write_buffer);
+	spi_mem_write(test_mem_spi_mem_handle, address, TEST_MEM_LENGTH, test_mem_write_buffer);
 
 	// read
-	spi_ram_read(test_mem_spi_ram_handle, address, TEST_MEM_LENGTH, test_mem_read_buffer);
+	spi_mem_read(test_mem_spi_mem_handle, address, TEST_MEM_LENGTH, test_mem_read_buffer);
 
 	// check
 	for (index = 0; index < TEST_MEM_LENGTH; index++) {
@@ -175,17 +175,17 @@ void test_mem_task(void *ignore) {
 	ESP_LOGD(TAG, ">test_mem_task");
 	test_mem_log_configuration();
 
-	spi_ram_config_t configuration;
-	memset(&configuration, 0, sizeof(spi_ram_config_t));
+	spi_mem_config_t configuration;
+	memset(&configuration, 0, sizeof(spi_mem_config_t));
 	configuration.host = (spi_host_device_t) VSPI_HOST;
-	configuration.clock_speed_hz = CONFIG_SPI_RAM_SPEED_MHZ * 1000000;
-	configuration.spics_io_num = CONFIG_SPI_RAM_GPIO_CS;
-	configuration.total_bytes = CONFIG_SPI_RAM_TOTAL_BYTES;
-	configuration.number_of_pages = CONFIG_SPI_RAM_NUMBER_OF_PAGES;
-	configuration.number_of_bytes_page = CONFIG_SPI_RAM_BYTES_PER_PAGE;
-	spi_ram_begin(configuration, &test_mem_spi_ram_handle);
+	configuration.clock_speed_hz = CONFIG_SPI_MEM_SPEED_MHZ * 1000000;
+	configuration.spics_io_num = CONFIG_SPI_MEM_GPIO_CS;
+	configuration.total_bytes = CONFIG_SPI_MEM_TOTAL_BYTES;
+	configuration.number_of_pages = CONFIG_SPI_MEM_NUMBER_OF_PAGES;
+	configuration.number_of_bytes_page = CONFIG_SPI_MEM_BYTES_PER_PAGE;
+	spi_mem_begin(configuration, &test_mem_spi_mem_handle);
 
-	ESP_LOGD(TAG, "test_mem_spi_ram_handle=%p", test_mem_spi_ram_handle);
+	ESP_LOGD(TAG, "test_mem_spi_mem_handle=%p", test_mem_spi_mem_handle);
 
 	test_mem_buffers_malloc();
 
@@ -201,7 +201,7 @@ void test_mem_task(void *ignore) {
 	}
 
 	// never reached
-//	spi_ram_end(test_mem_spi_ram_handle);
+//	spi_mem_end(test_mem_spi_mem_handle);
 //	test_mem_buffers_free();
 //	ESP_LOGI(TAG, "<test_mem_task");
 //	vTaskDelete(NULL);
