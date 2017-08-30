@@ -19,11 +19,11 @@ uint8_t *test_mem_read_buffer;
 
 void test_mem_log_configuration() {
 	ESP_LOGD(TAG, ">test_mem_log_configuration");
-	ESP_LOGI(TAG, "CONFIG_SPI_MEM_GPIO_CS: %d", CONFIG_SPI_MEM_GPIO_CS);
-	ESP_LOGI(TAG, "CONFIG_SPI_MEM_SPEED_MHZ: %d", CONFIG_SPI_MEM_SPEED_MHZ);
-	ESP_LOGI(TAG, "CONFIG_SPI_MEM_TOTAL_BYTES: %d", CONFIG_SPI_MEM_TOTAL_BYTES);
-	ESP_LOGI(TAG, "CONFIG_SPI_MEM_NUMBER_OF_PAGES: %d", CONFIG_SPI_MEM_NUMBER_OF_PAGES);
-	ESP_LOGI(TAG, "CONFIG_SPI_MEM_BYTES_PER_PAGE: %d", CONFIG_SPI_MEM_BYTES_PER_PAGE);
+	ESP_LOGI(TAG, "CONFIG_MEM_GPIO_CS: %d", CONFIG_MEM_GPIO_CS);
+	ESP_LOGI(TAG, "CONFIG_MEM_SPEED_MHZ: %d", CONFIG_MEM_SPEED_MHZ);
+	ESP_LOGI(TAG, "CONFIG_MEM_TOTAL_BYTES: %d", CONFIG_MEM_TOTAL_BYTES);
+	ESP_LOGI(TAG, "CONFIG_MEM_NUMBER_OF_PAGES: %d", CONFIG_MEM_NUMBER_OF_PAGES);
+	ESP_LOGI(TAG, "CONFIG_MEM_BYTES_PER_PAGE: %d", CONFIG_MEM_BYTES_PER_PAGE);
 	ESP_LOGD(TAG, "<test_mem_log_configuration");
 }
 
@@ -71,9 +71,9 @@ void test_mem_page() {
 	uint32_t errorcount = 0;
 
 	for (address = 0; address < TEST_MEM_LENGTH; address +=
-	CONFIG_SPI_MEM_BYTES_PER_PAGE) {
+	CONFIG_MEM_BYTES_PER_PAGE) {
 		// write
-		for (index = 0; index < CONFIG_SPI_MEM_BYTES_PER_PAGE; index++) {
+		for (index = 0; index < CONFIG_MEM_BYTES_PER_PAGE; index++) {
 			test_mem_write_buffer[index] = w;
 			w++;
 		}
@@ -84,14 +84,14 @@ void test_mem_page() {
 
 		// check
 		errorcount = 0;
-		for (index = 0; index < CONFIG_SPI_MEM_BYTES_PER_PAGE; index++) {
+		for (index = 0; index < CONFIG_MEM_BYTES_PER_PAGE; index++) {
 			r = test_mem_read_buffer[index];
 			w = test_mem_write_buffer[index];
 			if (w != r) {
 				errorcount++;
 			}
 		}
-		bytecount += CONFIG_SPI_MEM_BYTES_PER_PAGE;
+		bytecount += CONFIG_MEM_BYTES_PER_PAGE;
 	}
 	if (errorcount > 0) {
 		ESP_LOGE(TAG, "test_mem_page FAIL %d/%d", bytecount, errorcount);
@@ -178,11 +178,11 @@ void test_mem_task(void *ignore) {
 	spi_mem_config_t configuration;
 	memset(&configuration, 0, sizeof(spi_mem_config_t));
 	configuration.host = (spi_host_device_t) VSPI_HOST;
-	configuration.clock_speed_hz = CONFIG_SPI_MEM_SPEED_MHZ * 1000000;
-	configuration.spics_io_num = CONFIG_SPI_MEM_GPIO_CS;
-	configuration.total_bytes = CONFIG_SPI_MEM_TOTAL_BYTES;
-	configuration.number_of_pages = CONFIG_SPI_MEM_NUMBER_OF_PAGES;
-	configuration.number_of_bytes_page = CONFIG_SPI_MEM_BYTES_PER_PAGE;
+	configuration.clock_speed_hz = CONFIG_MEM_SPEED_MHZ * 1000000;
+	configuration.spics_io_num = CONFIG_MEM_GPIO_CS;
+	configuration.total_bytes = CONFIG_MEM_TOTAL_BYTES;
+	configuration.number_of_pages = CONFIG_MEM_NUMBER_OF_PAGES;
+	configuration.number_of_bytes_page = CONFIG_MEM_BYTES_PER_PAGE;
 	spi_mem_begin(configuration, &test_mem_handle);
 
 	ESP_LOGD(TAG, "test_mem_spi_mem_handle=%p", test_mem_handle);

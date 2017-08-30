@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../components/mem/include/spi_mem.h"
+#include "spi_mem.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_heap_caps.h"
@@ -30,37 +30,45 @@ struct buffer_t {
 typedef struct buffer_t *buffer_handle_t;
 
 /**
- * Check number of bytes that can be pulled from the buffer.
+ * @brief Check number of bytes that can be pulled from the buffer.
+ * @param handle Buffer handle.
  * @return Number of bytes.
  */
 uint32_t buffer_available(buffer_handle_t handle);
+
 /**
  * Check number of bytes that can be pushed into the buffer.
+ * @param handle Buffer handle.
  * @return Number of bytes.
  */
 uint32_t buffer_free(buffer_handle_t handle);
+
 /**
- * Push a number of bytes into the buffer.
+ * @brief Push a number of bytes into the buffer.
+ * @param handle  Buffer handle.
  * @param data Source of data.
  * @param length Number of bytes.
  */
 void buffer_push(buffer_handle_t handle, uint8_t *data, uint32_t length);
+
 /**
- * Pull a number of bytes from the buffer.
+ * @brief Pull a number of bytes from the buffer.
+ *
+ * @param handle Buffer handle.
  * @param data Target of data.
  * @param length Number of bytes.
  */
-void buffer_pull(buffer_handle_t handle, uint8_t *page, uint32_t length);
+void buffer_pull(buffer_handle_t handle, uint8_t *data, uint32_t length);
+
 /**
- * Log buffer configuration.
- */
-void buffer_log_configuration();
-/**
- * Begin usage.
+ * @brief Begin usage.
+ * @param host SPI host number.
+ * @param handle Created buffer handle.
  */
 void buffer_begin(spi_host_device_t host, buffer_handle_t *handle);
 /**
- * End usage.
+ * @brief End usage.
+ * @param handle Buffer handle.
  */
 void buffer_end(buffer_handle_t handle);
 

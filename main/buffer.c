@@ -6,7 +6,7 @@ static const char* TAG = "buffer.c";
 /**
  * Buffer algorithm only works when memory size is a power of two.
  */
-#define BUFFER_MASK (CONFIG_SPI_MEM_TOTAL_BYTES - 1)
+#define BUFFER_MASK (CONFIG_MEM_TOTAL_BYTES - 1)
 
 uint32_t buffer_available(buffer_handle_t handle) {
 
@@ -14,7 +14,7 @@ uint32_t buffer_available(buffer_handle_t handle) {
 }
 
 uint32_t buffer_free(buffer_handle_t handle) {
-	return CONFIG_SPI_MEM_TOTAL_BYTES - (handle->buffer_write_addr - handle->buffer_read_addr);
+	return CONFIG_MEM_TOTAL_BYTES - (handle->buffer_write_addr - handle->buffer_read_addr);
 }
 
 void buffer_push(buffer_handle_t handle, uint8_t *data, uint32_t length) {
@@ -38,6 +38,8 @@ void buffer_log_configuration() {
 void buffer_begin(spi_host_device_t host, buffer_handle_t *handle) {
 	ESP_LOGD(TAG, ">buffer_begin");
 
+	buffer_log_configuration();
+
 	buffer_handle_t buffer_handle = malloc(sizeof(struct buffer_t));
 	buffer_handle->spi_mem_handle = NULL;
 	buffer_handle->buffer_read_addr = 0;
@@ -48,11 +50,11 @@ void buffer_begin(spi_host_device_t host, buffer_handle_t *handle) {
 	spi_mem_config_t configuration;
 	memset(&configuration, 0, sizeof(spi_mem_config_t));
 	configuration.host = (spi_host_device_t) VSPI_HOST;
-	configuration.clock_speed_hz = CONFIG_SPI_MEM_SPEED_MHZ * 1000000;
-	configuration.spics_io_num = CONFIG_SPI_MEM_GPIO_CS;
-	configuration.total_bytes = CONFIG_SPI_MEM_TOTAL_BYTES;
-	configuration.number_of_pages = CONFIG_SPI_MEM_NUMBER_OF_PAGES;
-	configuration.number_of_bytes_page = CONFIG_SPI_MEM_BYTES_PER_PAGE;
+	configuration.clock_speed_hz = CONFIG_MEM_SPEED_MHZ * 1000000;
+	configuration.spics_io_num = CONFIG_MEM_GPIO_CS;
+	configuration.total_bytes = CONFIG_MEM_TOTAL_BYTES;
+	configuration.number_of_pages = CONFIG_MEM_NUMBER_OF_PAGES;
+	configuration.number_of_bytes_page = CONFIG_MEM_BYTES_PER_PAGE;
 	spi_mem_begin(configuration, &(buffer_handle->spi_mem_handle));
 
 	spi_mem_write_mode_register(buffer_handle->spi_mem_handle, SPI_MEM_MODE_SEQUENTIAL);

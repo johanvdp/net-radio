@@ -143,35 +143,35 @@ endmenu
 
 menu "SPI_MEM"
 
-config SPI_MEM_GPIO_CS
+config MEM_GPIO_CS
     int "SPI RAM GPIO pin for CS (0-39)"
     default 5
     range 0 39
     help
         SPI RAM GPIO pin for CS output (0-39).
 
-config SPI_MEM_SPEED_MHZ
+config MEM_SPEED_MHZ
     int "SPI RAM clock frequency (1-50) MHz"
     default 20
     range 1 40
     help
         SPI RAM clock frequency (1-50) MHz.
 
-config SPI_MEM_TOTAL_BYTES
+config MEM_TOTAL_BYTES
     int "SPI RAM total bytes (1-1048576)"
     default 131072
     range 1 1048576
     help
         SPI RAM total bytes (1-1048576).
 
-config SPI_MEM_NUMBER_OF_PAGES
+config MEM_NUMBER_OF_PAGES
     int "SPI RAM number of pages (1-1048576)"
     default 4092
     range 1 1048576
     help
         SPI RAM number of pages (1-1048576).
 
-config SPI_MEM_BYTES_PER_PAGE
+config MEM_BYTES_PER_PAGE
     int "SPI RAM bytes per page (1-1048576)"
     default 32
     range 1 1048576

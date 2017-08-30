@@ -31,6 +31,8 @@ void test_dsp_log_configuration() {
 void test_dsp_task(void *ignore) {
 	ESP_LOGI(TAG, ">test_dsp_task");
 
+	test_dsp_log_configuration();
+
 	vs1053_config_t configuration;
 	memset(&configuration, 0, sizeof(vs1053_config_t));
 	configuration.host = (spi_host_device_t) HSPI_HOST;

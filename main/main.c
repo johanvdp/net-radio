@@ -1,6 +1,22 @@
 // The author disclaims copyright to this source code.
 #include "main.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_heap_caps.h"
+#include "esp_system.h"
+#include "esp_spi_flash.h"
+#include "esp_log.h"
+#include "driver/spi_master.h"
+#include "driver/gpio.h"
+#include "sdkconfig.h"
+#include "blink.h"
+#include "test_mem.h"
+#include "test_dsp.h"
+
 static const char* TAG = "main.c";
 
 void main_log_configuration() {
@@ -65,6 +81,7 @@ void main_hspi_free() {
 	ESP_ERROR_CHECK(spi_bus_free(HSPI_HOST));
 	ESP_LOGD(TAG, "<main_hspi_free");
 }
+
 /**
  * FreeRTOS Application entry point.
  */
