@@ -94,7 +94,7 @@ void vs1053_write_register(vs1053_handle_t handle, uint8_t addressbyte, uint8_t 
 }
 
 void vs1053_decode(vs1053_handle_t handle, uint8_t *data, uint8_t length) {
-	ESP_ERROR_CHECK(length > VS1053_MAX_DATA_SIZE ? ESP_FAIL : ESP_OK);
+	ESP_ERROR_CHECK(length > VS1053_MAX_DATA_SIZE ? ESP_ERR_INVALID_SIZE : ESP_OK);
 	// create transaction
 	spi_transaction_t vs1053_spi_transaction;
 	memset(&vs1053_spi_transaction, 0, sizeof(vs1053_spi_transaction));
@@ -108,6 +108,7 @@ void vs1053_decode(vs1053_handle_t handle, uint8_t *data, uint8_t length) {
 }
 
 void vs1053_decode_long(vs1053_handle_t handle, uint8_t *data, uint16_t length) {
+	ESP_LOGV(TAG, ">vs1053_decode_long");
 	uint8_t *p = data;
 	uint16_t remainder = length;
 	while (remainder > 0) {
@@ -117,6 +118,7 @@ void vs1053_decode_long(vs1053_handle_t handle, uint8_t *data, uint16_t length) 
 		p += max;
 		remainder -= max;
 	}
+	ESP_LOGV(TAG, "<vs1053_decode_long");
 }
 
 void vs1053_decode_end(vs1053_handle_t handle) {

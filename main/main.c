@@ -120,14 +120,16 @@ void app_main() {
 	main_hspi_initialize();
 	main_handles_create();
 
+	main_test_buffer_configuration.buffer_handle = main_buffer_handle;
+	if (test_buffer(main_test_buffer_configuration) != ESP_OK) {
+		return;
+	}
+
 	//main_test_mem_configuration.spi_mem_handle = main_spi_mem_handle;
 	//xTaskCreatePinnedToCore(&test_mem_task, "test_mem_task", 4096, &main_test_mem_configuration, 5, NULL, 0);
 
-	//main_test_dsp_configuration.vs1053_handle = main_vs1053_handle;
-	//xTaskCreatePinnedToCore(&test_dsp_task, "test_dsp_task", 4096, &main_test_dsp_configuration, 5, NULL, 1);
-
-	main_test_buffer_configuration.buffer_handle = main_buffer_handle;
-	if (test_buffer(main_test_buffer_configuration) != ESP_OK) {
+	main_test_dsp_configuration.vs1053_handle = main_vs1053_handle;
+	if (test_dsp(main_test_dsp_configuration) != ESP_OK) {
 		return;
 	}
 

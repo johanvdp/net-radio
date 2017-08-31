@@ -8,13 +8,13 @@
 
 /**
  * @file
- * FreeRTOS DSP test task.
+ * DSP test.
  */
 
 typedef struct test_dsp_config_t {
 	vs1053_handle_t vs1053_handle;
 } test_dsp_config_t;
 
-void test_dsp_task(void *pvParameters);
+esp_err_t test_dsp(test_dsp_config_t config);
 
 #endif

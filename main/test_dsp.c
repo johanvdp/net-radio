@@ -10,36 +10,28 @@
 #include "esp_log.h"
 #include "driver/spi_master.h"
 #include "sdkconfig.h"
+#include "esp_err.h"
 
 static const char* TAG = "test_dsp.c";
 
 vs1053_handle_t test_dsp_handle;
 
 /**
- * FreeRTOS DSP test task.
+ * DSP test task.
  */
-void test_dsp_task(void *pvParameters) {
-	ESP_LOGI(TAG, ">test_dsp_task");
+esp_err_t test_dsp(test_dsp_config_t config) {
+	ESP_LOGD(TAG, ">test_dsp");
 
-	test_dsp_config_t *config = (test_dsp_config_t *)pvParameters;
-	test_dsp_handle = config->vs1053_handle;
+	test_dsp_handle = config.vs1053_handle;
+	ESP_LOGD(TAG, "test_dsp_handle: %p", test_dsp_handle);
 
-	vs1053_set_volume(test_dsp_handle, 80, 80);
+	vs1053_decode_long(test_dsp_handle, (uint8_t*) &HELLO_MP3[0], sizeof(HELLO_MP3));
+	vs1053_decode_end(test_dsp_handle);
+	vTaskDelay(1000 / portTICK_PERIOD_MS);
+	vs1053_soft_reset(test_dsp_handle);
+	// todo verify dsp functioning correctly (status?)
 
-	while (1) {
-
-		vs1053_decode_long(test_dsp_handle, (uint8_t*) &HELLO_MP3[0], sizeof(HELLO_MP3));
-
-		vs1053_decode_end(test_dsp_handle);
-
-		vTaskDelay(1000 / portTICK_PERIOD_MS);
-
-		vs1053_soft_reset(test_dsp_handle);
-	}
-
-	// never reached
-	//dsp_end(test_vs1053_handle);
-	//ESP_LOGI(TAG, "<test_dsp_task");
-	//vTaskDelete(NULL);
+	ESP_LOGD(TAG, "<test_dsp");
+	return ESP_OK;
 }
 
