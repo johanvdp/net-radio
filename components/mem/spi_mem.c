@@ -3,9 +3,9 @@
 
 #include <string.h>
 #include "esp_log.h"
+#include "esp_heap_caps.h"
 #include "driver/spi_master.h"
 #include "sdkconfig.h"
-#include "esp_heap_caps.h"
 
 static const char* TAG = "spi_mem.c";
 
@@ -48,6 +48,31 @@ void spi_mem_remove_command(spi_mem_handle_t handle) {
 	ESP_ERROR_CHECK(spi_bus_remove_device(handle->device_command));
 	handle->device_command = NULL;
 	ESP_LOGD(TAG, "<spi_mem_remove_command");
+}
+
+void spi_mem_log_config(spi_mem_config_t config) {
+	ESP_LOGD(TAG, ">spi_mem_log_config");
+	ESP_LOGI(TAG, "host: %d", config.host);
+	ESP_LOGI(TAG, "clock_speed_hz: %d", config.clock_speed_hz);
+	ESP_LOGI(TAG, "spics_io_num: %d", config.spics_io_num);
+	ESP_LOGI(TAG, "total_bytes: %d", config.total_bytes);
+	ESP_LOGI(TAG, "number_of_pages: %d", config.number_of_pages);
+	ESP_LOGI(TAG, "number_of_bytes_page: %d", config.number_of_bytes_page);
+	ESP_LOGD(TAG, "<spi_mem_log_config");
+}
+
+void spi_mem_log(spi_mem_handle_t handle) {
+	ESP_LOGD(TAG, ">spi_mem_log");
+	ESP_LOGI(TAG, "handle: %p", handle);
+	ESP_LOGI(TAG, "host: %d", handle->host);
+	ESP_LOGI(TAG, "device_command: %p", handle->device_command);
+	ESP_LOGI(TAG, "device_data: %p", handle->device_data);
+	ESP_LOGI(TAG, "clock_speed_hz: %d", handle->clock_speed_hz);
+	ESP_LOGI(TAG, "spics_io_num: %d", handle->spics_io_num);
+	ESP_LOGI(TAG, "total_bytes: %d", handle->total_bytes);
+	ESP_LOGI(TAG, "number_of_pages: %d", handle->number_of_pages);
+	ESP_LOGI(TAG, "number_of_bytes_page: %d", handle->number_of_bytes_page);
+	ESP_LOGD(TAG, "<spi_mem_log");
 }
 
 void spi_mem_begin(spi_mem_config_t config, spi_mem_handle_t *handle) {

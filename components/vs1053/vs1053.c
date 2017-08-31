@@ -6,13 +6,13 @@
 // - http://www.vsdsp-forum.com/phpbb/viewtopic.php?f=11&t=65&p=308#p308
 #include "vs1053.h"
 
+#include "esp_heap_caps.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <string.h>
 #include "esp_log.h"
 #include "driver/gpio.h"
 #include "sdkconfig.h"
-#include "esp_heap_caps.h"
 
 static const char* TAG = "dsp.c";
 
@@ -22,25 +22,6 @@ static const uint8_t VS1053_EMPTY_DATA[] = { //
 				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //
 				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00  //
 		};
-
-void vs1053_buffer_malloc(vs1053_handle_t handle) {
-	ESP_LOGD(TAG, ">vs1053_buffer_malloc");
-	handle->dma_buffer = heap_caps_malloc(VS1053_MAX_DATA_SIZE, MALLOC_CAP_DMA);
-	if (handle->dma_buffer == NULL) {
-		ESP_LOGE(TAG, "heap_caps_malloc: out of memory");
-		size_t available = heap_caps_get_minimum_free_size(MALLOC_CAP_DMA);
-		ESP_LOGI(TAG, "heap_caps_get_minimum_free_size: %d", available);
-	}
-	memset(handle->dma_buffer, 0, VS1053_MAX_DATA_SIZE);
-	ESP_LOGD(TAG, "<vs1053_buffer_malloc");
-}
-
-void vs1053_buffer_free(vs1053_handle_t handle) {
-	ESP_LOGD(TAG, ">vs1053_buffer_free");
-	heap_caps_free(handle->dma_buffer);
-	handle->dma_buffer = NULL;
-	ESP_LOGD(TAG, "<vs1053_buffer_free");
-}
 
 void vs1053_begin_control_start(vs1053_handle_t handle) {
 	ESP_LOGD(TAG, ">vs1053_begin_control_start");
@@ -114,14 +95,12 @@ void vs1053_write_register(vs1053_handle_t handle, uint8_t addressbyte, uint8_t 
 
 void vs1053_decode(vs1053_handle_t handle, uint8_t *data, uint8_t length) {
 	ESP_ERROR_CHECK(length > VS1053_MAX_DATA_SIZE ? ESP_FAIL : ESP_OK);
-	// copy to DMA capable region
-	memcpy(handle->dma_buffer, data, length);
 	// create transaction
 	spi_transaction_t vs1053_spi_transaction;
 	memset(&vs1053_spi_transaction, 0, sizeof(vs1053_spi_transaction));
 	vs1053_spi_transaction.flags = 0;
 	vs1053_spi_transaction.length = 8 * length;
-	vs1053_spi_transaction.tx_buffer = handle->dma_buffer;
+	vs1053_spi_transaction.tx_buffer = data;
 	// wait for ready for data
 	vs1053_wait_dreq(handle);
 	// transmit
@@ -186,6 +165,33 @@ void vs1053_hard_reset(vs1053_handle_t handle) {
 	ESP_LOGD(TAG, "<vs1053_hard_reset");
 }
 
+void vs1053_log_config(vs1053_config_t config) {
+	ESP_LOGD(TAG, ">vs1053_log_config");
+	ESP_LOGI(TAG, "host: %d", config.host);
+	ESP_LOGI(TAG, "clock_speed_start_hz: %d", config.clock_speed_start_hz);
+	ESP_LOGI(TAG, "clock_speed_hz: %d", config.clock_speed_hz);
+	ESP_LOGI(TAG, "xcs_io_num: %d", config.xcs_io_num);
+	ESP_LOGI(TAG, "xdcs_io_num: %d", config.xdcs_io_num);
+	ESP_LOGI(TAG, "dreq_io_num: %d", config.dreq_io_num);
+	ESP_LOGI(TAG, "rst_io_num: %d", config.rst_io_num);
+	ESP_LOGD(TAG, "<vs1053_log_config");
+}
+
+void vs1053_log(vs1053_handle_t handle) {
+	ESP_LOGD(TAG, ">vs1053_log");
+	ESP_LOGI(TAG, "handle: %p", handle);
+	ESP_LOGI(TAG, "host: %d", handle->host);
+	ESP_LOGI(TAG, "device_control: %p", handle->device_control);
+	ESP_LOGI(TAG, "device_data: %p", handle->device_data);
+	ESP_LOGI(TAG, "clock_speed_start_hz: %d", handle->clock_speed_start_hz);
+	ESP_LOGI(TAG, "clock_speed_hz: %d", handle->clock_speed_hz);
+	ESP_LOGI(TAG, "xcs_io_num: %d", handle->xcs_io_num);
+	ESP_LOGI(TAG, "xdcs_io_num: %d", handle->xdcs_io_num);
+	ESP_LOGI(TAG, "dreq_io_num: %d", handle->dreq_io_num);
+	ESP_LOGI(TAG, "rst_io_num: %d", handle->rst_io_num);
+	ESP_LOGD(TAG, "<vs1053_log");
+}
+
 void vs1053_begin(vs1053_config_t config, vs1053_handle_t *handle) {
 	ESP_LOGD(TAG, ">vs1053_begin");
 
@@ -210,8 +216,6 @@ void vs1053_begin(vs1053_config_t config, vs1053_handle_t *handle) {
 
 	vs1053_hard_reset(vs1053);
 
-	vs1053_buffer_malloc(vs1053);
-
 	// slow SPI
 	vs1053_begin_control_start(vs1053);
 	vs1053_soft_reset(vs1053);
@@ -232,7 +236,6 @@ void vs1053_end(vs1053_handle_t handle) {
 	vs1053_soft_reset(handle);
 	vs1053_end_control(handle);
 	vs1053_end_data(handle);
-	vs1053_buffer_free(handle);
 	free(handle);
 	ESP_LOGD(TAG, "<vs1053_end");
 }

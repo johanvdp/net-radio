@@ -10,11 +10,11 @@
 #include "driver/spi_master.h"
 
 typedef enum spi_mem_mode_t {
-	/** */
+	/** Transfer data per byte. */
 	SPI_MEM_MODE_BYTE = 0x00,
-	/** */
+	/** Transfer data per page. */
 	SPI_MEM_MODE_PAGE = 0x80,
-	/** */
+	/** Transfer data sequentially. */
 	SPI_MEM_MODE_SEQUENTIAL = 0x40
 } spi_mem_mode_t;
 
@@ -39,6 +39,18 @@ typedef struct spi_mem_t {
 } spi_mem_t;
 
 typedef struct spi_mem_t *spi_mem_handle_t;
+
+/**
+ * @brief Log configuration.
+ * @param config The configuration.
+ */
+void spi_mem_log_config(spi_mem_config_t config);
+
+/**
+ * @brief Log current state.
+ * @param handle Component handle.
+ */
+void spi_mem_log(spi_mem_handle_t handle);
 
 /**
  * @brief Begin using the component.

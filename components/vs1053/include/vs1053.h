@@ -104,10 +104,21 @@ typedef struct vs1053_t {
 	int xdcs_io_num;
 	int dreq_io_num;
 	int rst_io_num;
-	uint8_t *dma_buffer;
 } vs1053_t;
 
 typedef struct vs1053_t *vs1053_handle_t;
+
+/**
+ * @brief Log configuration.
+ * @param config The configuration.
+ */
+void vs1053_log_config(vs1053_config_t config);
+
+/**
+ * @brief Log current state.
+ * @param handle Component handle.
+ */
+void vs1053_log(vs1053_handle_t handle);
 
 /**
  * @brief Begin using this component.
@@ -121,8 +132,7 @@ void vs1053_end(vs1053_handle_t handle);
  * @brief Decode stream. Allowing only short data chunks.
  * @param handle Component handle.
  * @param data The data to send.
- * @param length Length of the data to send. Obey VS1053 maximum data size
- * @ref VS1053_MAX_DATA_SIZE
+ * @param length Length of the data to send. Obey VS1053 maximum data size.
  */
 void vs1053_decode(vs1053_handle_t handle, uint8_t *data, uint8_t length);
 /**

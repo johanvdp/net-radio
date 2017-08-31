@@ -2,7 +2,7 @@
 #include "test_dsp.h"
 
 #include <string.h>
-#include "vs1053.h"
+#include "factory.h"
 #include "hello_mp3.c"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -15,35 +15,15 @@ static const char* TAG = "test_dsp.c";
 
 vs1053_handle_t test_dsp_handle;
 
-void test_dsp_log_configuration() {
-	ESP_LOGD(TAG, ">test_dsp_log_configuration");
-	ESP_LOGI(TAG, "CONFIG_DSP_GPIO_XCS: %d", CONFIG_DSP_GPIO_XCS);
-	ESP_LOGI(TAG, "CONFIG_DSP_GPIO_XDCS: %d", CONFIG_DSP_GPIO_XDCS);
-	ESP_LOGI(TAG, "CONFIG_DSP_GPIO_DREQ: %d", CONFIG_DSP_GPIO_DREQ);
-	ESP_LOGI(TAG, "CONFIG_DSP_SPI_SPEED_START_KHZ: %d", CONFIG_DSP_SPI_SPEED_START_KHZ);
-	ESP_LOGI(TAG, "CONFIG_DSP_SPI_SPEED_KHZ: %d", CONFIG_DSP_SPI_SPEED_KHZ);
-	ESP_LOGD(TAG, "<test_dsp_log_configuration");
-}
-
 /**
- * FreeRTOS MEM test task runs once.
+ * FreeRTOS DSP test task.
  */
-void test_dsp_task(void *ignore) {
+void test_dsp_task(void *pvParameters) {
 	ESP_LOGI(TAG, ">test_dsp_task");
 
-	test_dsp_log_configuration();
+	test_dsp_config_t *config = (test_dsp_config_t *)pvParameters;
+	test_dsp_handle = config->vs1053_handle;
 
-	vs1053_config_t configuration;
-	memset(&configuration, 0, sizeof(vs1053_config_t));
-	configuration.host = (spi_host_device_t) HSPI_HOST;
-	configuration.clock_speed_start_hz = CONFIG_DSP_SPI_SPEED_START_KHZ * 1000;
-	configuration.clock_speed_hz = CONFIG_DSP_SPI_SPEED_KHZ * 1000;
-	configuration.xcs_io_num = CONFIG_DSP_GPIO_XCS;
-	configuration.xdcs_io_num = CONFIG_DSP_GPIO_XDCS;
-	configuration.dreq_io_num = CONFIG_DSP_GPIO_DREQ;
-	configuration.rst_io_num = CONFIG_DSP_GPIO_RST;
-
-	vs1053_begin(configuration, &test_dsp_handle);
 	vs1053_set_volume(test_dsp_handle, 80, 80);
 
 	while (1) {

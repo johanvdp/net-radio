@@ -23,11 +23,31 @@
 
 struct buffer_t {
 	spi_mem_handle_t spi_mem_handle;
+	uint32_t size;
+	uint32_t mask;
 	uint32_t buffer_read_addr;
 	uint32_t buffer_write_addr;
 };
-
+typedef struct buffer_config_t {
+	spi_mem_handle_t spi_mem_handle;
+	/**
+	 * buffer algorithm only works when size is a power of two.
+	 */
+	uint32_t size;
+} buffer_config_t;
 typedef struct buffer_t *buffer_handle_t;
+
+/**
+ * @brief Log configuration.
+ * @param config The configuration.
+ */
+void buffer_log_config(buffer_config_t config);
+
+/**
+ * @brief Log current state.
+ * @param handle Component handle.
+ */
+void buffer_log(buffer_handle_t handle);
 
 /**
  * @brief Check number of bytes that can be pulled from the buffer.
@@ -55,21 +75,28 @@ void buffer_push(buffer_handle_t handle, uint8_t *data, uint32_t length);
  * @brief Pull a number of bytes from the buffer.
  *
  * @param handle Buffer handle.
- * @param data Target of data.
  * @param length Number of bytes.
+ * @param data Target of data.
  */
-void buffer_pull(buffer_handle_t handle, uint8_t *data, uint32_t length);
+void buffer_pull(buffer_handle_t handle, uint32_t length, uint8_t *data);
 
 /**
- * @brief Begin usage.
- * @param host SPI host number.
+ * @brief Begin buffer usage.
+ * @param config Buffer configuration.
  * @param handle Created buffer handle.
  */
-void buffer_begin(spi_host_device_t host, buffer_handle_t *handle);
+void buffer_begin(buffer_config_t config, buffer_handle_t *handle);
+
 /**
- * @brief End usage.
+ * @brief End buffer usage.
  * @param handle Buffer handle.
  */
 void buffer_end(buffer_handle_t handle);
+
+/**
+ * @brief Clear buffer.
+ * @param handle Buffer handle.
+ */
+void buffer_reset(buffer_handle_t handle);
 
 #endif

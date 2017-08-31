@@ -16,8 +16,21 @@
 #include "blink.h"
 #include "test_mem.h"
 #include "test_dsp.h"
+#include "test_buffer.h"
+#include "reader.h"
+#include "player.h"
+#include "factory.h"
 
 static const char* TAG = "main.c";
+
+spi_mem_handle_t main_spi_mem_handle;
+buffer_handle_t main_buffer_handle;
+vs1053_handle_t main_vs1053_handle;
+reader_config_t main_reader_configuration;
+player_config_t main_player_configuration;
+test_mem_config_t main_test_mem_configuration;
+test_dsp_config_t main_test_dsp_configuration;
+test_buffer_config_t main_test_buffer_configuration;
 
 void main_log_configuration() {
 	ESP_LOGD(TAG, ">main_log_configuration");
@@ -82,20 +95,51 @@ void main_hspi_free() {
 	ESP_LOGD(TAG, "<main_hspi_free");
 }
 
+void main_handles_create() {
+	ESP_LOGD(TAG, ">main_handles_create");
+	factory_mem_create(&main_spi_mem_handle);
+	factory_buffer_create(main_spi_mem_handle, CONFIG_MEM_TOTAL_BYTES, &main_buffer_handle);
+	factory_dsp_create(&main_vs1053_handle);
+	ESP_LOGD(TAG, "main_spi_mem_handle: %p", main_spi_mem_handle);
+	ESP_LOGD(TAG, "main_buffer_handle: %p", main_buffer_handle);
+	ESP_LOGD(TAG, "main_vs1053_handle: %p", main_vs1053_handle);
+	ESP_LOGD(TAG, "<main_handles_create");
+}
+
 /**
  * FreeRTOS Application entry point.
  */
 void app_main() {
+	ESP_LOGD(TAG, ">app_main");
+
 	main_log_configuration();
 
 	main_vspi_initialize();
 	main_hspi_initialize();
+	main_handles_create();
 
-	xTaskCreatePinnedToCore(&test_mem_task, "test_mem_task", 4096, NULL, 5, NULL, 0);
-	xTaskCreatePinnedToCore(&test_dsp_task, "test_dsp_task", 4096, NULL, 5, NULL, 1);
+	//main_test_mem_configuration.spi_mem_handle = main_spi_mem_handle;
+	//xTaskCreatePinnedToCore(&test_mem_task, "test_mem_task", 4096, &main_test_mem_configuration, 5, NULL, 0);
+
+	main_test_dsp_configuration.vs1053_handle = main_vs1053_handle;
+	xTaskCreatePinnedToCore(&test_dsp_task, "test_dsp_task", 4096, &main_test_dsp_configuration, 5, NULL, 1);
+
+	main_test_buffer_configuration.buffer_handle = main_buffer_handle;
+	xTaskCreatePinnedToCore(&test_buffer_task, "test_buffer_task", 4096, &main_test_buffer_configuration, 5, NULL, 0);
+
 	xTaskCreate(&blink_task, "blink_task", 2048, NULL, 5, NULL);
 
+	// reader
+	//main_reader_configuration.buffer_handle = main_buffer_handle;
+	//xTaskCreatePinnedToCore(&reader_task, "reader_task", 4096, &main_reader_configuration, 5, NULL, 0);
+
+	// player
+	//main_player_configuration.buffer_handle = main_buffer_handle;
+	//main_player_configuration.vs1053_handle = main_vs1053_handle;
+	//xTaskCreatePinnedToCore(&player_task, "player_task", 4096, &main_player_configuration, 5, NULL, 1);
+
 	// tasks are still running, never free resources
-	// main_vspi_free();
-	// main_hspi_free();
+	//main_vspi_free();
+	//main_hspi_free();
+	ESP_LOGD(TAG, "<app_main");
 }

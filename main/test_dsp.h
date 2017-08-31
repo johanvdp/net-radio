@@ -4,12 +4,17 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "vs1053.h"
 
 /**
  * @file
  * FreeRTOS DSP test task.
  */
 
-void test_dsp_task(void *ignore);
+typedef struct test_dsp_config_t {
+	vs1053_handle_t vs1053_handle;
+} test_dsp_config_t;
+
+void test_dsp_task(void *pvParameters);
 
 #endif
