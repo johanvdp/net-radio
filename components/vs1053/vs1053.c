@@ -139,8 +139,8 @@ void vs1053_wake(vs1053_handle_t handle) {
 	vs1053_set_volume(handle, 0xFE, 0xFE);
 	// Select low sample rate (8KHz Mono)
 	vs1053_write_register(handle, VS1053_SCI_AUDATA, 31, 64);
-	// Set initial volume (40 = -20dB)
-	vs1053_set_volume(handle, 40, 40);
+	// Set initial volume (80 = -40dB)
+	vs1053_set_volume(handle, 80, 80);
 	ESP_LOGD(TAG, "<vs1053_wake");
 }
 

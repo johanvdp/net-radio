@@ -15,6 +15,6 @@ typedef struct reader_config_t {
 	buffer_handle_t buffer_handle;
 } reader_config_t;
 
-void reader_task(void *config);
+void reader_task(void *pvParameters);
 
 #endif

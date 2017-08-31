@@ -18,12 +18,6 @@ static const char* TAG = "reader.c";
 buffer_handle_t reader_buffer_handle;
 uint8_t *reader_data;
 
-void reader_log_configuration() {
-	ESP_LOGD(TAG, ">reader_log_configuration");
-	//ESP_LOGI(TAG, "CONFIG_: %d", CONFIG_);
-	ESP_LOGD(TAG, "<reader_log_configuration");
-}
-
 void *reader_malloc(size_t size) {
 	ESP_LOGD(TAG, ">reader_malloc");
 	void *buffer = heap_caps_malloc(size, MALLOC_CAP_DMA);
@@ -51,6 +45,7 @@ void reader_data_free() {
 }
 
 void reader_push_hello() {
+	ESP_LOGD(TAG, ">reader_push_hello");
 	uint8_t *p = &HELLO_MP3[0];
 	uint32_t remainder = sizeof(HELLO_MP3);
 	while (remainder > 0) {
@@ -62,6 +57,7 @@ void reader_push_hello() {
 		if (max > 0) {
 			// push into buffer
 			memcpy(reader_data, p, max);
+			ESP_LOGV(TAG, "buffer_push %p %p %d", reader_buffer_handle, reader_data, max);
 			buffer_push(reader_buffer_handle, reader_data, max);
 			p += max;
 			remainder -= max;
@@ -70,14 +66,13 @@ void reader_push_hello() {
 			vTaskDelay(1 / portTICK_PERIOD_MS);
 		}
 	}
+	ESP_LOGD(TAG, "<reader_push_hello");
 }
 /**
  * FreeRTOS Reader task.
  */
 void reader_task(void *pvParameters) {
 	ESP_LOGI(TAG, ">reader_task");
-
-	reader_log_configuration();
 
 	reader_config_t *config = (reader_config_t *) pvParameters;
 	reader_buffer_handle = config->buffer_handle;
@@ -87,6 +82,7 @@ void reader_task(void *pvParameters) {
 
 	while (1) {
 		reader_push_hello();
+		taskYIELD();
 	}
 
 	// never reached

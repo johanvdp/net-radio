@@ -1,5 +1,8 @@
 // The author disclaims copyright to this source code.
 #include "blink.h"
+#include "driver/gpio.h"
+#include "esp_log.h"
+#include "sdkconfig.h"
 
 static const char* TAG = "blink.c";
 

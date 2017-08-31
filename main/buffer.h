@@ -13,6 +13,7 @@
 #include "spi_mem.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/semphr.h"
 #include "esp_heap_caps.h"
 #include "esp_system.h"
 #include "esp_spi_flash.h"
@@ -25,8 +26,13 @@ struct buffer_t {
 	spi_mem_handle_t spi_mem_handle;
 	uint32_t size;
 	uint32_t mask;
-	uint32_t buffer_read_addr;
-	uint32_t buffer_write_addr;
+	uint32_t read_addr;
+	uint32_t write_addr;
+	SemaphoreHandle_t mutex;
+	uint32_t push_bytes;
+	uint32_t pull_bytes;
+	uint32_t push_count;
+	uint32_t pull_count;
 };
 typedef struct buffer_config_t {
 	spi_mem_handle_t spi_mem_handle;

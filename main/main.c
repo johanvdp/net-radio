@@ -20,6 +20,7 @@
 #include "reader.h"
 #include "player.h"
 #include "factory.h"
+#include "statistics.h"
 
 static const char* TAG = "main.c";
 
@@ -31,6 +32,7 @@ player_config_t main_player_configuration;
 test_mem_config_t main_test_mem_configuration;
 test_dsp_config_t main_test_dsp_configuration;
 test_buffer_config_t main_test_buffer_configuration;
+statistics_config_t main_statistics_configuration;
 
 void main_log_configuration() {
 	ESP_LOGD(TAG, ">main_log_configuration");
@@ -121,22 +123,27 @@ void app_main() {
 	//main_test_mem_configuration.spi_mem_handle = main_spi_mem_handle;
 	//xTaskCreatePinnedToCore(&test_mem_task, "test_mem_task", 4096, &main_test_mem_configuration, 5, NULL, 0);
 
-	main_test_dsp_configuration.vs1053_handle = main_vs1053_handle;
-	xTaskCreatePinnedToCore(&test_dsp_task, "test_dsp_task", 4096, &main_test_dsp_configuration, 5, NULL, 1);
+	//main_test_dsp_configuration.vs1053_handle = main_vs1053_handle;
+	//xTaskCreatePinnedToCore(&test_dsp_task, "test_dsp_task", 4096, &main_test_dsp_configuration, 5, NULL, 1);
 
-	main_test_buffer_configuration.buffer_handle = main_buffer_handle;
-	xTaskCreatePinnedToCore(&test_buffer_task, "test_buffer_task", 4096, &main_test_buffer_configuration, 5, NULL, 0);
+	//main_test_buffer_configuration.buffer_handle = main_buffer_handle;
+	//xTaskCreatePinnedToCore(&test_buffer_task, "test_buffer_task", 4096, &main_test_buffer_configuration, 5, NULL, 0);
 
+	// blink task
 	xTaskCreate(&blink_task, "blink_task", 2048, NULL, 5, NULL);
 
-	// reader
-	//main_reader_configuration.buffer_handle = main_buffer_handle;
-	//xTaskCreatePinnedToCore(&reader_task, "reader_task", 4096, &main_reader_configuration, 5, NULL, 0);
+	// reader task
+	main_reader_configuration.buffer_handle = main_buffer_handle;
+	xTaskCreatePinnedToCore(&reader_task, "reader_task", 4096, &main_reader_configuration, 5, NULL, 1);
 
-	// player
-	//main_player_configuration.buffer_handle = main_buffer_handle;
-	//main_player_configuration.vs1053_handle = main_vs1053_handle;
-	//xTaskCreatePinnedToCore(&player_task, "player_task", 4096, &main_player_configuration, 5, NULL, 1);
+	// player task
+	main_player_configuration.buffer_handle = main_buffer_handle;
+	main_player_configuration.vs1053_handle = main_vs1053_handle;
+	xTaskCreatePinnedToCore(&player_task, "player_task", 4096, &main_player_configuration, 5, NULL, 0);
+
+	// statistics task
+	main_statistics_configuration.buffer_handle = main_buffer_handle;
+	xTaskCreate(&statistics_task, "statistics_task", 4096, &main_statistics_configuration, 0, NULL);
 
 	// tasks are still running, never free resources
 	//main_vspi_free();

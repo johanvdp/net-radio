@@ -106,6 +106,7 @@ void spi_mem_end(spi_mem_handle_t handle) {
 }
 
 uint8_t spi_mem_read_byte(spi_mem_handle_t handle, uint32_t address) {
+	ESP_LOGV(TAG, ">spi_mem_read_byte");
 	spi_transaction_t transaction;
 	memset(&transaction, 0, sizeof(transaction));
 	transaction.command = 0x03;
@@ -113,14 +114,18 @@ uint8_t spi_mem_read_byte(spi_mem_handle_t handle, uint32_t address) {
 	transaction.flags = SPI_TRANS_USE_RXDATA;
 	transaction.length = 8;
 	ESP_ERROR_CHECK(spi_device_transmit(handle->device_data, &transaction));
+	ESP_LOGV(TAG, "<spi_mem_read_byte");
 	return transaction.rx_data[0];
 }
 
 void spi_mem_read_page(spi_mem_handle_t handle, uint32_t address, uint8_t *data) {
+	ESP_LOGV(TAG, ">spi_mem_read_page");
 	spi_mem_read(handle, address, handle->number_of_bytes_page, data);
+	ESP_LOGV(TAG, "<spi_mem_read_page");
 }
 
 void spi_mem_read(spi_mem_handle_t handle, uint32_t address, uint32_t length, uint8_t *data) {
+	ESP_LOGV(TAG, ">spi_mem_read");
 	spi_transaction_t transaction;
 	memset(&transaction, 0, sizeof(transaction));
 	transaction.command = 0x03;
@@ -129,9 +134,11 @@ void spi_mem_read(spi_mem_handle_t handle, uint32_t address, uint32_t length, ui
 	transaction.length = length * 8;
 	transaction.rx_buffer = data;
 	ESP_ERROR_CHECK(spi_device_transmit(handle->device_data, &transaction));
+	ESP_LOGV(TAG, "<spi_mem_read");
 }
 
 void spi_mem_write_byte(spi_mem_handle_t handle, uint32_t address, uint8_t data) {
+	ESP_LOGV(TAG, ">spi_mem_write_byte");
 	spi_transaction_t transaction;
 	memset(&transaction, 0, sizeof(transaction));
 	transaction.command = 0x02;
@@ -140,13 +147,17 @@ void spi_mem_write_byte(spi_mem_handle_t handle, uint32_t address, uint8_t data)
 	transaction.length = 8;
 	transaction.tx_data[0] = data;
 	ESP_ERROR_CHECK(spi_device_transmit(handle->device_data, &transaction));
+	ESP_LOGV(TAG, "<spi_mem_write_byte");
 }
 
 void spi_mem_write_page(spi_mem_handle_t handle, uint32_t address, uint8_t *data) {
+	ESP_LOGV(TAG, ">spi_mem_write_page");
 	spi_mem_write(handle, address, handle->number_of_bytes_page, data);
+	ESP_LOGV(TAG, "<spi_mem_write_page");
 }
 
 void spi_mem_write(spi_mem_handle_t handle, uint32_t address, uint32_t length, uint8_t *data) {
+	ESP_LOGV(TAG, ">spi_mem_write");
 	spi_transaction_t transaction;
 	memset(&transaction, 0, sizeof(transaction));
 	transaction.command = 0x02;
@@ -155,6 +166,7 @@ void spi_mem_write(spi_mem_handle_t handle, uint32_t address, uint32_t length, u
 	transaction.length = 8 * length;
 	transaction.tx_buffer = data;
 	ESP_ERROR_CHECK(spi_device_transmit(handle->device_data, &transaction));
+	ESP_LOGV(TAG, "<spi_mem_write");
 }
 
 void spi_mem_enter_dual_io_access(spi_mem_handle_t handle) {

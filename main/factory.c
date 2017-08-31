@@ -74,16 +74,8 @@ void factory_dsp_create(vs1053_handle_t *handle) {
 	ESP_LOGD(TAG, "<factory_dsp_create");
 }
 
-void factory_buffer_log_configuration() {
-	ESP_LOGD(TAG, ">factory_buffer_log_configuration");
-	//ESP_LOGI(TAG, "CONFIG_: %d", CONFIG_);
-	ESP_LOGD(TAG, "<factory_buffer_log_configuration");
-}
-
 void factory_buffer_create(spi_mem_handle_t spi_mem_handle, uint32_t size, buffer_handle_t *handle) {
 	ESP_LOGD(TAG, ">factory_buffer_create");
-
-	factory_buffer_log_configuration();
 
 	buffer_config_t configuration;
 	configuration.spi_mem_handle = spi_mem_handle;
@@ -95,3 +87,4 @@ void factory_buffer_create(spi_mem_handle_t spi_mem_handle, uint32_t size, buffe
 
 	ESP_LOGD(TAG, "<factory_buffer_create");
 }
+

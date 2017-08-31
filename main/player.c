@@ -66,10 +66,10 @@ void player_task(void *pvParameters) {
 		if (available > 0) {
 			// read buffer
 			uint32_t length = available > VS1053_MAX_DATA_SIZE ? VS1053_MAX_DATA_SIZE : available;
-			ESP_LOGD(TAG, "buffer_pull %p %d %p", player_buffer_handle, length, player_data);
+			ESP_LOGV(TAG, "buffer_pull %p %d %p", player_buffer_handle, length, player_data);
 			buffer_pull(player_buffer_handle, length, player_data);
 			// write decoder
-			ESP_LOGD(TAG, "vs1053_decode %p %p %d", player_vs1053_handle, player_data, length);
+			ESP_LOGV(TAG, "vs1053_decode %p %p %d", player_vs1053_handle, player_data, length);
 			vs1053_decode(player_vs1053_handle, player_data, length);
 		} else {
 			vTaskDelay(1 / portTICK_PERIOD_MS);
