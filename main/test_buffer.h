@@ -2,19 +2,18 @@
 #ifndef _TEST_BUFFER_H_
 #define _TEST_BUFFER_H_
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 #include "buffer.h"
+#include "esp_err.h"
 
 /**
  * @file
- * FreeRTOS Buffer test task.
+ * Buffer test.
  */
 
 typedef struct test_buffer_config_t {
 	buffer_handle_t buffer_handle;
 } test_buffer_config_t;
 
-void test_buffer_task(void *pvParameters);
+esp_err_t test_buffer(test_buffer_config_t config);
 
 #endif

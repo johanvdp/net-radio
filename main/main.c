@@ -126,8 +126,10 @@ void app_main() {
 	//main_test_dsp_configuration.vs1053_handle = main_vs1053_handle;
 	//xTaskCreatePinnedToCore(&test_dsp_task, "test_dsp_task", 4096, &main_test_dsp_configuration, 5, NULL, 1);
 
-	//main_test_buffer_configuration.buffer_handle = main_buffer_handle;
-	//xTaskCreatePinnedToCore(&test_buffer_task, "test_buffer_task", 4096, &main_test_buffer_configuration, 5, NULL, 0);
+	main_test_buffer_configuration.buffer_handle = main_buffer_handle;
+	if (test_buffer(main_test_buffer_configuration) != ESP_OK) {
+		return;
+	}
 
 	// blink task
 	xTaskCreate(&blink_task, "blink_task", 2048, NULL, 5, NULL);

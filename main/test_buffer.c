@@ -44,22 +44,25 @@ void test_buffer_data_free() {
 	ESP_LOGD(TAG, "<test_buffer_data_free");
 }
 
-void test_buffer_reset() {
-	buffer_reset(test_buffer_handle);
-
+esp_err_t test_buffer_check_size(int available_expected) {
+	ESP_LOGD(TAG, ">test_buffer_check_size");
 	uint32_t available_actual = buffer_available(test_buffer_handle);
-	uint32_t available_expected = 0;
 	if (available_actual != available_expected) {
+		buffer_log(test_buffer_handle);
 		ESP_LOGE(TAG, "buffer_available expected: %d, actual: %d", available_expected, available_actual);
-		return;
+		return ESP_FAIL;
 	}
 
 	uint32_t free_actual = buffer_free(test_buffer_handle);
-	uint32_t free_expected = test_buffer_handle->size;
+	uint32_t free_expected = (test_buffer_handle->size - available_expected);
 	if (free_actual != free_expected) {
+		buffer_log(test_buffer_handle);
 		ESP_LOGE(TAG, "buffer_free expected: %d, actual: %d", free_expected, free_actual);
-		return;
+		return ESP_FAIL;
 	}
+
+	ESP_LOGD(TAG, "<test_buffer_check_size");
+	return ESP_OK;
 }
 
 void test_buffer_tinymt_init() {
@@ -71,25 +74,8 @@ void test_buffer_tinymt_init() {
 	ESP_LOGD(TAG, "<test_buffer_tinymt_init");
 }
 
-void test_buffer_check_size(int available_expected) {
-	uint32_t available_actual = buffer_available(test_buffer_handle);
-	if (available_actual != available_expected) {
-		buffer_log(test_buffer_handle);
-		ESP_LOGE(TAG, "buffer_available expected: %d, actual: %d", available_expected, available_actual);
-		return;
-	}
-
-	uint32_t free_actual = buffer_free(test_buffer_handle);
-	uint32_t free_expected = (test_buffer_handle->size - available_expected);
-	if (free_actual != free_expected) {
-		buffer_log(test_buffer_handle);
-		ESP_LOGE(TAG, "buffer_free expected: %d, actual: %d", free_expected, free_actual);
-		return;
-	}
-}
-
 void test_buffer_push(uint32_t size) {
-	ESP_LOGI(TAG, "push %d", size);
+	ESP_LOGD(TAG, ">test_buffer_push %d", size);
 	int remaining = size;
 	while (remaining > 0) {
 		// limit transfer length
@@ -100,89 +86,124 @@ void test_buffer_push(uint32_t size) {
 		buffer_push(test_buffer_handle, test_buffer_data, max);
 		remaining -= max;
 	}
+	ESP_LOGD(TAG, "<test_buffer_push");
 }
 
-void test_buffer_check_value(int size) {
+esp_err_t test_buffer_check_value(int size) {
+	ESP_LOGD(TAG, ">test_buffer_check_value %d", size);
 	for (int i = 0; i < size; i++) {
 		uint8_t value_actual = test_buffer_data[i];
 		uint8_t value_expected = tinymt32_generate_uint32(&test_buffer_tinymt);
 		if (value_actual != value_expected) {
 			buffer_log(test_buffer_handle);
 			ESP_LOGE(TAG, "value expected: %d, actual: %d", value_expected, value_actual);
-			return;
+			return ESP_FAIL;
 		}
 	}
+	ESP_LOGD(TAG, "<test_buffer_check_value");
+	return ESP_OK;
 }
 
-void test_buffer_pull(uint32_t size) {
-	ESP_LOGI(TAG, "pull %d", size);
+esp_err_t test_buffer_reset() {
+	ESP_LOGD(TAG, ">test_buffer_reset");
+	buffer_reset(test_buffer_handle);
+	if (test_buffer_check_value(0) != ESP_OK) {
+		return ESP_FAIL;
+	}
+	ESP_LOGD(TAG, "<test_buffer_reset");
+	return ESP_OK;
+}
+
+esp_err_t test_buffer_pull(uint32_t size) {
+	ESP_LOGD(TAG, ">test_buffer_pull %d", size);
 	uint32_t remaining = size;
 	while (remaining > 0) {
 		// limit transfer length
 		int max = remaining > DMA_MAX_LENGTH ? DMA_MAX_LENGTH : remaining;
 		buffer_pull(test_buffer_handle, max, test_buffer_data);
-		test_buffer_check_value(max);
+		if (test_buffer_check_value(max) != ESP_OK) {
+			return ESP_FAIL;
+		}
 		remaining -= max;
 	}
+	ESP_LOGD(TAG, "<test_buffer_pull");
+	return ESP_OK;
 }
 
-void test_buffer_push_pull() {
+esp_err_t test_buffer_push_pull() {
+	ESP_LOGD(TAG, ">test_buffer_push_pull");
 	// prepare
 	buffer_reset(test_buffer_handle);
 
 	// push 20: expect available=20 and free=(test_buffer_handle->size - 20)
 	test_buffer_tinymt_init();
 	test_buffer_push(20);
-	test_buffer_check_size(20);
+	if (test_buffer_check_size(20) != ESP_OK) {
+		return ESP_FAIL;
+	}
 
 	// pull 10: expect available=10, free=(test_buffer_handle->size - 10), and data matches
 	test_buffer_tinymt_init();
 	test_buffer_pull(10);
-	test_buffer_check_size(10);
+	if (test_buffer_check_size(10) != ESP_OK) {
+		return ESP_FAIL;
+	}
 
 	// push (test_buffer_handle->size - 15): expect available=(test_buffer_handle->size - 5) and free=5
 	// this will demonstrate wrap around top
 	test_buffer_tinymt_init();
 	test_buffer_push(test_buffer_handle->size - 15);
-	test_buffer_check_size(test_buffer_handle->size - 5);
+	if (test_buffer_check_size(test_buffer_handle->size - 5) != ESP_OK) {
+		return ESP_FAIL;
+	}
 
 	// first 10 where already pulled, but need to generate 'random' value sequence
 	test_buffer_tinymt_init();
-	ESP_LOGI(TAG, "skip 10");
 	for (int i = 0; i < 10; i++) {
 		tinymt32_generate_uint32(&test_buffer_tinymt);
 	}
 
 	// pull 10
-	ESP_LOGI(TAG, "pull 10");
 	buffer_pull(test_buffer_handle, 10, test_buffer_data);
-	test_buffer_check_size(test_buffer_handle->size - 15);
-	test_buffer_check_value(10);
+	if (test_buffer_check_size(test_buffer_handle->size - 15) != ESP_OK) {
+		return ESP_FAIL;
+	}
+
+	if (test_buffer_check_value(10) != ESP_OK) {
+		return ESP_FAIL;
+	}
 
 	// pull remainder
 	test_buffer_tinymt_init();
 	test_buffer_pull(test_buffer_handle->size - 15);
-	test_buffer_check_size(0);
+	if (test_buffer_check_size(0) != ESP_OK) {
+		return ESP_FAIL;
+	}
+
+	ESP_LOGD(TAG, "<test_buffer_push_pull");
+	return ESP_OK;
 }
 
 /**
- * FreeRTOS Buffer test task.
+ * Buffer test.
  */
-void test_buffer_task(void *pvParameters) {
-	ESP_LOGI(TAG, ">test_buffer_task");
+esp_err_t test_buffer(test_buffer_config_t config) {
+	ESP_LOGD(TAG, ">test_buffer");
 
-	test_buffer_config_t *config = (test_buffer_config_t *) pvParameters;
-	test_buffer_handle = config->buffer_handle;
+	test_buffer_handle = config.buffer_handle;
 	ESP_LOGD(TAG, "test_buffer_handle: %p", test_buffer_handle);
 
 	test_buffer_data_malloc();
 
-	while (1) {
-		test_buffer_reset();
-
-		test_buffer_push_pull();
-
-		vTaskDelay(1 / portTICK_PERIOD_MS);
+	if (test_buffer_reset() != ESP_OK) {
+		return ESP_FAIL;
 	}
+
+	if (test_buffer_push_pull() != ESP_OK) {
+		return ESP_FAIL;
+	}
+
+	ESP_LOGD(TAG, "<test_buffer");
+	return ESP_OK;
 }
 
