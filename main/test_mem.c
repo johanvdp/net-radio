@@ -10,11 +10,11 @@ static const char* TAG = "test_mem.c";
 // SPI DMA transfers are limited to SPI_MAX_DMA_LEN
 #define TEST_MEM_LENGTH 2048
 
-spi_mem_handle_t test_mem_handle;
-uint8_t *test_mem_write_buffer;
-uint8_t *test_mem_read_buffer;
+static spi_mem_handle_t test_mem_handle;
+static uint8_t *test_mem_write_buffer;
+static uint8_t *test_mem_read_buffer;
 
-esp_err_t test_mem_byte() {
+static esp_err_t test_mem_byte() {
 	ESP_LOGD(TAG, ">test_mem_byte");
 
 	spi_mem_write_mode_register(test_mem_handle, SPI_MEM_MODE_BYTE);
@@ -44,7 +44,7 @@ esp_err_t test_mem_byte() {
 	return ESP_OK;
 }
 
-esp_err_t test_mem_page() {
+static esp_err_t test_mem_page() {
 	ESP_LOGD(TAG, ">test_mem_page");
 
 	spi_mem_write_mode_register(test_mem_handle, SPI_MEM_MODE_PAGE);
@@ -89,7 +89,7 @@ esp_err_t test_mem_page() {
 	return ESP_OK;
 }
 
-esp_err_t test_mem_sequential() {
+static esp_err_t test_mem_sequential() {
 	ESP_LOGD(TAG, ">test_mem_sequential");
 
 	spi_mem_write_mode_register(test_mem_handle, SPI_MEM_MODE_SEQUENTIAL);
@@ -128,27 +128,27 @@ esp_err_t test_mem_sequential() {
 	return ESP_OK;
 }
 
-void *test_mem_malloc(size_t size) {
+static void *test_mem_malloc(size_t size) {
 	ESP_LOGD(TAG, ">test_mem_malloc");
 	void *buffer = heap_caps_malloc(size, MALLOC_CAP_DMA);
 	if (buffer == NULL) {
 		ESP_LOGE(TAG, "heap_caps_malloc: out of memory");
 		size_t available = heap_caps_get_minimum_free_size(MALLOC_CAP_DMA);
-		ESP_LOGI(TAG, "heap_caps_get_minimum_free_size: %d", available);
+		ESP_LOGD(TAG, "heap_caps_get_minimum_free_size: %d", available);
 	}
 	memset(buffer, 0, size);
 	ESP_LOGD(TAG, "<test_mem_malloc");
 	return buffer;
 }
 
-void test_mem_buffers_malloc() {
+static void test_mem_buffers_malloc() {
 	ESP_LOGD(TAG, ">test_mem_buffers_malloc");
 	test_mem_write_buffer = test_mem_malloc(TEST_MEM_LENGTH);
 	test_mem_read_buffer = test_mem_malloc(TEST_MEM_LENGTH);
 	ESP_LOGD(TAG, "<test_mem_buffers_malloc");
 }
 
-void test_mem_buffers_free() {
+static void test_mem_buffers_free() {
 	ESP_LOGD(TAG, ">test_mem_buffers_free");
 	heap_caps_free(test_mem_write_buffer);
 	heap_caps_free(test_mem_read_buffer);
@@ -159,7 +159,7 @@ void test_mem_buffers_free() {
  * MEM test task.
  */
 esp_err_t test_mem(test_mem_config_t config) {
-	ESP_LOGI(TAG, ">test_mem_task");
+	ESP_LOGD(TAG, ">test_mem");
 
 	test_mem_handle = config.spi_mem_handle;
 	ESP_LOGD(TAG, "spi_mem_handle: %p", test_mem_handle);
@@ -183,7 +183,7 @@ esp_err_t test_mem(test_mem_config_t config) {
 
 	test_mem_buffers_free();
 
-	ESP_LOGI(TAG, "<test_mem_task");
+	ESP_LOGD(TAG, "<test_mem");
 
 	return ESP_OK;
 }

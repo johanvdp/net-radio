@@ -5,27 +5,20 @@
 
 static const char* TAG = "buffer.c";
 
-void buffer_log_config(buffer_config_t config) {
-	ESP_LOGD(TAG, ">buffer_log_config");
-	ESP_LOGI(TAG, "spi_mem_handle: %p", config.spi_mem_handle);
-	ESP_LOGI(TAG, "size: %d", config.size);
-	ESP_LOGD(TAG, "<buffer_log_config");
-}
-
 void buffer_log(buffer_handle_t handle) {
 	assert(xSemaphoreTake(handle->mutex, portMAX_DELAY) == pdTRUE);
 	ESP_LOGD(TAG, ">buffer_log");
-	ESP_LOGI(TAG, "handle: %p", handle);
-	ESP_LOGI(TAG, "spi_mem_handle: %p", handle->spi_mem_handle);
-	ESP_LOGI(TAG, "size: %d", handle->size);
-	ESP_LOGI(TAG, "mask: 0x%04x", handle->mask);
-	ESP_LOGI(TAG, "buffer_read_addr: %d", handle->read_addr);
-	ESP_LOGI(TAG, "buffer_write_addr: %d", handle->write_addr);
-	ESP_LOGI(TAG, "mutex: %p", handle->mutex);
-	ESP_LOGI(TAG, "pull_bytes: %u", handle->pull_bytes);
-	ESP_LOGI(TAG, "push_bytes: %u", handle->push_bytes);
-	ESP_LOGI(TAG, "pull_count: %u", handle->pull_count);
-	ESP_LOGI(TAG, "push_count: %u", handle->push_count);
+	ESP_LOGD(TAG, "handle: %p", handle);
+	ESP_LOGD(TAG, "spi_mem_handle: %p", handle->spi_mem_handle);
+	ESP_LOGD(TAG, "size: %d", handle->size);
+	ESP_LOGD(TAG, "mask: 0x%04x", handle->mask);
+	ESP_LOGD(TAG, "buffer_read_addr: %d", handle->read_addr);
+	ESP_LOGD(TAG, "buffer_write_addr: %d", handle->write_addr);
+	ESP_LOGD(TAG, "mutex: %p", handle->mutex);
+	ESP_LOGD(TAG, "pull_bytes: %u", handle->pull_bytes);
+	ESP_LOGD(TAG, "push_bytes: %u", handle->push_bytes);
+	ESP_LOGD(TAG, "pull_count: %u", handle->pull_count);
+	ESP_LOGD(TAG, "push_count: %u", handle->push_count);
 	ESP_LOGD(TAG, "<buffer_log");
 	assert(xSemaphoreGive(handle->mutex) == pdTRUE);
 }
@@ -74,12 +67,14 @@ void buffer_pull(buffer_handle_t handle, uint32_t length, uint8_t *data) {
 	ESP_LOGV(TAG, "<buffer_pull");
 }
 
-bool buffer_is_power_of_two(uint32_t size) {
+static bool buffer_is_power_of_two(uint32_t size) {
 	return (size != 0) && ((size & (size - 1)) == 0);
 }
 
 void buffer_begin(buffer_config_t config, buffer_handle_t *handle) {
 	ESP_LOGD(TAG, ">buffer_begin");
+	ESP_LOGD(TAG, "spi_mem_handle: %p", config.spi_mem_handle);
+	ESP_LOGD(TAG, "size: %d", config.size);
 
 	assert(buffer_is_power_of_two(config.size));
 

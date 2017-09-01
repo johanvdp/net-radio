@@ -11,37 +11,37 @@ static const char* TAG = "test_buffer.c";
 // SPI DMA transfers are limited to SPI_MAX_DMA_LEN
 #define DMA_MAX_LENGTH 2048
 
-buffer_handle_t test_buffer_handle;
-uint8_t *test_buffer_data;
-tinymt32_t test_buffer_tinymt;
+static buffer_handle_t test_buffer_handle;
+static uint8_t *test_buffer_data;
+static tinymt32_t test_buffer_tinymt;
 
-void *test_buffer_malloc(size_t size) {
+static void *test_buffer_malloc(size_t size) {
 	ESP_LOGD(TAG, ">test_buffer_malloc");
 	void *buffer = heap_caps_malloc(size, MALLOC_CAP_DMA);
 	if (buffer == NULL) {
 		ESP_LOGE(TAG, "heap_caps_malloc: out of memory");
 		size_t available = heap_caps_get_minimum_free_size(MALLOC_CAP_DMA);
-		ESP_LOGI(TAG, "heap_caps_get_minimum_free_size: %d", available);
+		ESP_LOGD(TAG, "heap_caps_get_minimum_free_size: %d", available);
 	}
 	memset(buffer, 0, size);
 	ESP_LOGD(TAG, "<test_buffer_malloc");
 	return buffer;
 }
 
-void test_buffer_data_malloc() {
+static void test_buffer_data_malloc() {
 	ESP_LOGD(TAG, ">test_buffer_data_malloc");
 	test_buffer_data = test_buffer_malloc(DMA_MAX_LENGTH);
 	ESP_LOGD(TAG, "<test_buffer_data_malloc");
 }
 
-void test_buffer_data_free() {
+static void test_buffer_data_free() {
 	ESP_LOGD(TAG, ">test_buffer_data_free");
 	heap_caps_free(test_buffer_data);
 	test_buffer_data = NULL;
 	ESP_LOGD(TAG, "<test_buffer_data_free");
 }
 
-esp_err_t test_buffer_check_size(int available_expected) {
+static esp_err_t test_buffer_check_size(int available_expected) {
 	ESP_LOGD(TAG, ">test_buffer_check_size");
 	uint32_t available_actual = buffer_available(test_buffer_handle);
 	if (available_actual != available_expected) {
@@ -62,7 +62,7 @@ esp_err_t test_buffer_check_size(int available_expected) {
 	return ESP_OK;
 }
 
-void test_buffer_tinymt_init() {
+static void test_buffer_tinymt_init() {
 	ESP_LOGD(TAG, ">test_buffer_tinymt_init");
 	test_buffer_tinymt.mat1 = 0x8f7011ee;
 	test_buffer_tinymt.mat2 = 0xfc78ff1f;
@@ -71,7 +71,7 @@ void test_buffer_tinymt_init() {
 	ESP_LOGD(TAG, "<test_buffer_tinymt_init");
 }
 
-void test_buffer_push(uint32_t size) {
+static void test_buffer_push(uint32_t size) {
 	ESP_LOGD(TAG, ">test_buffer_push %d", size);
 	int remaining = size;
 	while (remaining > 0) {
@@ -86,7 +86,7 @@ void test_buffer_push(uint32_t size) {
 	ESP_LOGD(TAG, "<test_buffer_push");
 }
 
-esp_err_t test_buffer_check_value(int size) {
+static esp_err_t test_buffer_check_value(int size) {
 	ESP_LOGD(TAG, ">test_buffer_check_value %d", size);
 	for (int i = 0; i < size; i++) {
 		uint8_t value_actual = test_buffer_data[i];
@@ -101,7 +101,7 @@ esp_err_t test_buffer_check_value(int size) {
 	return ESP_OK;
 }
 
-esp_err_t test_buffer_reset() {
+static esp_err_t test_buffer_reset() {
 	ESP_LOGD(TAG, ">test_buffer_reset");
 	buffer_reset(test_buffer_handle);
 	if (test_buffer_check_value(0) != ESP_OK) {
@@ -111,7 +111,7 @@ esp_err_t test_buffer_reset() {
 	return ESP_OK;
 }
 
-esp_err_t test_buffer_pull(uint32_t size) {
+static esp_err_t test_buffer_pull(uint32_t size) {
 	ESP_LOGD(TAG, ">test_buffer_pull %d", size);
 	uint32_t remaining = size;
 	while (remaining > 0) {
@@ -127,7 +127,7 @@ esp_err_t test_buffer_pull(uint32_t size) {
 	return ESP_OK;
 }
 
-esp_err_t test_buffer_push_pull() {
+static esp_err_t test_buffer_push_pull() {
 	ESP_LOGD(TAG, ">test_buffer_push_pull");
 	// prepare
 	buffer_reset(test_buffer_handle);
@@ -199,6 +199,8 @@ esp_err_t test_buffer(test_buffer_config_t config) {
 	if (test_buffer_push_pull() != ESP_OK) {
 		return ESP_FAIL;
 	}
+
+	test_buffer_data_free();
 
 	ESP_LOGD(TAG, "<test_buffer");
 	return ESP_OK;

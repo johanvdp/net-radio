@@ -6,11 +6,11 @@
 
 static const char* TAG = "statistics.c";
 
-buffer_handle_t statistics_buffer_handle;
-uint32_t statistics_previous_pull_bytes;
-uint32_t statistics_previous_push_bytes;
-uint32_t statistics_previous_pull_count;
-uint32_t statistics_previous_push_count;
+static buffer_handle_t statistics_buffer_handle;
+static uint32_t statistics_previous_pull_bytes;
+static uint32_t statistics_previous_push_bytes;
+static uint32_t statistics_previous_pull_count;
+static uint32_t statistics_previous_push_count;
 
 void statistics_task(void *pvParameters) {
 	ESP_LOGD(TAG, ">statistics_task");
@@ -19,7 +19,6 @@ void statistics_task(void *pvParameters) {
 	statistics_buffer_handle = config->buffer_handle;
 	ESP_LOGD(TAG, "statistics_buffer_handle: %p", statistics_buffer_handle);
 
-	// loop forever
 	while (1) {
 
 		uint32_t pull_bytes = statistics_buffer_handle->pull_bytes;
@@ -40,18 +39,16 @@ void statistics_task(void *pvParameters) {
 		statistics_previous_pull_count = pull_count;
 		statistics_previous_push_count = push_count;
 
-		ESP_LOGI(TAG, "push_count: %10u %10u", push_count, push_count_per_second);
-		ESP_LOGI(TAG, "push_bytes: %10u %10u", push_bytes, push_bytes_per_second);
+		ESP_LOGD(TAG, "push_count: %10u %10u", push_count, push_count_per_second);
+		ESP_LOGD(TAG, "push_bytes: %10u %10u", push_bytes, push_bytes_per_second);
 
-		ESP_LOGI(TAG, "pull_count: %10u %10u", pull_count, pull_count_per_second);
-		ESP_LOGI(TAG, "pull_bytes: %10u %10u", pull_bytes, pull_bytes_per_second);
+		ESP_LOGD(TAG, "pull_count: %10u %10u", pull_count, pull_count_per_second);
+		ESP_LOGD(TAG, "pull_bytes: %10u %10u", pull_bytes, pull_bytes_per_second);
 
-		ESP_LOGI(TAG, "usage: %10u %10u", available, percentage);
+		ESP_LOGD(TAG, "usage: %10u %10u", available, percentage);
 
 		vTaskDelay(1000 / portTICK_PERIOD_MS);
 	}
-
-	// never reached
-	// ESP_LOGD(TAG, "<blink_task");
+	// should never be reached
 }
 

@@ -9,6 +9,10 @@
 
 #include "spi_mem.h"
 
+/**
+ * Even though this data is 'public'.
+ * Do not shoot yourself in the foot by changing this data.
+ */
 struct buffer_t {
 	spi_mem_handle_t spi_mem_handle;
 	uint32_t size;
@@ -21,23 +25,18 @@ struct buffer_t {
 	uint32_t push_count;
 	uint32_t pull_count;
 };
+
 typedef struct buffer_config_t {
 	spi_mem_handle_t spi_mem_handle;
-	/**
-	 * buffer algorithm only works when size is a power of two.
-	 */
+	/** buffer algorithm only works when size is a power of two. */
 	uint32_t size;
 } buffer_config_t;
+
 typedef struct buffer_t *buffer_handle_t;
 
 /**
- * @brief Log configuration.
- * @param config The configuration.
- */
-void buffer_log_config(buffer_config_t config);
-
-/**
  * @brief Log current state.
+ * Useful when reporting buffer errors.
  * @param handle Component handle.
  */
 void buffer_log(buffer_handle_t handle);

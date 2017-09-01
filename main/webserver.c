@@ -17,44 +17,65 @@
 #include "lwip/err.h"
 #include "lwip/netdb.h"
 
-static const char http_header[] = "HTTP/1.1 200 OK\nContent-type: text/html\n\n";
+/**
+ * Request-Line = Method SP Request-URI SP HTTP-Version CRLF
+ * one or more header lines
+ * one empty line
+ */
+static const char http_ok[] = "HTTP/1.0 200 OK\nContent-type: text/html\nConnection: Closed\n\n";
+/**
+ * Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+ * one or more header lines
+ * one empty line
+ */
+static const char http_bad_request[] = "HTTP/1.0 400 Bad Request\nContent-Length: 0\nConnection: Closed\n\n";
+/**
+ * Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+ * one or more header lines
+ * one empty line
+ */
+static const char http_server_error[] = "HTTP/1.0 500 Internal Server Error\nContent-Length: 0\nConnection: Closed\n\n";
+/** Content */
 static const char http_content[] = "<html><head></head><body>Hello world!</body></html>";
 
 static const char* TAG = "webserver.c";
 
-static void http_server_netconn_serve(struct netconn *conn) {
-	ESP_LOGD(TAG, ">http_server_netconn_serve")
-	struct netbuf *inbuf;
-	char *buf;
-	u16_t buflen;
-	err_t err;
+static void webserver_process(struct netconn *conn) {
+	ESP_LOGD(TAG, ">webserver_process")
 
-	err = netconn_recv(conn, &inbuf);
-
+	struct netbuf *netbuf;
+	err_t err = netconn_recv(conn, &netbuf);
 	if (err == ERR_OK) {
 
-		netbuf_data(inbuf, (void**) &buf, &buflen);
+		char *buf;
+		u16_t len;
+		netbuf_data(netbuf, (void**) &buf, &len);
 
-		// extract the first line, with the request
-		char *line = strtok(buf, "\n");
+		// Request-Line = Method SP Request-URI SP HTTP-Version CRLF
+		char *request_line = strtok(buf, "\n");
+		if (request_line) {
 
-		if (line) {
-
-			if (strstr(line, "GET / ")) {
-				netconn_write(conn, http_header, sizeof(http_header) - 1, NETCONN_NOCOPY);
+			if (strstr(request_line, "GET / ")) {
+				// the one and only response
+				netconn_write(conn, http_ok, sizeof(http_ok) - 1, NETCONN_NOCOPY);
 				netconn_write(conn, http_content, sizeof(http_content) - 1, NETCONN_NOCOPY);
 			} else {
-				ESP_LOGD(TAG, "Unknown: %s\n", line);
+				ESP_LOGE(TAG, "Bad request: %s", request_line);
+				netconn_write(conn, http_bad_request, sizeof(http_bad_request) - 1, NETCONN_NOCOPY);
 			}
 		} else {
-			ESP_LOGD(TAG, "Expected newline")
+			ESP_LOGE(TAG, "Bad request: expected newline")
+			netconn_write(conn, http_bad_request, sizeof(http_bad_request) - 1, NETCONN_NOCOPY);
 		}
+	} else {
+		ESP_LOGE(TAG, "netconn_recv error: %d", err)
+		netconn_write(conn, http_server_error, sizeof(http_server_error) - 1, NETCONN_NOCOPY);
 	}
 
-	// close the connection and free the buffer
 	netconn_close(conn);
-	netbuf_delete(inbuf);
-	ESP_LOGD(TAG, "<http_server_netconn_serve")
+	netbuf_delete(netbuf);
+
+	ESP_LOGD(TAG, "<webserver_process")
 }
 
 void webserver_task(void *pvParameters) {
@@ -70,7 +91,7 @@ void webserver_task(void *pvParameters) {
 	do {
 		err = netconn_accept(conn, &newconn);
 		if (err == ERR_OK) {
-			http_server_netconn_serve(newconn);
+			webserver_process(newconn);
 			netconn_delete(newconn);
 		}
 	} while (err == ERR_OK);

@@ -22,42 +22,42 @@
 
 static const char* TAG = "main.c";
 
-spi_mem_handle_t main_spi_mem_handle;
-buffer_handle_t main_buffer_handle;
-vs1053_handle_t main_vs1053_handle;
-reader_config_t main_reader_configuration;
-player_config_t main_player_configuration;
-test_mem_config_t main_test_mem_configuration;
-test_dsp_config_t main_test_dsp_configuration;
-test_buffer_config_t main_test_buffer_configuration;
-statistics_config_t main_statistics_configuration;
+static spi_mem_handle_t main_spi_mem_handle;
+static buffer_handle_t main_buffer_handle;
+static vs1053_handle_t main_vs1053_handle;
+static reader_config_t main_reader_configuration;
+static player_config_t main_player_configuration;
+static test_mem_config_t main_test_mem_configuration;
+static test_dsp_config_t main_test_dsp_configuration;
+static test_buffer_config_t main_test_buffer_configuration;
+static statistics_config_t main_statistics_configuration;
 
-void main_log_configuration() {
+static void main_log_configuration() {
 	ESP_LOGD(TAG, ">main_log_configuration");
 	esp_chip_info_t chip_info;
 	esp_chip_info(&chip_info);
 	if (chip_info.model == CHIP_ESP32) {
-		ESP_LOGI(TAG, "model: ESP32");
+		ESP_LOGD(TAG, "model: ESP32");
 	} else {
-		ESP_LOGI(TAG, "model: %d (unknown)", chip_info.model);
+		ESP_LOGD(TAG, "model: %d (unknown)", chip_info.model);
 	}
-	ESP_LOGI(TAG, "cores: %d", chip_info.cores);
-	ESP_LOGI(TAG, "features WiFi: %s", ((chip_info.features & CHIP_FEATURE_WIFI_BGN) ? "YES" : "NO"));
-	ESP_LOGI(TAG, "features BT: %s", ((chip_info.features & CHIP_FEATURE_BT) ? "YES" : "NO"));
-	ESP_LOGI(TAG, "features BLE: %s", ((chip_info.features & CHIP_FEATURE_BLE) ? "YES" : "NO"));
-	ESP_LOGI(TAG, "features flash: %s", ((chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external"));
-	ESP_LOGI(TAG, "flash size (MB): %d", (spi_flash_get_chip_size() / (1024 * 1024)));
-	ESP_LOGI(TAG, "revision: %d", chip_info.revision);
-	ESP_LOGI(TAG, "CONFIG_GPIO_VSPI_CLK: %d", CONFIG_GPIO_VSPI_CLK);
-	ESP_LOGI(TAG, "CONFIG_GPIO_VSPI_MOSI: %d", CONFIG_GPIO_VSPI_MOSI);
-	ESP_LOGI(TAG, "CONFIG_GPIO_VSPI_MISO: %d", CONFIG_GPIO_VSPI_MISO);
-	ESP_LOGI(TAG, "CONFIG_GPIO_HSPI_CLK: %d", CONFIG_GPIO_HSPI_CLK);
-	ESP_LOGI(TAG, "CONFIG_GPIO_HSPI_MOSI: %d", CONFIG_GPIO_HSPI_MOSI);
-	ESP_LOGI(TAG, "CONFIG_GPIO_HSPI_MISO: %d", CONFIG_GPIO_HSPI_MISO);
+	ESP_LOGD(TAG, "cores: %d", chip_info.cores);
+	ESP_LOGD(TAG, "features WiFi: %s", ((chip_info.features & CHIP_FEATURE_WIFI_BGN) ? "YES" : "NO"));
+	ESP_LOGD(TAG, "features BT: %s", ((chip_info.features & CHIP_FEATURE_BT) ? "YES" : "NO"));
+	ESP_LOGD(TAG, "features BLE: %s", ((chip_info.features & CHIP_FEATURE_BLE) ? "YES" : "NO"));
+	ESP_LOGD(TAG, "features flash: %s", ((chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external"));
+	ESP_LOGD(TAG, "flash size (MB): %d", (spi_flash_get_chip_size() / (1024 * 1024)));
+	ESP_LOGD(TAG, "revision: %d", chip_info.revision);
+	ESP_LOGD(TAG, "CONFIG_GPIO_VSPI_CLK: %d", CONFIG_GPIO_VSPI_CLK);
+	ESP_LOGD(TAG, "CONFIG_GPIO_VSPI_MOSI: %d", CONFIG_GPIO_VSPI_MOSI);
+	ESP_LOGD(TAG, "CONFIG_GPIO_VSPI_MISO: %d", CONFIG_GPIO_VSPI_MISO);
+	ESP_LOGD(TAG, "CONFIG_GPIO_HSPI_CLK: %d", CONFIG_GPIO_HSPI_CLK);
+	ESP_LOGD(TAG, "CONFIG_GPIO_HSPI_MOSI: %d", CONFIG_GPIO_HSPI_MOSI);
+	ESP_LOGD(TAG, "CONFIG_GPIO_HSPI_MISO: %d", CONFIG_GPIO_HSPI_MISO);
 	ESP_LOGD(TAG, "<main_log_configuration");
 }
 
-void main_vspi_initialize() {
+static void main_vspi_initialize() {
 	ESP_LOGD(TAG, ">main_vspi_initialize");
 	spi_bus_config_t configuration;
 	memset(&configuration, 0, sizeof(configuration));
@@ -70,13 +70,7 @@ void main_vspi_initialize() {
 	ESP_LOGD(TAG, "<main_vspi_initialize");
 }
 
-void main_vspi_free() {
-	ESP_LOGD(TAG, ">main_vspi_free");
-	ESP_ERROR_CHECK(spi_bus_free(VSPI_HOST));
-	ESP_LOGD(TAG, "<main_vspi_free");
-}
-
-void main_hspi_initialize() {
+static void main_hspi_initialize() {
 	ESP_LOGD(TAG, ">main_hspi_initialize");
 	spi_bus_config_t configuration;
 	memset(&configuration, 0, sizeof(configuration));
@@ -89,13 +83,7 @@ void main_hspi_initialize() {
 	ESP_LOGD(TAG, "<main_hspi_initialize");
 }
 
-void main_hspi_free() {
-	ESP_LOGD(TAG, ">main_hspi_free");
-	ESP_ERROR_CHECK(spi_bus_free(HSPI_HOST));
-	ESP_LOGD(TAG, "<main_hspi_free");
-}
-
-void main_handles_create() {
+static void main_handles_create() {
 	ESP_LOGD(TAG, ">main_handles_create");
 	factory_mem_create(&main_spi_mem_handle);
 	factory_buffer_create(main_spi_mem_handle, CONFIG_MEM_TOTAL_BYTES, &main_buffer_handle);
@@ -159,9 +147,5 @@ void app_main() {
 	xTaskCreatePinnedToCore(&webserver_task, "webserver_task", 4096, NULL, 1, NULL, 1);
 
 	// tasks are still running, never free resources
-	//main_vspi_free();
-	//main_hspi_free();
-	//ap_end();
-	//mdns_end();
 	ESP_LOGD(TAG, "<app_main");
 }

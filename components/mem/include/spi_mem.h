@@ -27,6 +27,10 @@ typedef struct spi_mem_config_t {
 	int number_of_bytes_page;
 } spi_mem_config_t;
 
+/**
+ * Even though this data is 'public'.
+ * Do not shoot yourself in the foot by changing this data.
+ */
 typedef struct spi_mem_t {
 	spi_host_device_t host;
 	spi_device_handle_t device_command;
@@ -39,18 +43,6 @@ typedef struct spi_mem_t {
 } spi_mem_t;
 
 typedef struct spi_mem_t *spi_mem_handle_t;
-
-/**
- * @brief Log configuration.
- * @param config The configuration.
- */
-void spi_mem_log_config(spi_mem_config_t config);
-
-/**
- * @brief Log current state.
- * @param handle Component handle.
- */
-void spi_mem_log(spi_mem_handle_t handle);
 
 /**
  * @brief Begin using the component.

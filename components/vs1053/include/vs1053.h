@@ -94,6 +94,10 @@ typedef struct vs1053_config_t {
 	int rst_io_num;
 } vs1053_config_t;
 
+/**
+ * Even though this data is 'public'.
+ * Do not shoot yourself in the foot by changing this data.
+ */
 typedef struct vs1053_t {
 	spi_host_device_t host;
 	spi_device_handle_t device_control;
@@ -107,18 +111,6 @@ typedef struct vs1053_t {
 } vs1053_t;
 
 typedef struct vs1053_t *vs1053_handle_t;
-
-/**
- * @brief Log configuration.
- * @param config The configuration.
- */
-void vs1053_log_config(vs1053_config_t config);
-
-/**
- * @brief Log current state.
- * @param handle Component handle.
- */
-void vs1053_log(vs1053_handle_t handle);
 
 /**
  * @brief Begin using this component.

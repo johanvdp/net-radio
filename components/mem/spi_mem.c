@@ -7,7 +7,7 @@
 static const char* TAG = "spi_mem.c";
 
 /** Add device with same configuration but configured to transfer data only. */
-void spi_mem_add_command(spi_mem_handle_t handle) {
+static void spi_mem_add_command(spi_mem_handle_t handle) {
 	ESP_LOGD(TAG, ">spi_mem_add_command");
 	spi_device_interface_config_t configuration;
 	memset(&configuration, 0, sizeof(configuration));
@@ -19,7 +19,7 @@ void spi_mem_add_command(spi_mem_handle_t handle) {
 }
 
 /** Add device with same configuration but configured to transfer command and address in separate phase before data. */
-void spi_mem_add_data(spi_mem_handle_t handle) {
+static void spi_mem_add_data(spi_mem_handle_t handle) {
 	ESP_LOGD(TAG, ">spi_mem_add_data");
 	spi_device_interface_config_t configuration;
 	memset(&configuration, 0, sizeof(configuration));
@@ -33,47 +33,28 @@ void spi_mem_add_data(spi_mem_handle_t handle) {
 	ESP_LOGD(TAG, "<spi_mem_add_data");
 }
 
-void spi_mem_remove_data(spi_mem_handle_t handle) {
+static void spi_mem_remove_data(spi_mem_handle_t handle) {
 	ESP_LOGD(TAG, ">spi_mem_remove_data");
 	ESP_ERROR_CHECK(spi_bus_remove_device(handle->device_data));
 	handle->device_data = NULL;
 	ESP_LOGD(TAG, "<spi_mem_remove_data");
 }
 
-void spi_mem_remove_command(spi_mem_handle_t handle) {
+static void spi_mem_remove_command(spi_mem_handle_t handle) {
 	ESP_LOGD(TAG, ">spi_mem_remove_command");
 	ESP_ERROR_CHECK(spi_bus_remove_device(handle->device_command));
 	handle->device_command = NULL;
 	ESP_LOGD(TAG, "<spi_mem_remove_command");
 }
 
-void spi_mem_log_config(spi_mem_config_t config) {
-	ESP_LOGD(TAG, ">spi_mem_log_config");
-	ESP_LOGI(TAG, "host: %d", config.host);
-	ESP_LOGI(TAG, "clock_speed_hz: %d", config.clock_speed_hz);
-	ESP_LOGI(TAG, "spics_io_num: %d", config.spics_io_num);
-	ESP_LOGI(TAG, "total_bytes: %d", config.total_bytes);
-	ESP_LOGI(TAG, "number_of_pages: %d", config.number_of_pages);
-	ESP_LOGI(TAG, "number_of_bytes_page: %d", config.number_of_bytes_page);
-	ESP_LOGD(TAG, "<spi_mem_log_config");
-}
-
-void spi_mem_log(spi_mem_handle_t handle) {
-	ESP_LOGD(TAG, ">spi_mem_log");
-	ESP_LOGI(TAG, "handle: %p", handle);
-	ESP_LOGI(TAG, "host: %d", handle->host);
-	ESP_LOGI(TAG, "device_command: %p", handle->device_command);
-	ESP_LOGI(TAG, "device_data: %p", handle->device_data);
-	ESP_LOGI(TAG, "clock_speed_hz: %d", handle->clock_speed_hz);
-	ESP_LOGI(TAG, "spics_io_num: %d", handle->spics_io_num);
-	ESP_LOGI(TAG, "total_bytes: %d", handle->total_bytes);
-	ESP_LOGI(TAG, "number_of_pages: %d", handle->number_of_pages);
-	ESP_LOGI(TAG, "number_of_bytes_page: %d", handle->number_of_bytes_page);
-	ESP_LOGD(TAG, "<spi_mem_log");
-}
-
 void spi_mem_begin(spi_mem_config_t config, spi_mem_handle_t *handle) {
 	ESP_LOGD(TAG, ">spi_mem_begin");
+	ESP_LOGD(TAG, "host: %d", config.host);
+	ESP_LOGD(TAG, "clock_speed_hz: %d", config.clock_speed_hz);
+	ESP_LOGD(TAG, "spics_io_num: %d", config.spics_io_num);
+	ESP_LOGD(TAG, "total_bytes: %d", config.total_bytes);
+	ESP_LOGD(TAG, "number_of_pages: %d", config.number_of_pages);
+	ESP_LOGD(TAG, "number_of_bytes_page: %d", config.number_of_bytes_page);
 
 	// create a new handle
 	spi_mem_t *spi_mem = malloc(sizeof(spi_mem_t));

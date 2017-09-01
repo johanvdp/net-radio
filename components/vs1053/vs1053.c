@@ -21,7 +21,7 @@ static const uint8_t VS1053_EMPTY_DATA[] = { //
 				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00  //
 		};
 
-void vs1053_begin_control_start(vs1053_handle_t handle) {
+static void vs1053_begin_control_start(vs1053_handle_t handle) {
 	ESP_LOGD(TAG, ">vs1053_begin_control_start");
 	spi_device_interface_config_t configuration;
 	memset(&configuration, 0, sizeof(configuration));
@@ -32,7 +32,7 @@ void vs1053_begin_control_start(vs1053_handle_t handle) {
 	ESP_LOGD(TAG, "<vs1053_begin_control_start");
 }
 
-void vs1053_begin_control(vs1053_handle_t handle) {
+static void vs1053_begin_control(vs1053_handle_t handle) {
 	ESP_LOGD(TAG, ">vs1053_begin_control");
 	spi_device_interface_config_t configuration;
 	memset(&configuration, 0, sizeof(configuration));
@@ -43,7 +43,7 @@ void vs1053_begin_control(vs1053_handle_t handle) {
 	ESP_LOGD(TAG, "<vs1053_begin_control");
 }
 
-void vs1053_begin_data(vs1053_handle_t handle) {
+static void vs1053_begin_data(vs1053_handle_t handle) {
 	ESP_LOGD(TAG, ">vs1053_begin_data");
 	spi_device_interface_config_t configuration;
 	memset(&configuration, 0, sizeof(configuration));
@@ -54,26 +54,29 @@ void vs1053_begin_data(vs1053_handle_t handle) {
 	ESP_LOGD(TAG, "<vs1053_begin_data");
 }
 
-void vs1053_end_control(vs1053_handle_t handle) {
+static void vs1053_end_control(vs1053_handle_t handle) {
 	ESP_LOGD(TAG, ">vs1053_end_control");
 	ESP_ERROR_CHECK(spi_bus_remove_device(handle->device_control));
 	handle->device_control = NULL;
 	ESP_LOGD(TAG, "<vs1053_end_control");
 }
 
-void vs1053_end_data(vs1053_handle_t handle) {
+static void vs1053_end_data(vs1053_handle_t handle) {
 	ESP_LOGD(TAG, ">vs1053_end_data");
 	ESP_ERROR_CHECK(spi_bus_remove_device(handle->device_data));
 	handle->device_data = NULL;
 	ESP_LOGD(TAG, "<vs1053_end_data");
 }
 
-void vs1053_wait_dreq(vs1053_handle_t handle) {
+static void vs1053_wait_dreq(vs1053_handle_t handle) {
 	while (gpio_get_level(handle->dreq_io_num) == 0)
 		;
 }
 
-void vs1053_write_register(vs1053_handle_t handle, uint8_t addressbyte, uint8_t highbyte, uint8_t lowbyte) {
+/**
+ * Suppress the urge to make this function public. Write a specific function with a nice name.
+ */
+static void vs1053_write_register(vs1053_handle_t handle, uint8_t addressbyte, uint8_t highbyte, uint8_t lowbyte) {
 	ESP_LOGD(TAG, ">vs1053_write_register 0x%02x 0x%02x%02x", addressbyte, highbyte, lowbyte);
 	spi_transaction_t vs1053_spi_transaction;
 	memset(&vs1053_spi_transaction, 0, sizeof(vs1053_spi_transaction));
@@ -119,6 +122,7 @@ void vs1053_decode_long(vs1053_handle_t handle, uint8_t *data, uint16_t length) 
 	ESP_LOGV(TAG, "<vs1053_decode_long");
 }
 
+/** TODO: determine the correct 'empty' value first (see endFillByte in the datasheet) */
 void vs1053_decode_end(vs1053_handle_t handle) {
 	ESP_LOGD(TAG, ">vs1053_decode_end");
 	vs1053_decode(handle, (uint8_t *) &VS1053_EMPTY_DATA[0], sizeof(VS1053_EMPTY_DATA));
@@ -165,35 +169,15 @@ void vs1053_hard_reset(vs1053_handle_t handle) {
 	ESP_LOGD(TAG, "<vs1053_hard_reset");
 }
 
-void vs1053_log_config(vs1053_config_t config) {
-	ESP_LOGD(TAG, ">vs1053_log_config");
-	ESP_LOGI(TAG, "host: %d", config.host);
-	ESP_LOGI(TAG, "clock_speed_start_hz: %d", config.clock_speed_start_hz);
-	ESP_LOGI(TAG, "clock_speed_hz: %d", config.clock_speed_hz);
-	ESP_LOGI(TAG, "xcs_io_num: %d", config.xcs_io_num);
-	ESP_LOGI(TAG, "xdcs_io_num: %d", config.xdcs_io_num);
-	ESP_LOGI(TAG, "dreq_io_num: %d", config.dreq_io_num);
-	ESP_LOGI(TAG, "rst_io_num: %d", config.rst_io_num);
-	ESP_LOGD(TAG, "<vs1053_log_config");
-}
-
-void vs1053_log(vs1053_handle_t handle) {
-	ESP_LOGD(TAG, ">vs1053_log");
-	ESP_LOGI(TAG, "handle: %p", handle);
-	ESP_LOGI(TAG, "host: %d", handle->host);
-	ESP_LOGI(TAG, "device_control: %p", handle->device_control);
-	ESP_LOGI(TAG, "device_data: %p", handle->device_data);
-	ESP_LOGI(TAG, "clock_speed_start_hz: %d", handle->clock_speed_start_hz);
-	ESP_LOGI(TAG, "clock_speed_hz: %d", handle->clock_speed_hz);
-	ESP_LOGI(TAG, "xcs_io_num: %d", handle->xcs_io_num);
-	ESP_LOGI(TAG, "xdcs_io_num: %d", handle->xdcs_io_num);
-	ESP_LOGI(TAG, "dreq_io_num: %d", handle->dreq_io_num);
-	ESP_LOGI(TAG, "rst_io_num: %d", handle->rst_io_num);
-	ESP_LOGD(TAG, "<vs1053_log");
-}
-
 void vs1053_begin(vs1053_config_t config, vs1053_handle_t *handle) {
 	ESP_LOGD(TAG, ">vs1053_begin");
+	ESP_LOGD(TAG, "host: %d", config.host);
+	ESP_LOGD(TAG, "clock_speed_start_hz: %d", config.clock_speed_start_hz);
+	ESP_LOGD(TAG, "clock_speed_hz: %d", config.clock_speed_hz);
+	ESP_LOGD(TAG, "xcs_io_num: %d", config.xcs_io_num);
+	ESP_LOGD(TAG, "xdcs_io_num: %d", config.xdcs_io_num);
+	ESP_LOGD(TAG, "dreq_io_num: %d", config.dreq_io_num);
+	ESP_LOGD(TAG, "rst_io_num: %d", config.rst_io_num);
 
 	// create a new handle
 	vs1053_t *vs1053 = malloc(sizeof(vs1053_t));

@@ -19,27 +19,27 @@ static mdns_server_t* network_mdns;
 static esp_err_t event_handler(void *ctx, system_event_t *event) {
 	switch (event->event_id) {
 	case SYSTEM_EVENT_AP_START:
-		ESP_LOGI(TAG, "SYSTEM_EVENT_AP_START")
+		ESP_LOGD(TAG, "SYSTEM_EVENT_AP_START")
 		xEventGroupSetBits(network_event_group, BIT0);
 		break;
 	case SYSTEM_EVENT_AP_STOP:
-		ESP_LOGI(TAG, "SYSTEM_EVENT_AP_STOP")
+		ESP_LOGD(TAG, "SYSTEM_EVENT_AP_STOP")
 		break;
 	case SYSTEM_EVENT_AP_STACONNECTED:
-		ESP_LOGI(TAG, "SYSTEM_EVENT_AP_STACONNECTED")
+		ESP_LOGD(TAG, "SYSTEM_EVENT_AP_STACONNECTED")
 		break;
 	case SYSTEM_EVENT_AP_STADISCONNECTED:
-		ESP_LOGI(TAG, "SYSTEM_EVENT_AP_STADISCONNECTED")
+		ESP_LOGD(TAG, "SYSTEM_EVENT_AP_STADISCONNECTED")
 		break;
 	case SYSTEM_EVENT_AP_PROBEREQRECVED:
-		ESP_LOGI(TAG, "SYSTEM_EVENT_AP_PROBEREQRECVED")
+		ESP_LOGD(TAG, "SYSTEM_EVENT_AP_PROBEREQRECVED")
 		break;
 	case SYSTEM_EVENT_AP_STA_GOT_IP6:
-		ESP_LOGI(TAG, "SYSTEM_EVENT_AP_STA_GOT_IP6")
+		ESP_LOGD(TAG, "SYSTEM_EVENT_AP_STA_GOT_IP6")
 		break;
 	default:
 		// what else ends up here?
-		ESP_LOGI(TAG, "SYSTEM_EVENT %d", event->event_id)
+		ESP_LOGD(TAG, "SYSTEM_EVENT %d", event->event_id)
 		break;
 	}
 
@@ -48,8 +48,8 @@ static esp_err_t event_handler(void *ctx, system_event_t *event) {
 
 void ap_begin() {
 	ESP_LOGD(TAG, ">ap_begin")
-	ESP_LOGI(TAG, "CONFIG_AP_SSID: %s", CONFIG_AP_SSID);
-	ESP_LOGI(TAG, "CONFIG_AP_KEY: %s", CONFIG_AP_KEY);
+	ESP_LOGD(TAG, "CONFIG_AP_SSID: %s", CONFIG_AP_SSID);
+	ESP_LOGD(TAG, "CONFIG_AP_KEY: %s", CONFIG_AP_KEY);
 
 	// stop a lot of  built-in wifi logging
 	esp_log_level_set("wifi", ESP_LOG_NONE);
@@ -97,9 +97,9 @@ void ap_begin() {
 
 	tcpip_adapter_ip_info_t ip_info;
 	ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_AP, &ip_info));
-	ESP_LOGI(TAG, "ip: %s", ip4addr_ntoa(&ip_info.ip));
-	ESP_LOGI(TAG, "netmask: %s", ip4addr_ntoa(&ip_info.netmask));
-	ESP_LOGI(TAG, "gateway: %s", ip4addr_ntoa(&ip_info.gw));
+	ESP_LOGD(TAG, "ip: %s", ip4addr_ntoa(&ip_info.ip));
+	ESP_LOGD(TAG, "netmask: %s", ip4addr_ntoa(&ip_info.netmask));
+	ESP_LOGD(TAG, "gateway: %s", ip4addr_ntoa(&ip_info.gw));
 
 	ESP_LOGD(TAG, "<ap_begin")
 }
@@ -113,7 +113,7 @@ void ap_end() {
 
 void mdns_begin() {
 	ESP_LOGD(TAG, ">mdns_begin")
-	ESP_LOGI(TAG, "CONFIG_MDNS_HOSTNAME: %s", CONFIG_MDNS_HOSTNAME);
+	ESP_LOGD(TAG, "CONFIG_MDNS_HOSTNAME: %s", CONFIG_MDNS_HOSTNAME);
 
 	ESP_ERROR_CHECK(mdns_init(TCPIP_ADAPTER_IF_AP, &network_mdns));
 	ESP_ERROR_CHECK(mdns_set_hostname(network_mdns, CONFIG_MDNS_HOSTNAME));

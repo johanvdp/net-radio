@@ -13,36 +13,29 @@ static const char* TAG = "reader.c";
 // SPI DMA transfers are limited to SPI_MAX_DMA_LEN
 #define DMA_MAX_LENGTH 2048
 
-buffer_handle_t reader_buffer_handle;
-uint8_t *reader_data;
+static buffer_handle_t reader_buffer_handle;
+static uint8_t *reader_data;
 
-void *reader_malloc(size_t size) {
+static void *reader_malloc(size_t size) {
 	ESP_LOGD(TAG, ">reader_malloc");
 	void *buffer = heap_caps_malloc(size, MALLOC_CAP_DMA);
 	if (buffer == NULL) {
 		ESP_LOGE(TAG, "heap_caps_malloc: out of memory");
 		size_t available = heap_caps_get_minimum_free_size(MALLOC_CAP_DMA);
-		ESP_LOGI(TAG, "heap_caps_get_minimum_free_size: %d", available);
+		ESP_LOGD(TAG, "heap_caps_get_minimum_free_size: %d", available);
 	}
 	memset(buffer, 0, size);
 	ESP_LOGD(TAG, "<reader_malloc");
 	return buffer;
 }
 
-void reader_data_malloc() {
+static void reader_data_malloc() {
 	ESP_LOGD(TAG, ">reader_data_malloc");
 	reader_data = reader_malloc(DMA_MAX_LENGTH);
 	ESP_LOGD(TAG, "<reader_data_malloc");
 }
 
-void reader_data_free() {
-	ESP_LOGD(TAG, ">reader_data_free");
-	heap_caps_free(reader_data);
-	reader_data = NULL;
-	ESP_LOGD(TAG, "<reader_data_free");
-}
-
-void reader_push_hello() {
+static void reader_push_hello() {
 	ESP_LOGD(TAG, ">reader_push_hello");
 	const uint8_t *p = &HELLO_MP3[0];
 	uint32_t remainder = sizeof(HELLO_MP3);
@@ -66,6 +59,7 @@ void reader_push_hello() {
 	}
 	ESP_LOGD(TAG, "<reader_push_hello");
 }
+
 /**
  * FreeRTOS Reader task.
  */
@@ -82,10 +76,6 @@ void reader_task(void *pvParameters) {
 		reader_push_hello();
 		taskYIELD();
 	}
-
-	// never reached
-	//reader_data_free();
-	//ESP_LOGI(TAG, "<reader_task");
-	//vTaskDelete(NULL);
+	// should never be reached
 }
 
