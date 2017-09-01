@@ -1,13 +1,9 @@
 // The author disclaims copyright to this source code.
 #include "test_mem.h"
-
 #include <string.h>
-#include "spi_mem.h"
 #include "esp_heap_caps.h"
 #include "esp_log.h"
-#include "driver/spi_master.h"
 #include "sdkconfig.h"
-#include "factory.h"
 
 static const char* TAG = "test_mem.c";
 

@@ -6,13 +6,11 @@
 // - http://www.vsdsp-forum.com/phpbb/viewtopic.php?f=11&t=65&p=308#p308
 #include "vs1053.h"
 
-#include "esp_heap_caps.h"
-#include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <string.h>
 #include "esp_log.h"
-#include "driver/gpio.h"
 #include "sdkconfig.h"
+#include "driver/gpio.h"
 
 static const char* TAG = "dsp.c";
 

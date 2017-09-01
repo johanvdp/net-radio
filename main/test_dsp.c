@@ -1,16 +1,12 @@
 // The author disclaims copyright to this source code.
 #include "test_dsp.h"
-
 #include <string.h>
-#include "factory.h"
-#include "hello_mp3.c"
-#include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "esp_heap_caps.h"
 #include "esp_log.h"
-#include "driver/spi_master.h"
 #include "sdkconfig.h"
 #include "esp_err.h"
+
+#include "hello_mp3.c"
 
 static const char* TAG = "test_dsp.c";
 

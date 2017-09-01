@@ -2,14 +2,12 @@
 #ifndef _READER_H_
 #define _READER_H_
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "buffer.h"
-
 /**
  * @file
  * FreeRTOS Reader task.
  */
+
+#include "buffer.h"
 
 typedef struct reader_config_t {
 	buffer_handle_t buffer_handle;

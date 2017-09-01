@@ -2,14 +2,13 @@
 #ifndef _FACTORY_H_
 #define _FACTORY_H_
 
-#include "spi_mem.h"
-#include "vs1053.h"
-#include "buffer.h"
-
 /**
  * @file
  * Factory.
  */
+
+#include "vs1053.h"
+#include "buffer.h"
 
 void factory_mem_create(spi_mem_handle_t *handle);
 void factory_dsp_create(vs1053_handle_t *handle);

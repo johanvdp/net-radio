@@ -1,11 +1,9 @@
 // The author disclaims copyright to this source code.
 #include "reader.h"
-
 #include <string.h>
-#include "buffer.h"
+#include "freertos/task.h"
 #include "esp_heap_caps.h"
 #include "esp_log.h"
-#include "driver/spi_master.h"
 #include "sdkconfig.h"
 
 #include "hello_mp3.c"
@@ -46,7 +44,7 @@ void reader_data_free() {
 
 void reader_push_hello() {
 	ESP_LOGD(TAG, ">reader_push_hello");
-	uint8_t *p = &HELLO_MP3[0];
+	const uint8_t *p = &HELLO_MP3[0];
 	uint32_t remainder = sizeof(HELLO_MP3);
 	while (remainder > 0) {
 		// limit to transfer size

@@ -1,10 +1,7 @@
 // The author disclaims copyright to this source code.
 #include "spi_mem.h"
-
 #include <string.h>
 #include "esp_log.h"
-#include "esp_heap_caps.h"
-#include "driver/spi_master.h"
 #include "sdkconfig.h"
 
 static const char* TAG = "spi_mem.c";

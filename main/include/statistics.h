@@ -7,8 +7,6 @@
  * FreeRTOS Log statistics task.
  */
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 #include "buffer.h"
 
 typedef struct statistics_config_t {

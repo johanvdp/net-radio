@@ -1,14 +1,9 @@
 // The author disclaims copyright to this source code.
 #include "player.h"
-
 #include <string.h>
-#include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_heap_caps.h"
 #include "esp_log.h"
-#include "driver/spi_master.h"
-#include "vs1053.h"
-#include "buffer.h"
 #include "sdkconfig.h"
 
 static const char* TAG = "player.c";

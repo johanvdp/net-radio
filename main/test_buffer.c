@@ -1,11 +1,8 @@
 // The author disclaims copyright to this source code.
 #include "test_buffer.h"
-
 #include <string.h>
-#include "buffer.h"
 #include "esp_heap_caps.h"
 #include "esp_log.h"
-#include "driver/spi_master.h"
 #include "sdkconfig.h"
 #include "tinymt32.h"
 
