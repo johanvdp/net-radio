@@ -1,6 +1,4 @@
 // The author disclaims copyright to this source code.
-#include "main.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
