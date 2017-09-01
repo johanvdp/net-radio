@@ -5,56 +5,7 @@
 #
 menu "Application Configuration"
 
-# HSPI bus
-
-config GPIO_HSPI_CLK
-    int "GPIO pin for HSPI CLK (0-39)"
-    default 14
-    range 0 39
-    help
-        Select the GPIO pin for HSPI CLK (0-39).
-
-config GPIO_HSPI_MOSI
-    int "GPIO pin for HSPI MOSI (0-39)"
-    default 13
-    range 0 39
-    help
-        Select the GPIO pin for HSPI MOSI (0-39).
-
-config GPIO_HSPI_MISO
-    int "GPIO pin for HSPI MISO (0-39)"
-    default 12
-    range 0 39
-    help
-        Select the GPIO pin for HSPI MISO (0-39).
-
-# VSPI bus
-
-config GPIO_VSPI_CLK
-    int "GPIO pin for VSPI CLK (0-39)"
-    default 18
-    range 0 39
-    help
-        Select the GPIO pin for VSPI CLK (0-39).
-
-config GPIO_VSPI_MOSI
-    int "GPIO pin for VSPI MOSI (0-39)"
-    default 23
-    range 0 39
-    help
-        Select the GPIO pin for VSPI MOSI (0-39).
-
-config GPIO_VSPI_MISO
-    int "GPIO pin for VSPI MISO (0-39)"
-    default 19
-    range 0 39
-    help
-        Select the GPIO pin for VSPI MISO (0-39).
-
-# Control
-
-
-# I2C bus
+menu "LCD and UserInput (I2C bus)"
 
 config GPIO_I2C_SDA
     int "GPIO pin for I2C SDA (0-39)"
@@ -70,7 +21,9 @@ config GPIO_I2C_SCL
     help
         Select the GPIO pin for I2C SCL (0-39).
 
-menu "BLINK"
+endmenu
+
+menu "Blinking LED"
 
 config BLINK_GPIO
     int "BLINK GPIO pin for LED (0-39)"
@@ -95,7 +48,28 @@ config BLINK_OFF_MS
 
 endmenu
 
-menu "DSP"
+menu "DSP (HSPI bus)"
+
+config GPIO_HSPI_CLK
+    int "GPIO pin for HSPI CLK (0-39)"
+    default 14
+    range 0 39
+    help
+        Select the GPIO pin for HSPI CLK (0-39).
+
+config GPIO_HSPI_MOSI
+    int "GPIO pin for HSPI MOSI (0-39)"
+    default 13
+    range 0 39
+    help
+        Select the GPIO pin for HSPI MOSI (0-39).
+
+config GPIO_HSPI_MISO
+    int "GPIO pin for HSPI MISO (0-39)"
+    default 12
+    range 0 39
+    help
+        Select the GPIO pin for HSPI MISO (0-39).
 
 config DSP_GPIO_RST
     int "DSP GPIO pin for RST (0-39)"
@@ -141,7 +115,28 @@ config DSP_SPI_SPEED_KHZ
 
 endmenu
 
-menu "SPI_MEM"
+menu "MEM (VSPI bus)"
+
+config GPIO_VSPI_CLK
+    int "GPIO pin for VSPI CLK (0-39)"
+    default 18
+    range 0 39
+    help
+        Select the GPIO pin for VSPI CLK (0-39).
+
+config GPIO_VSPI_MOSI
+    int "GPIO pin for VSPI MOSI (0-39)"
+    default 23
+    range 0 39
+    help
+        Select the GPIO pin for VSPI MOSI (0-39).
+
+config GPIO_VSPI_MISO
+    int "GPIO pin for VSPI MISO (0-39)"
+    default 19
+    range 0 39
+    help
+        Select the GPIO pin for VSPI MISO (0-39).
 
 config MEM_GPIO_CS
     int "SPI RAM GPIO pin for CS (0-39)"
@@ -177,6 +172,35 @@ config MEM_BYTES_PER_PAGE
     range 1 1048576
     help
         SPI RAM bytes per page (1-1048576).
+
+endmenu
+
+menu "Networking"
+
+config AP_SSID
+	string "Maintenance WiFi SSID"
+	default "net-radio"
+	help
+		SSID for the maintenance WiFi Access Point (max 31 chars)
+
+config AP_KEY
+	string "Maintenance WiFi key"
+	default "NetRadio"
+	help
+		Key for the maintenance Wifi Access Point (min 8 chars)
+
+config MDNS_HOSTNAME
+	string "mDNS hostname"
+	default "net-radio"
+	help
+		mDNS advertised hostname (max 31 chars)
+
+config WEBSERVER_PORT
+	int "Web server port number"
+	default 80
+	range 1 65535
+	help
+		Web server port number
 
 endmenu
 

@@ -1,4 +1,5 @@
 // The author disclaims copyright to this source code.
+#include <network.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +17,8 @@
 #include "reader.h"
 #include "player.h"
 #include "statistics.h"
+#include "network.h"
+#include "webserver.h"
 
 static const char* TAG = "main.c";
 
@@ -133,6 +136,9 @@ void app_main() {
 		return;
 	}
 
+	ap_begin();
+	mdns_begin();
+
 	// blink task
 	xTaskCreate(&blink_task, "blink_task", 2048, NULL, 5, NULL);
 
@@ -149,8 +155,13 @@ void app_main() {
 	main_statistics_configuration.buffer_handle = main_buffer_handle;
 	xTaskCreate(&statistics_task, "statistics_task", 4096, &main_statistics_configuration, 0, NULL);
 
+	// webserver task
+	xTaskCreatePinnedToCore(&webserver_task, "webserver_task", 4096, NULL, 1, NULL, 1);
+
 	// tasks are still running, never free resources
 	//main_vspi_free();
 	//main_hspi_free();
+	//ap_end();
+	//mdns_end();
 	ESP_LOGD(TAG, "<app_main");
 }
