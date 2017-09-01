@@ -14,7 +14,7 @@ spi_mem_handle_t test_mem_handle;
 uint8_t *test_mem_write_buffer;
 uint8_t *test_mem_read_buffer;
 
-void test_mem_byte() {
+esp_err_t test_mem_byte() {
 	ESP_LOGD(TAG, ">test_mem_byte");
 
 	spi_mem_write_mode_register(test_mem_handle, SPI_MEM_MODE_BYTE);
@@ -37,14 +37,14 @@ void test_mem_byte() {
 	}
 	if (errorcount > 0) {
 		ESP_LOGE(TAG, "test_mem_byte FAIL %d/%d", TEST_MEM_LENGTH, errorcount);
-	} else {
-		ESP_LOGI(TAG, "test_mem_byte OK");
+		return ESP_FAIL;
 	}
 
 	ESP_LOGD(TAG, "<test_mem_byte");
+	return ESP_OK;
 }
 
-void test_mem_page() {
+esp_err_t test_mem_page() {
 	ESP_LOGD(TAG, ">test_mem_page");
 
 	spi_mem_write_mode_register(test_mem_handle, SPI_MEM_MODE_PAGE);
@@ -82,14 +82,14 @@ void test_mem_page() {
 	}
 	if (errorcount > 0) {
 		ESP_LOGE(TAG, "test_mem_page FAIL %d/%d", bytecount, errorcount);
-	} else {
-		ESP_LOGI(TAG, "test_mem_page OK");
+		return ESP_FAIL;
 	}
 
 	ESP_LOGD(TAG, "<test_mem_page");
+	return ESP_OK;
 }
 
-void test_mem_sequential() {
+esp_err_t test_mem_sequential() {
 	ESP_LOGD(TAG, ">test_mem_sequential");
 
 	spi_mem_write_mode_register(test_mem_handle, SPI_MEM_MODE_SEQUENTIAL);
@@ -121,11 +121,11 @@ void test_mem_sequential() {
 	}
 	if (errorcount > 0) {
 		ESP_LOGE(TAG, "test_mem_sequential FAIL %d/%d", TEST_MEM_LENGTH, errorcount);
-	} else {
-		ESP_LOGI(TAG, "test_mem_sequential OK");
+		return ESP_FAIL;
 	}
 
 	ESP_LOGD(TAG, "<test_mem_sequential");
+	return ESP_OK;
 }
 
 void *test_mem_malloc(size_t size) {
@@ -156,31 +156,35 @@ void test_mem_buffers_free() {
 }
 
 /**
- * FreeRTOS MEM test task runs once.
+ * MEM test task.
  */
-void test_mem_task(void *pvParameters) {
+esp_err_t test_mem(test_mem_config_t config) {
 	ESP_LOGI(TAG, ">test_mem_task");
 
-	test_mem_config_t *config = (test_mem_config_t *)pvParameters;
-	test_mem_handle = config->spi_mem_handle;
+	test_mem_handle = config.spi_mem_handle;
+	ESP_LOGD(TAG, "spi_mem_handle: %p", test_mem_handle);
 
 	test_mem_buffers_malloc();
 
-	while (1) {
-		// write and read TEST_MEM_LENGTH bytes per byte
-		test_mem_byte();
-
-		// write and read TEST_MEM_LENGTH bytes per MEM_BYTES_PER_PAGE
-		test_mem_page();
-
-		// write and read TEST_MEM_LENGTH bytes at once
-		test_mem_sequential();
+	// write and read TEST_MEM_LENGTH bytes per byte
+	if (test_mem_byte() != ESP_OK) {
+		return ESP_FAIL;
 	}
 
-	// never reached
-	//spi_mem_end(test_mem_spi_mem_handle);
-	//test_mem_buffers_free();
-	//ESP_LOGI(TAG, "<test_mem_task");
-	//vTaskDelete(NULL);
+	// write and read TEST_MEM_LENGTH bytes per MEM_BYTES_PER_PAGE
+	if (test_mem_page() != ESP_OK) {
+		return ESP_FAIL;
+	}
+
+	// write and read TEST_MEM_LENGTH bytes at once
+	if (test_mem_sequential() != ESP_OK) {
+		return ESP_FAIL;
+	}
+
+	test_mem_buffers_free();
+
+	ESP_LOGI(TAG, "<test_mem_task");
+
+	return ESP_OK;
 }
 

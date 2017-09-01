@@ -9,10 +9,10 @@
 #include "esp_log.h"
 #include "sdkconfig.h"
 #include "factory.h"
-#include "blink.h"
 #include "test_mem.h"
-#include "test_dsp.h"
 #include "test_buffer.h"
+#include "test_dsp.h"
+#include "blink.h"
 #include "reader.h"
 #include "player.h"
 #include "statistics.h"
@@ -115,14 +115,19 @@ void app_main() {
 	main_hspi_initialize();
 	main_handles_create();
 
+	// test memory
+	main_test_mem_configuration.spi_mem_handle = main_spi_mem_handle;
+	if (test_mem(main_test_mem_configuration) != ESP_OK) {
+		return;
+	}
+
+	// test buffer (uses memory)
 	main_test_buffer_configuration.buffer_handle = main_buffer_handle;
 	if (test_buffer(main_test_buffer_configuration) != ESP_OK) {
 		return;
 	}
 
-	//main_test_mem_configuration.spi_mem_handle = main_spi_mem_handle;
-	//xTaskCreatePinnedToCore(&test_mem_task, "test_mem_task", 4096, &main_test_mem_configuration, 5, NULL, 0);
-
+	// test dsp
 	main_test_dsp_configuration.vs1053_handle = main_vs1053_handle;
 	if (test_dsp(main_test_dsp_configuration) != ESP_OK) {
 		return;

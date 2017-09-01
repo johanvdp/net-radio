@@ -8,11 +8,12 @@
  */
 
 #include "spi_mem.h"
+#include "esp_err.h"
 
 typedef struct test_mem_config_t {
 	spi_mem_handle_t spi_mem_handle;
 } test_mem_config_t;
 
-void test_mem_task(void *pvParameters);
+esp_err_t test_mem(test_mem_config_t config);
 
 #endif
