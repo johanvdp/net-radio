@@ -18,7 +18,6 @@ static esp_err_t test_mem_byte() {
 	ESP_LOGD(TAG, ">test_mem_byte");
 
 	spi_mem_write_mode_register(test_mem_handle, SPI_MEM_MODE_BYTE);
-	spi_mem_read_mode_register(test_mem_handle);
 
 	uint32_t address = 0;
 	uint8_t w = 0;
@@ -39,6 +38,13 @@ static esp_err_t test_mem_byte() {
 		ESP_LOGE(TAG, "test_mem_byte FAIL %d/%d", TEST_MEM_LENGTH, errorcount);
 		return ESP_FAIL;
 	}
+
+	// Can not make this function work
+	//spi_mem_mode_t mode = spi_mem_read_mode_register(test_mem_handle);
+	//if (mode != SPI_MEM_MODE_BYTE) {
+	//	ESP_LOGE(TAG, "test_mem_mode mode expected: 0x%02x, actual: 0x%02x", SPI_MEM_MODE_BYTE, mode);
+	//	return ESP_FAIL;
+	//}
 
 	ESP_LOGD(TAG, "<test_mem_byte");
 	return ESP_OK;
@@ -85,6 +91,13 @@ static esp_err_t test_mem_page() {
 		return ESP_FAIL;
 	}
 
+	// Can not make this function work
+	//spi_mem_mode_t mode = spi_mem_read_mode_register(test_mem_handle);
+	//if (mode != SPI_MEM_MODE_PAGE) {
+	//	ESP_LOGE(TAG, "test_mem_mode mode expected: 0x%02x, actual: 0x%02x", SPI_MEM_MODE_PAGE, mode);
+	//	return ESP_FAIL;
+	//}
+
 	ESP_LOGD(TAG, "<test_mem_page");
 	return ESP_OK;
 }
@@ -93,7 +106,6 @@ static esp_err_t test_mem_sequential() {
 	ESP_LOGD(TAG, ">test_mem_sequential");
 
 	spi_mem_write_mode_register(test_mem_handle, SPI_MEM_MODE_SEQUENTIAL);
-	spi_mem_read_mode_register(test_mem_handle);
 
 	uint8_t r = 0;
 	uint8_t w = 0;
@@ -123,6 +135,13 @@ static esp_err_t test_mem_sequential() {
 		ESP_LOGE(TAG, "test_mem_sequential FAIL %d/%d", TEST_MEM_LENGTH, errorcount);
 		return ESP_FAIL;
 	}
+
+	// Can not make this function work
+	//spi_mem_mode_t mode = spi_mem_read_mode_register(test_mem_handle);
+	//if (mode != SPI_MEM_MODE_SEQUENTIAL) {
+	//	ESP_LOGE(TAG, "test_mem_mode mode expected: 0x%02x, actual: 0x%02x", SPI_MEM_MODE_SEQUENTIAL, mode);
+	//	return ESP_FAIL;
+	//}
 
 	ESP_LOGD(TAG, "<test_mem_sequential");
 	return ESP_OK;

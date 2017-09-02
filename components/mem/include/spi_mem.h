@@ -139,6 +139,7 @@ void spi_mem_reset_io_access(spi_mem_handle_t handle);
 
 /**
  * @brief RDMR 0000 0101 0x05 Read Mode Register.
+ * This method exists but I have never seen it working YMMV.
  * @param handle SPI device handle.
  */
 spi_mem_mode_t spi_mem_read_mode_register(spi_mem_handle_t handle);

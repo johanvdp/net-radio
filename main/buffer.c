@@ -93,7 +93,6 @@ void buffer_begin(buffer_config_t config, buffer_handle_t *handle) {
 
 	// in sequential mode memory addressing will wrap like the buffer does
 	spi_mem_write_mode_register(buffer_handle->spi_mem_handle, SPI_MEM_MODE_SEQUENTIAL);
-	spi_mem_read_mode_register(buffer_handle->spi_mem_handle);
 
 	*handle = buffer_handle;
 

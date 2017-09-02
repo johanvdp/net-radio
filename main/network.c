@@ -49,6 +49,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event) {
 void ap_begin() {
 	ESP_LOGD(TAG, ">ap_begin")
 	ESP_LOGD(TAG, "CONFIG_AP_SSID: %s", CONFIG_AP_SSID);
+	// only visible in a debug build
 	ESP_LOGD(TAG, "CONFIG_AP_KEY: %s", CONFIG_AP_KEY);
 
 	// stop a lot of  built-in wifi logging
