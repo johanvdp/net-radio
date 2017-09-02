@@ -17,28 +17,36 @@
 #include "lwip/err.h"
 #include "lwip/netdb.h"
 
-/**
- * Request-Line = Method SP Request-URI SP HTTP-Version CRLF
- * one or more header lines
- * one empty line
- */
-static const char http_ok[] = "HTTP/1.0 200 OK\nContent-type: text/html\nConnection: Closed\n\n";
-/**
- * Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
- * one or more header lines
- * one empty line
- */
-static const char http_bad_request[] = "HTTP/1.0 400 Bad Request\nContent-Length: 0\nConnection: Closed\n\n";
-/**
- * Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
- * one or more header lines
- * one empty line
- */
-static const char http_server_error[] = "HTTP/1.0 500 Internal Server Error\nContent-Length: 0\nConnection: Closed\n\n";
-/** Content */
-static const char http_content[] = "<html><head></head><body>Hello world!</body></html>";
-
 static const char* TAG = "webserver.c";
+
+/**
+ * The structure of a HTTP response:
+ * Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+ * One or more header lines CRLF
+ * (An empty line) CRLF
+ * Followed by the content (with a length as specified by the Content-Length header).
+ */
+static const char http_bad_request[] = "HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\nConnection: Closed\r\n\r\n";
+static const char http_server_error[] = "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 0\r\nConnection: Closed\r\n\r\n";
+// the response contains one variable, the content length, and is cut in half
+static const char http_ok_1[] = "HTTP/1.1 200 OKr\nContent-Type: text/html; charset=utf-8\r\nContent length: ";
+static const char http_ok_2[] = "\r\nConnection: Closed\r\n\r\n";
+
+// embed text file, see component.mk
+extern const uint8_t index_html_start[] asm("_binary_index_html_start");
+extern const uint8_t index_html_end[]   asm("_binary_index_html_end");
+extern const uint8_t jquery_js_start[] asm("_binary_jquery_3_2_1_slim_min_js_start");
+extern const uint8_t jquery_js_end[]   asm("_binary_jquery_3_2_1_slim_min_js_end");
+
+static void webserver_write(struct netconn *conn, const void *begin, size_t length) {
+	assert(length < 1000000);
+	char content_length[6];
+	int content_length_length = snprintf(content_length, 6, "%d", length);
+	netconn_write(conn, http_ok_1, sizeof(http_ok_1) - 1, NETCONN_NOCOPY | NETCONN_MORE);
+	netconn_write(conn, content_length, content_length_length, NETCONN_COPY | NETCONN_MORE);
+	netconn_write(conn, http_ok_2, sizeof(http_ok_2) - 1, NETCONN_NOCOPY | NETCONN_MORE);
+	netconn_write(conn, begin, length, NETCONN_NOCOPY);
+}
 
 static void webserver_process(struct netconn *conn) {
 	ESP_LOGD(TAG, ">webserver_process")
@@ -56,9 +64,11 @@ static void webserver_process(struct netconn *conn) {
 		if (request_line) {
 
 			if (strstr(request_line, "GET / ")) {
-				// the one and only response
-				netconn_write(conn, http_ok, sizeof(http_ok) - 1, NETCONN_NOCOPY);
-				netconn_write(conn, http_content, sizeof(http_content) - 1, NETCONN_NOCOPY);
+				// index.html
+				webserver_write(conn, index_html_start, index_html_end - index_html_start);
+			} else if (strstr(request_line, "GET /jquery")) {
+				// jquery.js
+				webserver_write(conn, jquery_js_start, jquery_js_end - jquery_js_start);
 			} else {
 				ESP_LOGE(TAG, "Bad request: %s", request_line);
 				netconn_write(conn, http_bad_request, sizeof(http_bad_request) - 1, NETCONN_NOCOPY);
