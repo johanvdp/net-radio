@@ -4,7 +4,7 @@
 #include "esp_log.h"
 #include "sdkconfig.h"
 
-static const char* TAG = "spi_mem.c";
+static const char* TAG = "spi_mem";
 
 /** Add device with same configuration but configured to transfer data only. */
 static void spi_mem_add_command(spi_mem_handle_t handle) {

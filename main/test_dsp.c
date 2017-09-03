@@ -8,7 +8,7 @@
 
 #include "hello_mp3.c"
 
-static const char* TAG = "test_dsp.c";
+static const char* TAG = "test_dsp";
 
 vs1053_handle_t test_dsp_handle;
 

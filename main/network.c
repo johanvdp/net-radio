@@ -11,7 +11,7 @@
 #include "esp_log.h"
 #include "mdns.h"
 
-static const char* TAG = "network.c";
+static const char* TAG = "network";
 
 static EventGroupHandle_t network_event_group;
 static mdns_server_t* network_mdns;

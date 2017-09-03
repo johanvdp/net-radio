@@ -20,7 +20,7 @@
 #include "network.h"
 #include "web_server.h"
 
-static const char* TAG = "main.c";
+static const char* TAG = "main";
 
 static spi_mem_handle_t main_spi_mem_handle;
 static buffer_handle_t main_buffer_handle;

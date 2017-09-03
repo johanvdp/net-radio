@@ -6,7 +6,7 @@
 #include "sdkconfig.h"
 #include "driver/gpio.h"
 
-static const char* TAG = "blink.c";
+static const char* TAG = "blink";
 
 void blink_task(void *pvUnused) {
 	ESP_LOGD(TAG, ">blink_task");

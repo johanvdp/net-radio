@@ -4,7 +4,7 @@
 #include "esp_log.h"
 #include "sdkconfig.h"
 
-static const char* TAG = "statistics.c";
+static const char* TAG = "statistics";
 
 static buffer_handle_t statistics_buffer_handle;
 static uint32_t statistics_previous_pull_bytes;

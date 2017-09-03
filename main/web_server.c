@@ -17,7 +17,7 @@
 #include "lwip/err.h"
 #include "lwip/netdb.h"
 
-static const char* TAG = "web_server.c";
+static const char* TAG = "web_server";
 
 /**
  * The structure of a HTTP response:

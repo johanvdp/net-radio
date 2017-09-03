@@ -6,7 +6,7 @@
 #include "esp_log.h"
 #include "sdkconfig.h"
 
-static const char* TAG = "player.c";
+static const char* TAG = "player";
 
 static vs1053_handle_t player_vs1053_handle;
 static buffer_handle_t player_buffer_handle;

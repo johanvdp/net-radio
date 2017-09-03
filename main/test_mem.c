@@ -5,7 +5,7 @@
 #include "esp_log.h"
 #include "sdkconfig.h"
 
-static const char* TAG = "test_mem.c";
+static const char* TAG = "test_mem";
 
 // SPI DMA transfers are limited to SPI_MAX_DMA_LEN
 #define TEST_MEM_LENGTH 2048

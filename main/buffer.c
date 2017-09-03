@@ -3,7 +3,7 @@
 #include "esp_log.h"
 #include "sdkconfig.h"
 
-static const char* TAG = "buffer.c";
+static const char* TAG = "buffer";
 
 void buffer_log(buffer_handle_t handle) {
 	assert(xSemaphoreTake(handle->mutex, portMAX_DELAY) == pdTRUE);

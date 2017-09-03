@@ -12,7 +12,7 @@
 #include "sdkconfig.h"
 #include "driver/gpio.h"
 
-static const char* TAG = "dsp.c";
+static const char* TAG = "dsp";
 
 static const uint8_t VS1053_EMPTY_DATA[] = { //
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //

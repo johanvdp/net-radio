@@ -6,7 +6,7 @@
 #include "sdkconfig.h"
 #include "tinymt32.h"
 
-static const char* TAG = "test_buffer.c";
+static const char* TAG = "test_buffer";
 
 // SPI DMA transfers are limited to SPI_MAX_DMA_LEN
 #define DMA_MAX_LENGTH 2048

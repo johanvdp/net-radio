@@ -4,7 +4,7 @@
 #include "esp_log.h"
 #include "sdkconfig.h"
 
-static const char* TAG = "mem.c";
+static const char* TAG = "mem";
 
 void factory_mem_create(spi_mem_handle_t *handle) {
 	ESP_LOGD(TAG, ">factory_mem_create");

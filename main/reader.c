@@ -8,7 +8,7 @@
 
 #include "hello_mp3.c"
 
-static const char* TAG = "reader.c";
+static const char* TAG = "reader";
 
 // SPI DMA transfers are limited to SPI_MAX_DMA_LEN
 #define DMA_MAX_LENGTH 2048
