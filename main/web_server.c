@@ -17,7 +17,7 @@
 #include "lwip/err.h"
 #include "lwip/netdb.h"
 
-static const char* TAG = "webserver.c";
+static const char* TAG = "web_server.c";
 
 /**
  * The structure of a HTTP response:
@@ -38,7 +38,7 @@ extern const uint8_t index_html_end[]   asm("_binary_index_html_end");
 extern const uint8_t jquery_js_start[] asm("_binary_jquery_3_2_1_slim_min_js_start");
 extern const uint8_t jquery_js_end[]   asm("_binary_jquery_3_2_1_slim_min_js_end");
 
-static void webserver_write(struct netconn *conn, const void *begin, size_t length) {
+static void web_server_write(struct netconn *conn, const void *begin, size_t length) {
 	assert(length < 1000000);
 	char content_length[6];
 	int content_length_length = snprintf(content_length, 6, "%d", length);
@@ -48,8 +48,8 @@ static void webserver_write(struct netconn *conn, const void *begin, size_t leng
 	netconn_write(conn, begin, length, NETCONN_NOCOPY);
 }
 
-static void webserver_process(struct netconn *conn) {
-	ESP_LOGD(TAG, ">webserver_process")
+static void web_server_process(struct netconn *conn) {
+	ESP_LOGD(TAG, ">web_server_process")
 
 	struct netbuf *netbuf;
 	err_t err = netconn_recv(conn, &netbuf);
@@ -65,10 +65,10 @@ static void webserver_process(struct netconn *conn) {
 
 			if (strstr(request_line, "GET / ")) {
 				// index.html
-				webserver_write(conn, index_html_start, index_html_end - index_html_start);
+				web_server_write(conn, index_html_start, index_html_end - index_html_start);
 			} else if (strstr(request_line, "GET /jquery")) {
 				// jquery.js
-				webserver_write(conn, jquery_js_start, jquery_js_end - jquery_js_start);
+				web_server_write(conn, jquery_js_start, jquery_js_end - jquery_js_start);
 			} else {
 				ESP_LOGE(TAG, "Bad request: %s", request_line);
 				netconn_write(conn, http_bad_request, sizeof(http_bad_request) - 1, NETCONN_NOCOPY);
@@ -85,11 +85,11 @@ static void webserver_process(struct netconn *conn) {
 	netconn_close(conn);
 	netbuf_delete(netbuf);
 
-	ESP_LOGD(TAG, "<webserver_process")
+	ESP_LOGD(TAG, "<web_server_process")
 }
 
-void webserver_task(void *pvParameters) {
-	ESP_LOGI(TAG, ">webserver_task");
+void web_server_task(void *pvParameters) {
+	ESP_LOGI(TAG, ">web_server_task");
 
 	struct netconn *conn, *newconn;
 	err_t err;
@@ -101,12 +101,12 @@ void webserver_task(void *pvParameters) {
 	do {
 		err = netconn_accept(conn, &newconn);
 		if (err == ERR_OK) {
-			webserver_process(newconn);
+			web_server_process(newconn);
 			netconn_delete(newconn);
 		}
 	} while (err == ERR_OK);
 
 	netconn_close(conn);
 	netconn_delete(conn);
-	ESP_LOGE(TAG, "<webserver_task");
+	ESP_LOGE(TAG, "<web_server_task");
 }

@@ -18,7 +18,7 @@
 #include "player.h"
 #include "statistics.h"
 #include "network.h"
-#include "webserver.h"
+#include "web_server.h"
 
 static const char* TAG = "main.c";
 
@@ -144,7 +144,7 @@ void app_main() {
 	xTaskCreate(&statistics_task, "statistics_task", 4096, &main_statistics_configuration, 0, NULL);
 
 	// webserver task
-	xTaskCreatePinnedToCore(&webserver_task, "webserver_task", 4096, NULL, 1, NULL, 1);
+	xTaskCreatePinnedToCore(&web_server_task, "web_server_task", 4096, NULL, 1, NULL, 1);
 
 	// tasks are still running, never free resources
 	ESP_LOGD(TAG, "<app_main");

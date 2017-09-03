@@ -1,5 +1,5 @@
-#ifndef _WEBSERVER_H_
-#define _WEBSERVER_H_
+#ifndef _WEB_SERVER_H_
+#define _WEB_SERVER_H_
 
 /**
  * @file
@@ -9,7 +9,7 @@
 /**
  * FreeRTOS Web server task.
  */
-void webserver_task(void *pvUnused);
+void web_server_task(void *pvUnused);
 
 
 #endif
