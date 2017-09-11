@@ -180,29 +180,28 @@ static void websocket_lifecycle(struct netconn *conn) {
 				netbuf_data(frame_netbuf, (void**) &request, &request_length);
 
 				// build frame from request bytes
-				int request_index = 0;
+				ESP_LOGD(TAG, "request: %02X %02X %02X %02X ..", request[0], request[1], request[2], request[3]);
 				websocket_frame_t frame;
-				frame.fin = (request[request_index] & 0x80) > 0;
-				frame.opcode = (request[request_index] & 0x0F);
-				request_index++;
-				frame.mask = (request[request_index] & 0x80) > 0;
-				int payload_length = (request[request_index] & 0x7F);
-				if (payload_length < 126) {
-					frame.payload_length = payload_length;
-				} else if (payload_length == 126) {
-					request_index++;
-					frame.payload_length = request[request_index] & 0xFF;
-					request_index++;
-					frame.payload_length <<= 8;
-					frame.payload_length &= request[request_index] & 0xFF;
-				} else if (payload_length == 127) {
-					ESP_LOGE(TAG, "Unsupported payload length");
-				}
-
+				frame.fin = (request[0] & 0x80) > 0;
 				ESP_LOGD(TAG, "fin: %s", (frame.fin ? "true" : "false"));
+				frame.opcode = (request[0] & 0x0F);
 				ESP_LOGD(TAG, "opcode: %u", frame.opcode);
+				frame.mask = (request[1] & 0x80) > 0;
 				ESP_LOGD(TAG, "mask: %s", (frame.mask ? "true" : "false"));
-				ESP_LOGD(TAG, "payload_length: %u", frame.payload_length);
+				// start of mask varies with payload length
+				char* start_of_mask = NULL;
+				frame.payload_length = (request[1] & 0x7F);
+				if (frame.payload_length < 126) {
+					ESP_LOGD(TAG, "payload_length(7): %u", frame.payload_length);
+					start_of_mask = &request[2];
+				} else if (frame.payload_length == 126) {
+					frame.payload_length = ((request[2] & 0xFF) << 8) + (request[3] & 0xFF);
+					ESP_LOGD(TAG, "payload_length(16): %u", frame.payload_length);
+					start_of_mask = &request[4];
+				} else if (frame.payload_length == 127) {
+					ESP_LOGE(TAG, "Unsupported payload length(64)");
+					break;
+				}
 
 				if (frame.opcode == CONNECTION_CLOSE) {
 					// break from while loop receiving frames
@@ -217,8 +216,6 @@ static void websocket_lifecycle(struct netconn *conn) {
 					ESP_LOGE(TAG, "malloc failed");
 				} else {
 					// payload from client should be masked
-					request_index++;
-					char* start_of_mask = &request[request_index];
 					if (frame.mask) {
 						for (request_length = 0; request_length < frame.payload_length; request_length++) {
 							payload[request_length] = (start_of_mask + FRAME_MASK_BYTES)[request_length]
@@ -273,8 +270,6 @@ static err_t write_text(websocket_frame_t frame) {
 	if (payload_length < 126) {
 		// mask = false 0x00, payload_length < 7 bits
 		header[1] = (payload_length & 0x7F);
-		header[2] = 0;
-		header[3] = 0;
 		header_length = 2;
 		ESP_LOGD(TAG, "header: %02X %02X", header[0], header[1]);
 	} else {
