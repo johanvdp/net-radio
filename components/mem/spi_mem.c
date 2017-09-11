@@ -87,7 +87,7 @@ uint8_t spi_mem_read_byte(spi_mem_handle_t handle, uint32_t address) {
 	ESP_LOGV(TAG, ">spi_mem_read_byte");
 	spi_transaction_t transaction;
 	memset(&transaction, 0, sizeof(transaction));
-	transaction.command = 0x03;
+	transaction.cmd = 0x03;
 	transaction.addr = address;
 	transaction.flags = SPI_TRANS_USE_RXDATA;
 	transaction.length = 8;
@@ -106,7 +106,7 @@ void spi_mem_read(spi_mem_handle_t handle, uint32_t address, uint32_t length, ui
 	ESP_LOGV(TAG, ">spi_mem_read");
 	spi_transaction_t transaction;
 	memset(&transaction, 0, sizeof(transaction));
-	transaction.command = 0x03;
+	transaction.cmd = 0x03;
 	transaction.addr = address;
 	transaction.flags = 0;
 	transaction.length = length * 8;
@@ -119,7 +119,7 @@ void spi_mem_write_byte(spi_mem_handle_t handle, uint32_t address, uint8_t data)
 	ESP_LOGV(TAG, ">spi_mem_write_byte");
 	spi_transaction_t transaction;
 	memset(&transaction, 0, sizeof(transaction));
-	transaction.command = 0x02;
+	transaction.cmd = 0x02;
 	transaction.addr = address;
 	transaction.flags = SPI_TRANS_USE_TXDATA;
 	transaction.length = 8;
@@ -138,7 +138,7 @@ void spi_mem_write(spi_mem_handle_t handle, uint32_t address, uint32_t length, u
 	ESP_LOGV(TAG, ">spi_mem_write");
 	spi_transaction_t transaction;
 	memset(&transaction, 0, sizeof(transaction));
-	transaction.command = 0x02;
+	transaction.cmd = 0x02;
 	transaction.addr = address;
 	transaction.flags = 0;
 	transaction.length = 8 * length;
