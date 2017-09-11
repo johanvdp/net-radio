@@ -1,66 +1,93 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>net-radio</title>
-	<script src="jquery-3.2.1.slim.min.js"></script>
-    <script type="text/javascript">
-	
-		var WebSocket_connection;
-		
-	    if (!"WebSocket" in window){  
-			alert("WebSocket NOT supported by your Browser!");
-			$('#WebSocket_State').text("WebSocket NOT supported by your Browser!");			
-		}
-		
-		window.onbeforeunload = function() {
-			websocket.onclose = function () {}; // disable onclose handler first
-			websocket.close()
-		};
-				
-		function connect(){
-			WebSocket_connection = new WebSocket($('#websocket_address').val());
-			$('#WebSocket_State').text("Connecting");
-			
-			WebSocket_connection.onopen = function(){
-			  $('#WebSocket_State').html('<input type="text" id="websocket_message" value="Data to be send"/><a href=\"javascript:WebSocketSend()\">send WebSocket</a>');
-			};
-		   
-			WebSocket_connection.onmessage = function (evt) { 
-				//read data and append it to output_div
-				$( "#output_div" ).append( evt.data + "<br>" );	
-			};
-			WebSocket_connection.onerror = function()
-			{
-				$('#WebSocket_State').text("Error,...  connection closed");
-			};
-			
-			WebSocket_connection.onclose = function()
-			{ 
-				$('#WebSocket_State').text("Disconnected");
-			};
-		}
-			
-				
-        function WebSocketSend(){
-			WebSocket_connection.send($('#websocket_message').val());
-        }
-		
-      </script>
-		
-   </head>
-   <body>
+<html>
+	<head>
+		<title>net-radio</title>
+		<script src="jquery-3.2.1.slim.min.js"></script>
+		<script type="text/javascript">
+			var websocket_connection;
 
-	<div id="WebSocket_State">
-		WebSocket Server: 
-		<input type="text" id="websocket_address" value="ws://192.168.10.1:9998"/>
-		<a href="javascript:connect()">Connect</a>
-		</div>
-	<br>
-	<div id="output_div">
-	Received WebSocket Messages:<br>
-	</div>
-	  
-      
-   </body>
+			function websocket_connect() {
+				websocket_connection = new WebSocket($('#websocket_target_value').val());
+				$('#websocket_in').append('&gt;Connecting<br/>');
+				
+				websocket_connection.onopen = function() {
+					$('#websocket_in').append('&gt;Open<br/>');
+					$('#websocket_target').css("visibility", "hidden");
+					$('#websocket_message').css("visibility", "visible");
+				};
+
+				websocket_connection.onclose = function(event)
+				{ 
+					var reason;
+					// See http://tools.ietf.org/html/rfc6455#section-7.4.1
+					if (event.code == 1000)
+						reason = "Normal closure, meaning that the purpose for which the connection was established has been fulfilled.";
+					else if(event.code == 1001)
+						reason = "An endpoint is \"going away\", such as a server going down or a browser having navigated away from a page.";
+					else if(event.code == 1002)
+						reason = "An endpoint is terminating the connection due to a protocol error";
+					else if(event.code == 1003)
+						reason = "An endpoint is terminating the connection because it has received a type of data it cannot accept (e.g., an endpoint that understands only text data MAY send this if it receives a binary message).";
+					else if(event.code == 1004)
+						reason = "Reserved. The specific meaning might be defined in the future.";
+					else if(event.code == 1005)
+						reason = "No status code was actually present.";
+					else if(event.code == 1006)
+					   reason = "The connection was closed abnormally, e.g., without sending or receiving a Close control frame";
+					else if(event.code == 1007)
+						reason = "An endpoint is terminating the connection because it has received data within a message that was not consistent with the type of the message (e.g., non-UTF-8 [http://tools.ietf.org/html/rfc3629] data within a text message).";
+					else if(event.code == 1008)
+						reason = "An endpoint is terminating the connection because it has received a message that \"violates its policy\". This reason is given either if there is no other sutible reason, or if there is a need to hide specific details about the policy.";
+					else if(event.code == 1009)
+					   reason = "An endpoint is terminating the connection because it has received a message that is too big for it to process.";
+					else if(event.code == 1010) // Note that this status code is not used by the server, because it can fail the WebSocket handshake instead.
+						reason = "An endpoint (client) is terminating the connection because it has expected the server to negotiate one or more extension, but the server didn't return them in the response message of the WebSocket handshake. <br /> Specifically, the extensions that are needed are: " + event.reason;
+					else if(event.code == 1011)
+						reason = "A server is terminating the connection because it encountered an unexpected condition that prevented it from fulfilling the request.";
+					else if(event.code == 1015)
+						reason = "The connection was closed due to a failure to perform a TLS handshake (e.g., the server certificate can't be verified).";
+					else
+						reason = "Unknown reason";
+					
+					$('#websocket_in').append('&gt;Closed: ' + reason + ' (reload the page)<br/>');
+					$('#websocket_target').css("visibility", "visible");
+					$('#websocket_message').css("visibility", "hidden");
+				};
+
+				websocket_connection.onerror = function() {
+					$('#websocket_in').append('&gt;Error<br/>');
+					$('#websocket_target').css("visibility", "visible");
+					$('#websocket_message').css("visibility", "hidden");
+				};
+
+				websocket_connection.onmessage = function(event) {
+					$('#websocket_in').append(':');
+					$('#websocket_in').append(event.data + '<br/>');
+				};
+			}
+
+			function websocket_send(){
+				websocket_connection.send($('#websocket_message_value').val());
+			}
+
+			window.onbeforeunload = function() {
+				websocket.onclose = function() {};
+				websocket.close()
+			};
+
+			$(function() {
+				$('#websocket_message').css("visibility", "hidden");			
+				if (!"WebSocket" in window) {
+					$('#websocket_target').text("This page requires WebSocket support.");
+				}
+			});
+		</script>
+	</head>
+	<body>
+		<h1>Send</h1>
+		<div id="websocket_target">Target:<input type="text" id="websocket_target_value" value="ws://192.168.10.1:9998"/><a href="javascript:websocket_connect()">Connect</a></div>
+		<div id="websocket_message">Message:<input type="text" id="websocket_message_value" value="Hello world"/><a href="javascript:websocket_send()">Send</a></div>
+		<h1>Receive</h1>
+		<div id="websocket_in"></div>
+	</body>
 </html>

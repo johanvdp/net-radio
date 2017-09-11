@@ -1,3 +1,5 @@
+// The author disclaims copyright to this source code.
+#include "web_server.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -34,9 +36,11 @@ static const char http_ok_2[] = "\r\nConnection: Closed\r\n\r\n";
 
 // embed text file, see component.mk
 extern const uint8_t index_html_start[] asm("_binary_index_html_start");
-extern const uint8_t index_html_end[]   asm("_binary_index_html_end");
+extern const uint8_t index_html_end[] asm("_binary_index_html_end");
 extern const uint8_t jquery_js_start[] asm("_binary_jquery_3_2_1_slim_min_js_start");
-extern const uint8_t jquery_js_end[]   asm("_binary_jquery_3_2_1_slim_min_js_end");
+extern const uint8_t jquery_js_end[] asm("_binary_jquery_3_2_1_slim_min_js_end");
+
+static uint16_t web_server_port;
 
 static void web_server_write(struct netconn *conn, const void *begin, size_t length) {
 	assert(length < 1000000);
@@ -91,22 +95,39 @@ static void web_server_process(struct netconn *conn) {
 void web_server_task(void *pvParameters) {
 	ESP_LOGI(TAG, ">web_server_task");
 
-	struct netconn *conn, *newconn;
+	web_server_config_t *config = (web_server_config_t *) pvParameters;
+	web_server_port = config->port;
+	ESP_LOGD(TAG, "web_server_port: %u", web_server_port);
+
 	err_t err;
-	conn = netconn_new(NETCONN_TCP);
-	netconn_bind(conn, NULL, 80);
-	netconn_listen(conn);
-	ESP_LOGD(TAG, "netconn_bind: %d", 80);
-
-	do {
-		err = netconn_accept(conn, &newconn);
-		if (err == ERR_OK) {
-			web_server_process(newconn);
-			netconn_delete(newconn);
+	struct netconn *listening_conn = netconn_new(NETCONN_TCP);
+	if (listening_conn == NULL) {
+		ESP_LOGE(TAG, "netconn_new failed")
+	} else {
+		err = netconn_bind(listening_conn, NULL, web_server_port);
+		if (err != ERR_OK) {
+			ESP_LOGE(TAG, "netconn_bind error: %d", err)
+		} else {
+			ESP_LOGD(TAG, "netconn_bind: %u", web_server_port);
+			err = netconn_listen(listening_conn);
+			if (err != ERR_OK) {
+				ESP_LOGE(TAG, "netconn_bind error: %d", err)
+			} else {
+				ESP_LOGD(TAG, "netconn_listen");
+				struct netconn *accepted_conn;
+				do {
+					err = netconn_accept(listening_conn, &accepted_conn);
+					if (err != ERR_OK) {
+						ESP_LOGE(TAG, "netconn_accept error: %d", err)
+					} else {
+						web_server_process(accepted_conn);
+						netconn_delete(accepted_conn);
+					}
+				} while (err == ERR_OK);
+				netconn_close(listening_conn);
+			}
 		}
-	} while (err == ERR_OK);
-
-	netconn_close(conn);
-	netconn_delete(conn);
+		netconn_delete(listening_conn);
+	}
 	ESP_LOGE(TAG, "<web_server_task");
 }

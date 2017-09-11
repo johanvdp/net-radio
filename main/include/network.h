@@ -1,5 +1,8 @@
+// The author disclaims copyright to this source code.
 #ifndef _NETWORK_H_
 #define _NETWORK_H_
+
+#include <stdbool.h>
 
 /**
  * @file
@@ -7,23 +10,13 @@
  */
 
 /**
- * Begin Access Point.
+ * Begin WiFi networking.
  */
-void ap_begin();
+void network_begin();
 
 /**
- * End Access Point.
+ * End WiFi networking.
  */
-void ap_end();
-
-/**
- * Begin mDNS responder.
- */
-void mdns_begin();
-
-/**
- * End mDNS responder.
- */
-void mdns_end();
+void network_end();
 
 #endif

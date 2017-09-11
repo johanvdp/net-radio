@@ -177,6 +177,13 @@ endmenu
 
 menu "Networking"
 
+config STA_SEARCH_SECONDS
+	int "WiFi search period"
+    default 30
+    range 1 60
+	help
+		Period to search for WiFi accesspoint after startup. Else create maintenance Access Point.
+
 config AP_SSID
 	string "Maintenance WiFi SSID"
 	default "net-radio"
@@ -195,12 +202,19 @@ config MDNS_HOSTNAME
 	help
 		mDNS advertised hostname (max 31 chars)
 
-config WEBSERVER_PORT
+config WEB_SERVER_PORT
 	int "Web server port number"
 	default 80
 	range 1 65535
 	help
 		Web server port number
+
+config WEBSOCKET_SERVER_PORT
+	int "WebSocket server port number"
+	default 9998
+	range 1 65535
+	help
+		WebSocket server port number
 
 endmenu
 
