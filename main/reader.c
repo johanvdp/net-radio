@@ -74,7 +74,8 @@ void reader_task(void *pvParameters) {
 
 	while (1) {
 		reader_push_hello();
-		taskYIELD();
+		// not too many
+		vTaskDelay(1000 / portTICK_PERIOD_MS);
 	}
 	// should never be reached
 }

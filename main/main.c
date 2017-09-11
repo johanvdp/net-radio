@@ -116,39 +116,40 @@ void app_main() {
 	main_handles_create();
 
 	// test memory
-	// main_test_mem_configuration.spi_mem_handle = main_spi_mem_handle;
-	// if (test_mem(main_test_mem_configuration) != ESP_OK) {
-	// 	return;
-	// }
+	main_test_mem_configuration.spi_mem_handle = main_spi_mem_handle;
+	if (test_mem(main_test_mem_configuration) != ESP_OK) {
+		return;
+	}
 
 	// test buffer (uses memory)
-	// main_test_buffer_configuration.buffer_handle = main_buffer_handle;
-	// if (test_buffer(main_test_buffer_configuration) != ESP_OK) {
-	// 	return;
-	// }
+	main_test_buffer_configuration.buffer_handle = main_buffer_handle;
+	if (test_buffer(main_test_buffer_configuration) != ESP_OK) {
+		return;
+	}
 
 	// test dsp
-	// main_test_dsp_configuration.vs1053_handle = main_vs1053_handle;
-	// if (test_dsp(main_test_dsp_configuration) != ESP_OK) {
-	// 	return;
-	// }
+	main_test_dsp_configuration.vs1053_handle = main_vs1053_handle;
+	if (test_dsp(main_test_dsp_configuration) != ESP_OK) {
+		return;
+	}
+
 	network_begin();
 
 	// blink task
 	xTaskCreate(&blink_task, "blink_task", 2048, NULL, 5, NULL);
 
 	// reader task
-	// main_reader_configuration.buffer_handle = main_buffer_handle;
-	// xTaskCreatePinnedToCore(&reader_task, "reader_task", 4096, &main_reader_configuration, 5, NULL, 1);
+	main_reader_configuration.buffer_handle = main_buffer_handle;
+	xTaskCreatePinnedToCore(&reader_task, "reader_task", 4096, &main_reader_configuration, 5, NULL, 1);
 
 	// player task
-	// main_player_configuration.buffer_handle = main_buffer_handle;
-	// main_player_configuration.vs1053_handle = main_vs1053_handle;
-	// xTaskCreatePinnedToCore(&player_task, "player_task", 4096, &main_player_configuration, 5, NULL, 0);
+	main_player_configuration.buffer_handle = main_buffer_handle;
+	main_player_configuration.vs1053_handle = main_vs1053_handle;
+	xTaskCreatePinnedToCore(&player_task, "player_task", 4096, &main_player_configuration, 5, NULL, 0);
 
 	// statistics task
-	// main_statistics_configuration.buffer_handle = main_buffer_handle;
-	// xTaskCreate(&statistics_task, "statistics_task", 4096, &main_statistics_configuration, 0, NULL);
+	main_statistics_configuration.buffer_handle = main_buffer_handle;
+	xTaskCreate(&statistics_task, "statistics_task", 4096, &main_statistics_configuration, 0, NULL);
 
 	// websocket process task
 	xTaskCreatePinnedToCore(&websocket_process_task, "websocket_process_task", 4096, NULL, 1, NULL, 1);
