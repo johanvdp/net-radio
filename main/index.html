@@ -13,7 +13,7 @@
 				websocket_connection.onopen = function() {
 					$('#websocket_in').append('&gt;Open<br/>');
 					$('#websocket_target').css("visibility", "hidden");
-					$('#websocket_message').css("visibility", "visible");
+					$('#websocket_command').css("visibility", "visible");
 				};
 
 				websocket_connection.onclose = function(event)
@@ -51,23 +51,27 @@
 					
 					$('#websocket_in').append('&gt;Closed: ' + reason + ' (reload the page)<br/>');
 					$('#websocket_target').css("visibility", "visible");
-					$('#websocket_message').css("visibility", "hidden");
+					$('#websocket_command').css("visibility", "hidden");
 				};
 
 				websocket_connection.onerror = function() {
 					$('#websocket_in').append('&gt;Error<br/>');
 					$('#websocket_target').css("visibility", "visible");
-					$('#websocket_message').css("visibility", "hidden");
+					$('#websocket_command').css("visibility", "hidden");
 				};
 
 				websocket_connection.onmessage = function(event) {
-					$('#websocket_in').append(':');
-					$('#websocket_in').append(event.data + '<br/>');
+					var json = JSON.parse(event.data);
+					if (json.hasOwnProperty('echo')) {
+						$('#websocket_in').append(json.echo + '<br/>');
+					} else {
+						$('#websocket_in').append('unknown:' + event.data + '<br/>');
+					}
 				};
 			}
 
 			function websocket_send(){
-				websocket_connection.send($('#websocket_message_value').val());
+				websocket_connection.send($('#websocket_command_value').val());
 			}
 
 			window.onbeforeunload = function() {
@@ -76,7 +80,13 @@
 			};
 
 			$(function() {
-				$('#websocket_message').css("visibility", "hidden");			
+				$('#websocket_command').css("visibility", "hidden");
+				$('#websocket_target_value').val(function( index, value ) {
+					return "ws://" + window.location.hostname + ":9998";
+				});
+				$('#websocket_command_value').val(function( index, value ) {
+					return "{\"echo\":\"Hello world\"}";
+				});
 				if (!"WebSocket" in window) {
 					$('#websocket_target').text("This page requires WebSocket support.");
 				}
@@ -85,8 +95,8 @@
 	</head>
 	<body>
 		<h1>Send</h1>
-		<div id="websocket_target">Target:<input type="text" id="websocket_target_value" value="ws://192.168.10.1:9998"/><a href="javascript:websocket_connect()">Connect</a></div>
-		<div id="websocket_message">Message:<input type="text" id="websocket_message_value" value="Hello world"/><a href="javascript:websocket_send()">Send</a></div>
+		<div id="websocket_target">Target:<input type="text" id="websocket_target_value" value=""/><a href="javascript:websocket_connect()">Connect</a></div>
+		<div id="websocket_command">JSON:<input type="text" id="websocket_command_value" value=""/><a href="javascript:websocket_send()">Send</a></div>
 		<h1>Receive</h1>
 		<div id="websocket_in"></div>
 	</body>
