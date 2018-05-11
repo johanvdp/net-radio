@@ -107,7 +107,7 @@ void app_main() {
 	// stop built-in logging
 	// esp_log_level_set("wifi", ESP_LOG_NONE);
 
-	nvs_flash_init();
+	ESP_ERROR_CHECK(nvs_flash_init());
 
 	main_log_configuration();
 
