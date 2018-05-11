@@ -259,27 +259,27 @@ The following table shows the function to terminal mapping for this application.
 
 **Table: CPU terminals**
 
-|Group  |Terminal|Function|Comment                 ||Group  |Terminal|Function|Comment                 |
-|:------|:-------|:-------|------------------------||:------|:-------|:-------|------------------------|
-|Power  |3V3     |        |                        ||Power  |GND     |        |                        |
-|       |EN      |CHIP_PU |chip enable, active high||VSPI   |P23     |VSPID   |VSPI MOSI               |
-|       |SVP     |        |                        ||       |P22     |        |                        |
-|       |SVN     |        |                        ||Serial |TX      |        |in-use USB-to-serial    |
-|       |P34     |        |                        ||Serial |RX      |        |in-use USB-to-serial    |
-|       |P35     |        |                        ||       |P21     |        |                        |
-|       |P32     |        |                        ||Power  |GND     |        |                        |
-|       |P33     |        |                        ||VSPI   |P19     |VSPIQ   |VSPI MISO               |
-|       |P25     |        |                        ||VSPI   |P18     |VSPICLK |VSPI SCK                |
-|Control|P26     |GPIO26  |DSP RST                 ||Control|P5      |VSPICS0 |MEM CS                  |
-|Control|P27     |GPIO27  |DSP DREQ                ||I2C    |P17     |GPIO17  |I2C SCL                 |
-|HSPI   |P14     |HSPI-CLK|HSPI SCK                ||I2C    |P16     |GPIO16  |I2C SDA                 |
-|HSPI   |P12     |HSPIQ   |HSPI MISO               ||Control|P4      |GPIO4   |DSP XCS                 |
-|Power  |GND     |        |                        ||       |P0      |        |strapping pin, boot mode|
-|HSPI   |P13     |HSPID   |HSPI MOSI               ||       |P2      |GPIO2   |blue LED, active high   |
-|       |SD2     |        |in-use 4MB flash        ||Control|P15     |HSPICS0 |DSP XDCS                |
-|       |SD3     |        |in-use 4MB flash        ||       |SD1     |        |in-use 4MB flash        |
-|       |CMD     |        |in-use 4MB flash        ||       |SD0     |        |in-use 4MB flash        |
-|Power  |5V      |        |                        ||       |CLK     |        |in-use 4MB flash        |
+|Group  |Terminal|Function|Comment                 | |Group  |Terminal|Function|Comment                 |
+|:------|:-------|:-------|------------------------| |:------|:-------|:-------|------------------------|
+|Power  |3V3     |        |                        | |Power  |GND     |        |                        |
+|       |EN      |CHIP_PU |chip enable, active high| |VSPI   |P23     |VSPID   |VSPI MOSI               |
+|       |SVP     |        |                        | |       |P22     |        |                        |
+|       |SVN     |        |                        | |Serial |TX      |        |in-use USB-to-serial    |
+|       |P34     |        |                        | |Serial |RX      |        |in-use USB-to-serial    |
+|       |P35     |        |                        | |       |P21     |        |                        |
+|       |P32     |        |                        | |Power  |GND     |        |                        |
+|       |P33     |        |                        | |VSPI   |P19     |VSPIQ   |VSPI MISO               |
+|       |P25     |        |                        | |VSPI   |P18     |VSPICLK |VSPI SCK                |
+|Control|P26     |GPIO26  |DSP RST                 | |Control|P5      |VSPICS0 |MEM CS                  |
+|Control|P27     |GPIO27  |DSP DREQ                | |I2C    |P17     |GPIO17  |I2C SCL                 |
+|HSPI   |P14     |HSPI-CLK|HSPI SCK                | |I2C    |P16     |GPIO16  |I2C SDA                 |
+|HSPI   |P12     |HSPIQ   |HSPI MISO               | |Control|P4      |GPIO4   |DSP XCS                 |
+|Power  |GND     |        |                        | |       |P0      |        |strapping pin, boot mode|
+|HSPI   |P13     |HSPID   |HSPI MOSI               | |       |P2      |GPIO2   |blue LED, active high   |
+|       |SD2     |        |in-use 4MB flash        | |Control|P15     |HSPICS0 |DSP XDCS                |
+|       |SD3     |        |in-use 4MB flash        | |       |SD1     |        |in-use 4MB flash        |
+|       |CMD     |        |in-use 4MB flash        | |       |SD0     |        |in-use 4MB flash        |
+|Power  |5V      |        |                        | |       |CLK     |        |in-use 4MB flash        |
 
 ### LVL digital level converter
 BSS138 based digital level converter module.
@@ -383,7 +383,7 @@ MCP23017 16-bit I/O expander module.
 |I2C  |SDA     |SDA     |
 |I2C  |SCL     |SCL     |
 
-### MEM nemory
+### MEM memory
 23LC1024 1Mbit SPI SRAM module.
 
 + 3V3
@@ -476,7 +476,6 @@ TPA3110 2x15W class D audio amplifier module.
 |CPU.HSPI.MISO|P12|P1.3|
 |CPU.HSPI.MOSI|P13|P1.4|
 |CPU.HSPI.CLK |P14|P1.5|
-|             |   |    |
 
 **Table: VSPI connections**
 
