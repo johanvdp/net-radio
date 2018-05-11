@@ -1,4 +1,6 @@
 # Things that should not be published
+# deployment specific settings
+sdkconfig
 # documents created by others
 3rdparty/
 # ideas under development

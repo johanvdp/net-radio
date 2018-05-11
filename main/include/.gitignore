@@ -1,2 +1,14 @@
+# Do not publish WiFi access point credentials
+# exposed in network_secret.h file
+#
+#   // The author disclaims copyright to this source code.
+#   #ifndef _NETWORK_SECRET_H_
+#   #define _NETWORK_SECRET_H_
+#
+#   #define NETWORK_STA_SSID "MyName"
+#   #define NETWORK_STA_KEY  "MySecret"
+# 
+#   #endif
+#
 network_secret.h
 
