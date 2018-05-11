@@ -66,13 +66,6 @@ static bool sta_begin() {
 					.ssid = NETWORK_STA_SSID, //
 							.password = NETWORK_STA_KEY, //
 							.bssid_set = false, //
-							.bssid[0] = 0, //
-							.bssid[1] = 0, //
-							.bssid[2] = 0, //
-							.bssid[3] = 0, //
-							.bssid[4] = 0, //
-							.bssid[5] = 0, //
-							.channel = 6, //
 					}, //
 			};
 
