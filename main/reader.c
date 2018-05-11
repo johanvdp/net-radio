@@ -41,17 +41,17 @@ static void reader_push_hello() {
 	uint32_t remainder = sizeof(HELLO_MP3);
 	while (remainder > 0) {
 		// limit to transfer size
-		uint32_t max = (remainder > DMA_MAX_LENGTH ? DMA_MAX_LENGTH : remainder);
+		uint32_t transfer = (remainder > DMA_MAX_LENGTH ? DMA_MAX_LENGTH : remainder);
 		// limit to available space
 		uint32_t free = buffer_free(reader_buffer_handle);
-		max = max > free ? free : max;
-		if (max > 0) {
+		transfer = transfer > free ? free : transfer;
+		if (transfer > 0) {
 			// push into buffer
-			memcpy(reader_data, p, max);
-			ESP_LOGV(TAG, "buffer_push %p %p %d", reader_buffer_handle, reader_data, max);
-			buffer_push(reader_buffer_handle, reader_data, max);
-			p += max;
-			remainder -= max;
+			memcpy(reader_data, p, transfer);
+			ESP_LOGV(TAG, "buffer_push %p %p %d", reader_buffer_handle, reader_data, transfer);
+			buffer_push(reader_buffer_handle, reader_data, transfer);
+			p += transfer;
+			remainder -= transfer;
 		} else {
 			// wait for available space
 			vTaskDelay(1 / portTICK_PERIOD_MS);
