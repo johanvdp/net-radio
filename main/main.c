@@ -15,7 +15,7 @@
 #include "test_buffer.h"
 #include "test_dsp.h"
 #include "blink.h"
-#include "reader.h"
+#include "hello.h"
 #include "player.h"
 #include "statistics.h"
 #include "network.h"
@@ -27,7 +27,7 @@ static const char* TAG = "main";
 static spi_mem_handle_t main_spi_mem_handle;
 static buffer_handle_t main_buffer_handle;
 static vs1053_handle_t main_vs1053_handle;
-static reader_config_t main_reader_configuration;
+static hello_config_t main_reader_configuration;
 static player_config_t main_player_configuration;
 static test_mem_config_t main_test_mem_configuration;
 static test_dsp_config_t main_test_dsp_configuration;
@@ -138,9 +138,9 @@ void app_main() {
 	// blink task
 	xTaskCreate(&blink_task, "blink_task", 2048, NULL, 5, NULL);
 
-	// reader task
+	// hello task
 	main_reader_configuration.buffer_handle = main_buffer_handle;
-	xTaskCreatePinnedToCore(&reader_task, "reader_task", 4096, &main_reader_configuration, 5, NULL, 1);
+	xTaskCreatePinnedToCore(&hello_task, "hello_task", 4096, &main_reader_configuration, 5, NULL, 1);
 
 	// player task
 	main_player_configuration.buffer_handle = main_buffer_handle;
